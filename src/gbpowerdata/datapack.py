@@ -7,12 +7,16 @@ history, tied to the tag of the code that built it) or put on any shared drive.
 
 PACKS
     processed   the data/processed/ tables built from open sources (PROCESSED_*): the 2018-2025
-                panel, consumer-side tables and PECD historical capacity factors. Licensed
-                day-ahead data and the PECD climate projections (rebuild them with
-                `pecd_pull --stream projection` + `pecd_build --stream future`) are left out.
-    inputs      the hand-downloaded raw files no puller can fetch (INPUTS): plant roster, CfD
-                register, REPD, ESPENI, GSP/DNO boundaries, Ofgem cap model, DNO charging
-                statements, DESNZ consumption. Only needed to re-run the stages that read them.
+                panel, consumer-side tables and the national PECD capacity factors. Left out:
+                licensed day-ahead data; fuel_prices_2018-2021, whose carbon price comes from EEX
+                (whose terms do not allow passing it on), which `scripts/build_fuel_prices.py`
+                rebuilds from the public sources; and the hourly NUTS-2 PECD tables
+                (pecd/cf_historical spans 1950-2025 at 0.75 GB; pecd/cf_future_* is 0.7 GB per
+                climate model), which `pecd_pull` + `pecd_build` rebuild with a free key.
+    inputs      the hand-downloaded raw files no puller can fetch (INPUTS): CfD register, REPD,
+                ESPENI, GSP/DNO boundaries, Ofgem cap model, DNO charging statements, DESNZ
+                consumption. Only needed to re-run the stages that read them. The plant roster is
+                not among them: `pull.ppm_pull` fetches the pinned powerplantmatching release.
 
 FORMAT. A zip (deflate) holding the files byte for byte as the pipeline wrote them, under their
 data/ layout (processed/demand_2023.csv, raw/espeni.csv, ...), plus MANIFEST.json with each file's
@@ -23,10 +27,11 @@ unzip tool, Windows Explorer included. Measured on the 2018-2025 processed set (
 conversion step in both directions; LZMA saves 40% but writes 3x slower and Windows Explorer
 cannot open it. Both stay well inside GitHub's 2 GB per release asset either way.
 
-TERMS. Each manifest entry names the sources of its file (SOURCES), and flags
-`non_commercial` (it carries values from a CC BY-NC source: ESPENI, renewables.ninja) and
-`check_terms` (a source whose redistribution terms are restrictive or unstated). The manifest
-lists every source's licence and required attribution.
+TERMS. A file is packed only if every one of its sources (SOURCES, FILE_SOURCES) allows
+redistribution; a source marked `ship=False` (EEX) keeps its files out, and export says which
+and how to rebuild them. Each manifest entry names the sources of its file and flags
+`non_commercial` (it carries values from a CC BY-NC source: ESPENI, renewables.ninja); the
+manifest lists every source's licence and required attribution.
 
 GUARDS. Export refuses any file that is, or derives from, licensed N2EX/EPEX data, and any
 mid_target whose mid_source column holds N2EX rows (build those with
@@ -69,13 +74,11 @@ PROCESSED_YEARLY = (
 PROCESSED_SINGLE = (
     "cfd_status.csv", "cap_tariff_by_region.csv", "consumer_levy_annual.csv",
     "consumer_levy_daily.csv", "domestic_supply_by_year.csv", "duos_domestic_tariffs.csv",
-    "pecd/cf_historical.csv", "pecd/cf_historical_gaps.csv",
-    "pecd/temperature_popweighted_historical.csv", "pecd/temperature_popweighted_historical_gaps.csv",
 )
-# Hand-downloaded raw inputs, as glob patterns under data/raw/ ({powerplants}/{cfd_register}
-# are the file names set in config.yaml).
+# Hand-downloaded raw inputs, as glob patterns under data/raw/ ({cfd_register} is the file name
+# set in config.yaml).
 INPUTS = (
-    "{powerplants}", "{cfd_register}", "repd_*.csv", "espeni.csv",
+    "{cfd_register}", "repd_*.csv", "espeni.csv",
     "gis/gsp_regions_*.geojson", "gis/dno_license_areas_*.geojson",
     "ofgem/cap_prelevelised_*.xlsx", "ofgem/cap_tariff_model_*.xlsx",
     "manual/dno_duos/**/*", "manual/desnz_subnational/*",
@@ -83,7 +86,8 @@ INPUTS = (
 LICENSED = re.compile(r"nordpool|n2ex|epex|dayahead_price|curve_compare|demand_curves", re.I)
 
 # Upstream sources and their terms (checked at the URLs, 5 Oct 2026). `nc`: non-commercial only;
-# `check`: redistribution terms restrictive or unstated, so clear them before a public release.
+# `ship=False`: the terms do not allow passing the data on, so files carrying it are never packed
+# and each user pulls the source themselves (`rebuild` says how).
 SOURCES = {
     "elexon": dict(name="Elexon BMRS", licence="BMRS open data licence", url="https://www.elexon.co.uk/bsc/data/balancing-mechanism-reporting-agent/copyright-licence-bmrs-data/",
                    attribution="Contains BMRS data © Elexon Limited copyright and database right {year}"),
@@ -104,12 +108,18 @@ SOURCES = {
                  attribution="Generated using Copernicus Climate Change Service information {year}"),
     "worldbank": dict(name="World Bank Commodity Price Data (Pink Sheet)", licence="CC BY 4.0",
                       url="https://www.worldbank.org/en/research/commodity-markets"),
-    "ecb": dict(name="ECB euro reference rates", licence="reuse with the source acknowledged", url="https://data.ecb.europa.eu"),
-    "eex": dict(name="EEX EUA spot prices (carbon, 2018-2020)", licence="EEX market-data terms: substantial redistribution needs EEX permission",
-                check=True, url="https://www.eex.com/en/market-data/licensing-policies"),
-    "octopus": dict(name="Octopus Energy public API (standard variable tariff)", licence="no published data licence", check=True,
+    "ecb": dict(name="ECB euro foreign exchange reference rates", licence="ECB statistics reuse policy (free reuse, commercial included)",
+                url="https://www.ecb.europa.eu/stats/ecb_statistics/governance_and_quality_framework/html/usage_policy.en.html",
+                attribution="Source: ECB statistics"),
+    "eex": dict(name="EEX EU ETS primary auction clearing prices (carbon, 2018-2020)",
+                licence="EEX market-data terms: redistribution to third parties is a licensed EEX service",
+                ship=False, url="https://www.eex.com/en/market-data/licensing-policies",
+                rebuild="python scripts/build_fuel_prices.py"),
+    # The next two publish no data licence; treated as publicly published tariff information
+    # (maintainer's decision, 5 Oct 2026).
+    "octopus": dict(name="Octopus Energy public API (standard variable tariff)", licence="publicly published, no stated licence",
                     url="https://developer.octopus.energy"),
-    "dno": dict(name="DNO charging statements", licence="published by each DNO; no stated licence", check=True),
+    "dno": dict(name="DNO charging statements", licence="publicly published regulatory statements, no stated licence"),
 }
 # Which sources feed which file: processed family (or single file) / raw input pattern -> keys.
 FILE_SOURCES = {
@@ -122,7 +132,7 @@ FILE_SOURCES = {
     "demand": ("espeni", "elexon"),
     "demand_by_zone": ("espeni", "elexon", "govuk"),
     "forecast_state": ("elexon", "neso"),
-    "fuel_prices": ("govuk", "eex", "worldbank", "ecb"),
+    "fuel_prices": ("govuk", "worldbank", "ecb"),     # + "eex" for EEX_YEARS, see sources_for
     "lolp_drm": ("elexon",),
     "mid_target": ("elexon",),
     "powerplants_located": ("ppm", "lccc", "neso"),
@@ -134,30 +144,41 @@ FILE_SOURCES = {
     "wind_farms": ("elexon", "govuk", "lccc", "psd"),
     "cfd_status": ("lccc", "govuk"),
     "cap_tariff_by_region": ("ofgem",),
-    "consumer_levy_annual": ("lccc", "octopus"),
-    "consumer_levy_daily": ("lccc", "octopus"),
+    "consumer_levy_annual": ("lccc", "octopus"),      # svt_unit_rate_gbp_mwh, levy_share_of_unit_rate_pct
+    "consumer_levy_daily": ("lccc",),
     "domestic_supply_by_year": ("govuk",),
     "duos_domestic_tariffs": ("dno", "ofgem"),
-    "pecd": ("pecd",),
-    "raw/powerplants": ("ppm",), "raw/CfD_Register": ("lccc",), "raw/repd": ("govuk",),
+    "raw/CfD_Register": ("lccc",), "raw/repd": ("govuk",),
     "raw/espeni": ("espeni",), "raw/gis": ("neso",), "raw/ofgem": ("ofgem",),
     "raw/manual/dno_duos": ("dno",), "raw/manual/desnz_subnational": ("govuk",),
 }
+# The carbon price is the EEX EUA auction price until the UK left the EU ETS (pull.carbon_pull
+# EUA_YEARS 2018-2020), the gov.uk UK ETS price after. 2021 is included because stage 2 interpolates
+# between mid-month prices, so 1-14 January 2021 still carries the December 2020 EEX price.
+EEX_YEARS = (2018, 2019, 2020, 2021)
 
 
 def sources_for(arcname: str) -> tuple[str, ...]:
     """The SOURCES keys behind a packed file. A file with no entry is an error, so the terms
     registry cannot silently fall behind the pack lists."""
     if arcname.startswith("processed/"):
-        rel = arcname.removeprefix("processed/")
-        key = "pecd" if rel.startswith("pecd/") else re.sub(r"_\d{4}$", "", rel.removesuffix(".csv"))
+        stem = arcname.removeprefix("processed/").removesuffix(".csv")
+        key = re.sub(r"_\d{4}$", "", stem)
         if key in FILE_SOURCES:
+            year = stem[len(key) + 1:]
+            if key == "fuel_prices" and year.isdigit() and int(year) in EEX_YEARS:
+                return FILE_SOURCES[key] + ("eex",)
             return FILE_SOURCES[key]
     else:
         for prefix in sorted((k for k in FILE_SOURCES if k.startswith("raw/")), key=len, reverse=True):
             if arcname.startswith(prefix):
                 return FILE_SOURCES[prefix]
     raise ValueError(f"{arcname}: no entry in datapack.FILE_SOURCES - add its sources before packing")
+
+
+def withheld_by(keys: tuple[str, ...]) -> list[str]:
+    """The sources among `keys` whose terms do not allow passing their data on."""
+    return [k for k in keys if not SOURCES[k].get("ship", True)]
 
 
 def _roots() -> dict[str, Path]:
@@ -198,7 +219,7 @@ def input_files() -> list[Path]:
     raw, st1 = cfg.raw_dir(), cfg.load_config()["stage1"]
     out: list[Path] = []
     for pat in INPUTS:
-        pat = pat.format(powerplants=st1["powerplants"], cfd_register=st1["cfd_register"])
+        pat = pat.format(cfd_register=st1["cfd_register"])
         out += [f for f in sorted(raw.glob(pat)) if f.is_file() and f not in out]
     return out
 
@@ -231,10 +252,14 @@ def export(pack: str, out_dir: Path, years: tuple[int, int] | None = None) -> Pa
     if not files:
         raise SystemExit(f"nothing to pack for '{pack}' - are the data folders in config.yaml populated?")
     names = {f: _arcname(f) for f in files}
-    srcs = {}
-    for f, name in names.items():           # every check before anything is written
+    srcs, withheld = {}, []
+    for f, name in list(names.items()):     # every check before anything is written
         check_shareable(f, name)
         srcs[name] = sources_for(name)
+        if blocked := withheld_by(srcs[name]):
+            withheld.append({"path": name, "sources": blocked,
+                             "rebuild": sorted({SOURCES[k]["rebuild"] for k in blocked})})
+            del names[f]
     out_dir.mkdir(parents=True, exist_ok=True)
     now = datetime.now(timezone.utc)
     target = out_dir / f"gb-power-data_{pack}_{now:%Y-%m-%d}.zip"
@@ -246,9 +271,8 @@ def export(pack: str, out_dir: Path, years: tuple[int, int] | None = None) -> Pa
             keys = srcs[name]
             entries.append({"path": name, "bytes": len(data), "sha256": _sha256(data),
                             "sources": list(keys),
-                            "non_commercial": any(SOURCES[k].get("nc", False) for k in keys),
-                            "check_terms": any(SOURCES[k].get("check", False) for k in keys)})
-        used = sorted({k for keys in srcs.values() for k in keys})
+                            "non_commercial": any(SOURCES[k].get("nc", False) for k in keys)})
+        used = sorted({k for e in entries for k in e["sources"]})
         manifest = {
             "pack": pack,
             "created_utc": now.isoformat(timespec="seconds"),
@@ -259,11 +283,12 @@ def export(pack: str, out_dir: Path, years: tuple[int, int] | None = None) -> Pa
             "bytes_uncompressed": sum(e["bytes"] for e in entries),
             "terms": "The code's BSD licence does not cover this data. Each file keeps the terms of its "
                      "sources (listed below with their required attribution). non_commercial: CC BY-NC "
-                     "material, non-commercial use only. check_terms: a source whose redistribution terms "
-                     "must be cleared before any public release.",
+                     "material, non-commercial use only. withheld: files whose sources do not allow "
+                     "passing them on; rebuild them locally with the command given.",
             "sources": {k: {f: (v.format(year=now.year) if isinstance(v, str) else v)
                             for f, v in SOURCES[k].items()} for k in used},
             "files": entries,
+            "withheld": withheld,
         }
         z.writestr(MANIFEST, json.dumps(manifest, indent=1))
     return target
@@ -337,18 +362,30 @@ def main(argv: list[str]) -> None:
         man = verify(path)
         print(f"{path}  {man['n_files']} files, {man['bytes_uncompressed']/1e6:,.0f} MB -> "
               f"{path.stat().st_size/1e6:,.0f} MB, commit {man['git_commit']}")
-        for flag, what in (("non_commercial", "non-commercial (CC BY-NC)"),
-                           ("check_terms", "terms to clear before a public release")):
-            hit = sorted({re.sub(r"_\d{4}\.csv$", "_{y}.csv", e["path"]) for e in man["files"] if e[flag]})
-            if hit:
-                print(f"  {what}: {', '.join(hit)}")
+        # one line per table family or per manual folder, not per file
+        nc = sorted({re.sub(r"^(raw/manual/[^/]+/).*", r"\1", re.sub(r"_\d{4}\.csv$", "_{y}.csv", e["path"]))
+                     for e in man["files"] if e["non_commercial"]})
+        if nc:
+            print(f"  non-commercial (CC BY-NC): {', '.join(nc)}")
+        _print_withheld(man)
     elif a.cmd == "verify":
         man = verify(a.archive)
         print(f"OK  {man['pack']} pack, {man['n_files']} files, built {man['created_utc']} "
               f"from {man['git_commit']}")
+        _print_withheld(man)
     else:
         written, same = unpack(a.archive, a.force)
         print(f"{written} files written, {same} already identical")
+        with zipfile.ZipFile(a.archive) as z:
+            _print_withheld(_read_manifest(z))
+
+
+def _print_withheld(man: dict) -> None:
+    """Tell the user which files the pack leaves out and the command that builds them."""
+    for cmd in sorted({c for w in man.get("withheld", []) for c in w["rebuild"]}):
+        paths = [w["path"] for w in man["withheld"] if cmd in w["rebuild"]]
+        print(f"  not in this pack (source terms do not allow passing it on): {', '.join(paths)}\n"
+              f"    build locally with: {cmd}")
 
 
 if __name__ == "__main__":

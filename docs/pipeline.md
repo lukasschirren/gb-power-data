@@ -35,6 +35,7 @@ docstring has the method, the source quirks it handles, and its full CLI.
 | `renninja_pull` | renewables.ninja reanalysis CF per site | free token, ~50 requests/h | `raw/ninja/` | 0.1 GB, ~8 h |
 | `pecd_pull` | Copernicus CDS PECD v4.2 (ERA5 and CMIP6 CF, temperature) | free CDS key + licence acceptance | `raw/pecd/` | up to 10 GB |
 | `nuts_boundaries_pull` | Eurostat GISCO NUTS-2 boundaries | free | `raw/gis/nuts2_boundaries_2021.geojson` | <5 MB |
+| `ppm_pull` | powerplantmatching plant roster, pinned release v0.8.1, checksum-verified | free (GitHub) | `raw/powerplants.csv` | 22 MB |
 | `nordpool_pull` | Nord Pool N2EX prices, aggregated curves, blocks, flows | **paid API** | `raw/nordpool/` | 13 GB |
 | `epex_pull` | EPEX SPOT GB day-ahead and intraday prices, curves, blocks, trades | **paid sFTP** | `raw/epex/` | 3.4 GB |
 
@@ -95,6 +96,11 @@ stage stops the run, except the two marked *soft*, which are skipped when their 
 | `pecd_build`, then `pecd_national_cf` | `raw/pecd/historical/`, PECD region weights, agents | `pecd/cf_historical.csv`, `pecd/temperature_popweighted_historical.csv`, `capacity_factors_pecd_{y}.csv` |
 | `pecd_build --stream future` | `raw/pecd/projection/{gcm}/{ssp}/` (from `pecd_pull --stream projection`) | `pecd/cf_future_{gcm}_{ssp}.csv` (~0.7 GB each) |
 
+`python scripts/build_fuel_prices.py [first last]` (default 2018 2021) runs `gas_pull`,
+`carbon_pull` and `coal_pull`, then `stage2_build_timeseries --fuel-only` for each year, so it
+rebuilds `fuel_prices_{y}.csv` alone, with no ESPENI or Elexon input. It exists for the years
+the data pack leaves out because their carbon price comes from EEX.
+
 **Licensed venues** (need `raw/nordpool/` and/or `raw/epex/`; every output is licensed data):
 
 | Command | Writes (`processed/`) |
@@ -133,7 +139,10 @@ Every time series is UTC, half-hourly, keyed on `startTime`.
 | `verify <zip>` | checks every member against the manifest |
 | `unpack <zip> [--force]` | verifies, then writes into the configured data folders |
 
-Export refuses licensed N2EX/EPEX tables and any `mid_target` holding N2EX rows. A release is:
-build with `timeseries.mid_gap_fill_n2ex: false`, commit, tag, export both packs, and attach
-them to the GitHub Release of that tag (`gh release create <tag> dist/*.zip`), so the manifest's
-commit names the code that built the data.
+Export refuses licensed N2EX/EPEX tables and any `mid_target` holding N2EX rows, and leaves out
+every file with a source marked `ship=False` in `datapack.SOURCES` (today EEX, so
+`fuel_prices_2018` to `fuel_prices_2021`); the manifest lists those under `withheld` with the
+command that builds them, and `unpack` prints it. A release is built with
+`timeseries.mid_gap_fill_n2ex: false`, committed and tagged; then both packs are exported and
+attached to the GitHub Release of that tag (`gh release create <tag> dist/*.zip`), so the
+manifest's commit names the code that built the data.

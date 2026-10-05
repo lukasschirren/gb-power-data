@@ -118,12 +118,20 @@ def coal_price_thermal(times: pd.Series, fallback: float = COAL_FALLBACK_GBP_MWH
 
 
 def merge_drivers(year: int, coal_fallback: float = COAL_FALLBACK_GBP_MWH_TH) -> pd.DataFrame:
-    """Half-hourly join of demand + capacity factors + fuel prices + MID price,
-    plus the monthly coal price mapped onto the index."""
+    """Half-hourly join of demand + capacity factors + fuel prices + MID price, with the coal
+    price as the monthly step from data/raw/coal_monthly.csv where that file exists.
+
+    A processed-only install (the data pack, no raw/) keeps the coal series fuel_prices_{year}
+    already carries instead: coal_price_thermal() would otherwise replace it with the flat
+    fallback without a word."""
     d = load_year(year)
     m = (d["demand"]
          .merge(d["cf"], on="startTime")
          .merge(d["fuel"], on="startTime")
          .merge(d["mid"], on="startTime"))
-    m["coal_price_gbp_per_mwh_thermal"] = coal_price_thermal(m["startTime"], coal_fallback)
+    col = "coal_price_gbp_per_mwh_thermal"
+    if (cfg.raw_dir() / "coal_monthly.csv").exists() or col not in m:
+        m[col] = coal_price_thermal(m["startTime"], coal_fallback)
+    else:
+        m[col] = m[col].fillna(coal_fallback)
     return m

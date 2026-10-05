@@ -33,9 +33,12 @@ def src(tmp_path, monkeypatch) -> Path:
     p = root / "processed"
     (p / "demand_2023.csv").write_text("startTime,national_demand_mw\n2023-01-01 00:00:00+00:00,25000.5\n")
     (p / "demand_2017.csv").write_text("startTime,national_demand_mw\n")
+    (p / "capacity_factors_pecd_2023.csv").write_text("startTime,solar_cf\n2023-01-01 00:00:00+00:00,0.0\n")
     (p / "pecd").mkdir()
-    (p / "pecd" / "cf_historical.csv").write_text("time,UKC1\n2023-01-01T00:00:00Z,0.3\n")
+    (p / "pecd" / "cf_historical.csv").write_text("time,UKC1\n2023-01-01T00:00:00Z,0.3\n")   # rebuilt, not packed
     _mid(p / "mid_target_2023.csv", ["APXMIDP", "interpolated", "missing"])
+    (p / "fuel_prices_2023.csv").write_text("startTime,carbon_price_gbp_per_tonne\n2023-01-01 00:00:00+00:00,72.9\n")
+    (p / "fuel_prices_2019.csv").write_text("startTime,carbon_price_gbp_per_tonne\n2019-01-01 00:00:00+00:00,20.1\n")
     (p / "dayahead_price_n2ex_2023.csv").write_text("licensed\n")      # never in the pack list
     (p / "scratch_notes.csv").write_text("not a pipeline table\n")
     return root
@@ -46,35 +49,42 @@ def test_export_then_unpack_restores_the_files_byte_for_byte(src, tmp_path, monk
     with zipfile.ZipFile(archive) as z:
         names = set(z.namelist())
         man = json.loads(z.read(dp.MANIFEST))
+    # no 2017, licensed, hourly PECD or stray file, and no EEX-carrying fuel_prices_2019
     assert names == {dp.MANIFEST, "processed/demand_2023.csv", "processed/mid_target_2023.csv",
-                     "processed/pecd/cf_historical.csv"}                 # no 2017, licensed or stray file
-    assert man["n_files"] == 3 and dp.verify(archive)["pack"] == "processed"
+                     "processed/capacity_factors_pecd_2023.csv", "processed/fuel_prices_2023.csv"}
+    assert man["n_files"] == 4 and dp.verify(archive)["pack"] == "processed"
+    assert man["withheld"] == [{"path": "processed/fuel_prices_2019.csv", "sources": ["eex"],
+                                "rebuild": ["python scripts/build_fuel_prices.py"]}]
 
     dst = _tree(tmp_path / "dst", monkeypatch)
-    assert dp.unpack(archive) == (3, 0)
+    assert dp.unpack(archive) == (4, 0)
     for e in man["files"]:
         assert (dst / e["path"]).read_bytes() == (src / e["path"]).read_bytes()
-    assert dp.unpack(archive) == (0, 3)                                   # idempotent
+    assert dp.unpack(archive) == (0, 4)                                   # idempotent
 
 
 def test_every_packable_file_has_sources_and_the_flags_follow_them(src, tmp_path):
     names = ([f"processed/{f}_2023.csv" for f in dp.PROCESSED_YEARLY]
              + [f"processed/{s}" for s in dp.PROCESSED_SINGLE]
-             + ["raw/powerplants.csv", "raw/CfD_Register_2026-05-22.xlsx", "raw/repd_q1_2026.csv",
+             + ["raw/CfD_Register_2026-05-22.xlsx", "raw/repd_q1_2026.csv",
                 "raw/espeni.csv", "raw/gis/gsp_regions_20220314.geojson",
                 "raw/ofgem/cap_prelevelised_2026-05.xlsx", "raw/manual/dno_duos/ssen/x.xlsx",
                 "raw/manual/desnz_subnational/x.xlsx"])
     for n in names:
         assert set(dp.sources_for(n)) <= set(dp.SOURCES), n
     assert "ninja" in dp.sources_for("processed/capacity_factors_by_zone_2023.csv")
+    assert "eex" in dp.sources_for("processed/fuel_prices_2019.csv")          # EU ETS years,
+    assert "eex" in dp.sources_for("processed/fuel_prices_2021.csv")          # + early-Jan interpolation
+    assert "eex" not in dp.sources_for("processed/fuel_prices_2023.csv")
+    assert dp.withheld_by(dp.sources_for("processed/fuel_prices_2019.csv")) == ["eex"]
     with pytest.raises(ValueError, match="FILE_SOURCES"):
         dp.sources_for("processed/something_new_2023.csv")
 
     man = dp.verify(dp.export("processed", tmp_path / "dist"))
-    flags = {e["path"]: (e["non_commercial"], e["check_terms"]) for e in man["files"]}
-    assert flags["processed/demand_2023.csv"] == (True, False)            # ESPENI: CC BY-NC
-    assert flags["processed/mid_target_2023.csv"] == (False, False)       # Elexon: open
-    assert set(man["sources"]) == {"espeni", "elexon", "pecd"}
+    nc = {e["path"]: e["non_commercial"] for e in man["files"]}
+    assert nc["processed/demand_2023.csv"] is True                        # ESPENI: CC BY-NC
+    assert nc["processed/mid_target_2023.csv"] is False                   # Elexon: open
+    assert set(man["sources"]) == {"espeni", "elexon", "pecd", "ppm", "govuk", "worldbank", "ecb"}
     assert "© Elexon" in man["sources"]["elexon"]["attribution"]
 
 
