@@ -1,0 +1,10 @@
+allocation_round,vintage,neg_price_rule,neg_price_min_consecutive_hours,contract_term_years_key_tech,contract_term_years_other,strike_base_year,phasing_offshore,reference_price_intermittent,reference_price_baseload,indexation,notes
+Investment Contract,FIDeR,six_hour,6,15,15,2012,no,IMRP,BMRP,CPI,"Pre-AR1 FIDeR Investment Contracts (2014): Hornsea 1 / Walney Extension / Dudgeon / Beatrice / Burbo Bank Extension. Dominate the early panel."
+Bespoke,Bespoke,six_hour,6,35,35,2012,no,IMRP,BMRP,CPI,"Hinkley Point C 35-year bilateral CfD (nuclear baseload -> BMRP). Outside the allocation-round framework."
+Allocation Round 1,AR1,six_hour,6,15,15,2012,no,IMRP,BMRP,CPI,"Original 2014 AR1 contracts capped payments at strike with no suspension; the 6-hour rule applied to contracts from 2016. Modelled as six_hour."
+Allocation Round 2,AR2,six_hour,6,15,15,2012,no,IMRP,BMRP,CPI,"Offshore strike prices fell sharply; Triton Knoll / Moray East / Hornsea 2."
+Allocation Round 3,AR3,six_hour,6,15,15,2012,no,IMRP,BMRP,CPI,"Seagreen / Dogger Bank / Sofia. Straddles the panel's later years. Phasing introduced next round."
+Allocation Round 4,AR4,any_hour,1,15,15,2012,yes,IMRP,BMRP,CPI,"Any-hour strictly-below-zero rule begins; phased offshore wind (fixed-bottom; max 1500 MW / 3 phases / first 25pct). Mostly commissions beyond 2025."
+Allocation Round 5,AR5,any_hour,1,15,15,2012,yes,IMRP,BMRP,CPI,"No offshore wind awarded. Closed the merchant-during-TCW gap."
+Allocation Round 6,AR6,any_hour,1,15,15,2012,yes,IMRP,BMRP,CPI,"First commercial floating wind (GreenVolt); offshore in own Pot 3."
+Allocation Round 7,AR7,any_hour,1,20,15,2024,yes,IMRP,BMRP,CPI,"20-year term for offshore/floating/onshore wind and solar PV (others stay 15); base year 2024; phasing extended to floating; separate Scottish/E&W clearing."

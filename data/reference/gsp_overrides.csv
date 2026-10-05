@@ -1,0 +1,3 @@
+match_col,match_value,gsp_id,gsp_group,note
+Name,Hornsea,,_M,Connects at Killingholme (Humber); nearest-land snap wrongly gives _A. Register gsp_group=_M.
+Name,Triton Knoll,,_B,Connects at Bicker Fen (Lincs); nearest-land snap wrongly gives _A. Register gsp_group=_B.

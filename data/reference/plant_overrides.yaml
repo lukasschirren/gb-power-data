@@ -1,0 +1,19 @@
+# Manual data-quality overrides for the powerplantmatching roster (Stage 1).
+# Same pattern pipeline.md prescribes for override tables: edit here, not in code.
+
+# PPM mislabels Dinorwig and Foyers as run-of-river. All four GB pumped-storage
+# sites must be tagged as storage (opportunity-cost bidders), not renewable.
+pumped_storage_names: [Dinorwig, Foyers, Cruachan, Ffestiniog]
+
+# PPM's DateOut is often stale/wrong. Force a retirement year so the plant drops
+# out of the "operational in {year}" filter. Drax Timepoint is a legacy coal
+# listing; the converted biomass units are already a separate PPM "Drax" entry.
+dateout_patches:
+  Drax Timepoint: 2022
+
+# PPM Country='United Kingdom' includes Northern Ireland, which sits on the SEM
+# grid with the Republic of Ireland and is out of scope for a GB model.
+# Rough bounding box; covers NI without false positives on Scottish islands.
+ni_bbox:
+  lat: [54.0, 55.3]
+  lon: [-8.2, -5.4]

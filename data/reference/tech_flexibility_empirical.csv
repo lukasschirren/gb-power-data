@@ -1,0 +1,6 @@
+fuelhh_type,technology,cap_proxy_mw,mean_cf,pct_periods_off,intraday_minmax,min_stable_pct_committed,ramp_up_p95_pct_per_h,ramp_dn_p95_pct_per_h,ramp_p99_pct_per_h
+NUCLEAR,Nuclear,7918,0.65,0.0,0.96,91.0,0.9,0.9,3.3
+COAL,Hard Coal,7459,0.08,53.8,0.5,18.0,9.0,10.2,13.7
+CCGT,CCGT,24732,0.45,0.0,0.38,20.0,13.2,12.4,20.5
+OCGT,OCGT,393,0.05,83.6,0.42,10.0,44.3,44.8,53.9
+PS,Pumped Storage,1762,-0.04,55.8,0.15,6.0,66.3,58.3,95.1

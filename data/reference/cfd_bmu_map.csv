@@ -1,0 +1,78 @@
+cfd_id,station_id,station_name,elexon_bmu_id,bmu_name,lead_party,elexon_fuel_type,generation_capacity_mw,gsp_group_id,in_elexon_register,n_cfd_ids_on_station,cfd_id_source
+AAA-ACH-183,10288.0,Achlachan,C__PSMAR001,C__PSMAR001-AAA-ACH-183,Smartestenergy Limited,WIND,11.282,_P,True,1,psd
+AAA-BAD-185,10296.0,Bad a Cheo,T_BDCHW-1,Bad a Cheo Wind Farm,RWE Generation UK plc,WIND,270.0,,True,1,psd
+AAA-BAN-189,10302.0,Kype Muir,T_KPMRW-1,KYPE MUIR WIND FARM,OnPath Energy Limited,WIND,89.0,,True,1,psd
+AAA-BAN-192,10303.0,Middle Muir,T_MIDMW-1,MIDDLE MUIR WIND FARM,OnPath Energy Limited,WIND,51.0,,True,1,psd
+AAA-COI-196,10289.0,Coire Na Cloiche,E_CNCLW-1,Coire Na Cloiche WF,Statkraft Markets Gmbh,WIND,30.52,_P,True,1,psd
+AAA-DOR-182,10299.0,Dorenell,T_DOREW-1,Dorenell Wind Farm One,Dorenell Windfarm Limited,WIND,156.92,,True,1,psd
+AAA-DOR-182,10299.0,Dorenell,T_DOREW-2,Dorenell Wind Farm Two,Dorenell Windfarm Limited,WIND,156.92,,True,1,psd
+AAA-NAN-184,,,C__PSTAT011,,,,,,,1,elexon_bmu_name
+AAA-PNE-187,10307.0,Tralorg,T_TRLGW-1,T_TRLGW-1,Smartestenergy Limited,WIND,18.742,,True,1,psd
+AR2-HRN-106,10301.0,Hornsea,T_HOWAO-1,HORNSEA_1A,Hornsea 1 Limited,WIND,400.0,,True,6,psd
+AR2-HRN-106,10301.0,Hornsea,T_HOWAO-2,HORNSEA_1B,Hornsea 1 Limited,WIND,400.0,,True,6,psd
+AR2-HRN-106,10301.0,Hornsea,T_HOWAO-3,HORNSEA_1C,Hornsea 1 Limited,WIND,400.0,,True,6,psd
+AR2-HRN-206,10301.0,Hornsea,T_HOWAO-1,HORNSEA_1A,Hornsea 1 Limited,WIND,400.0,,True,6,psd
+AR2-HRN-206,10301.0,Hornsea,T_HOWAO-2,HORNSEA_1B,Hornsea 1 Limited,WIND,400.0,,True,6,psd
+AR2-HRN-206,10301.0,Hornsea,T_HOWAO-3,HORNSEA_1C,Hornsea 1 Limited,WIND,400.0,,True,6,psd
+AR2-HRN-306,10301.0,Hornsea,T_HOWAO-1,HORNSEA_1A,Hornsea 1 Limited,WIND,400.0,,True,6,psd
+AR2-HRN-306,10301.0,Hornsea,T_HOWAO-2,HORNSEA_1B,Hornsea 1 Limited,WIND,400.0,,True,6,psd
+AR2-HRN-306,10301.0,Hornsea,T_HOWAO-3,HORNSEA_1C,Hornsea 1 Limited,WIND,400.0,,True,6,psd
+AR2-MRY-107,10304.0,Moray East,T_MOWEO-1,Moray East OWF1,Moray Offshore Wind East Ltd,WIND,300.0,,True,3,psd
+AR2-MRY-107,10304.0,Moray East,T_MOWEO-2,Moray East OWF2,Moray Offshore Wind East Ltd,WIND,300.0,,True,3,psd
+AR2-MRY-107,10304.0,Moray East,T_MOWEO-3,Moray East OWF3,Moray Offshore Wind East Ltd,WIND,300.0,,True,3,psd
+AR2-MRY-207,10304.0,Moray East,T_MOWEO-1,Moray East OWF1,Moray Offshore Wind East Ltd,WIND,300.0,,True,3,psd
+AR2-MRY-207,10304.0,Moray East,T_MOWEO-2,Moray East OWF2,Moray Offshore Wind East Ltd,WIND,300.0,,True,3,psd
+AR2-MRY-207,10304.0,Moray East,T_MOWEO-3,Moray East OWF3,Moray Offshore Wind East Ltd,WIND,300.0,,True,3,psd
+AR2-MRY-307,10304.0,Moray East,T_MOWEO-1,Moray East OWF1,Moray Offshore Wind East Ltd,WIND,300.0,,True,3,psd
+AR2-MRY-307,10304.0,Moray East,T_MOWEO-2,Moray East OWF2,Moray Offshore Wind East Ltd,WIND,300.0,,True,3,psd
+AR2-MRY-307,10304.0,Moray East,T_MOWEO-3,Moray East OWF3,Moray Offshore Wind East Ltd,WIND,300.0,,True,3,psd
+AR2-TKN-103,10306.0,Triton Knoll,T_TKNEW-1,Triton Knoll OSP East 1,Triton Knoll Offshore Wind,WIND,412.0,,True,3,psd
+AR2-TKN-103,10306.0,Triton Knoll,T_TKNWW-1,Triton Knoll OSP west 1,Triton Knoll Offshore Wind,WIND,412.0,,True,3,psd
+AR2-TKN-203,10306.0,Triton Knoll,T_TKNEW-1,Triton Knoll OSP East 1,Triton Knoll Offshore Wind,WIND,412.0,,True,3,psd
+AR2-TKN-203,10306.0,Triton Knoll,T_TKNWW-1,Triton Knoll OSP west 1,Triton Knoll Offshore Wind,WIND,412.0,,True,3,psd
+AR2-TKN-303,10306.0,Triton Knoll,T_TKNEW-1,Triton Knoll OSP East 1,Triton Knoll Offshore Wind,WIND,412.0,,True,3,psd
+AR2-TKN-303,10306.0,Triton Knoll,T_TKNWW-1,Triton Knoll OSP west 1,Triton Knoll Offshore Wind,WIND,412.0,,True,3,psd
+CAA-EAS-166,10300.0,East Anglia,T_EAAO-1,East Anglia One Offshore 1,East Anglia One Limited,WIND,358.0,,True,3,psd
+CAA-EAS-166,10300.0,East Anglia,T_EAAO-2,East Anglia One Offshore 2,East Anglia One Limited,WIND,367.0,,True,3,psd
+CAA-EAS-167,10300.0,East Anglia,T_EAAO-1,East Anglia One Offshore 1,East Anglia One Limited,WIND,358.0,,True,3,psd
+CAA-EAS-167,10300.0,East Anglia,T_EAAO-2,East Anglia One Offshore 2,East Anglia One Limited,WIND,367.0,,True,3,psd
+CAA-EAS-168,10300.0,East Anglia,T_EAAO-1,East Anglia One Offshore 1,East Anglia One Limited,WIND,358.0,,True,3,psd
+CAA-EAS-168,10300.0,East Anglia,T_EAAO-2,East Anglia One Offshore 2,East Anglia One Limited,WIND,367.0,,True,3,psd
+INV-BEA-001,10297.0,Beatrice,T_BEATO-1,Beatrice Offshore WF 1,Beatrice Offshore Windfarm Ltd,WIND,184.0,,True,2,psd
+INV-BEA-001,10297.0,Beatrice,T_BEATO-2,Beatrice Offshore WF 2,Beatrice Offshore Windfarm Ltd,WIND,166.0,,True,2,psd
+INV-BEA-001,10297.0,Beatrice,T_BEATO-3,Beatrice Offshore WF 3,Beatrice Offshore Windfarm Ltd,WIND,166.0,,True,2,psd
+INV-BEA-001,10297.0,Beatrice,T_BEATO-4,Beatrice Offshore WF 4,Beatrice Offshore Windfarm Ltd,WIND,165.526,,True,2,psd
+INV-BEA-002,10297.0,Beatrice,T_BEATO-1,Beatrice Offshore WF 1,Beatrice Offshore Windfarm Ltd,WIND,184.0,,True,2,psd
+INV-BEA-002,10297.0,Beatrice,T_BEATO-2,Beatrice Offshore WF 2,Beatrice Offshore Windfarm Ltd,WIND,166.0,,True,2,psd
+INV-BEA-002,10297.0,Beatrice,T_BEATO-3,Beatrice Offshore WF 3,Beatrice Offshore Windfarm Ltd,WIND,166.0,,True,2,psd
+INV-BEA-002,10297.0,Beatrice,T_BEATO-4,Beatrice Offshore WF 4,Beatrice Offshore Windfarm Ltd,WIND,165.526,,True,2,psd
+INV-BUR-001,10169.0,Burbo Bank Offshore Windfarm,T_BRBEO-1,BURBO_EXTENSION,Burbo Extension Limited,WIND,257.7,,True,1,psd
+INV-DRX-001,10004.0,Drax,T_DRAXX-1,T_DRAXX-1,Drax Power Ltd,BIOMASS,665.248,,True,1,psd
+INV-DUD-001,10185.0,Dudgeon Offshore Wind Farm Generator,T_DDGNO-1,Dudgeon Generator BMU 1,Dudgeon Offshore Wind Ltd,WIND,108.0,,True,3,psd
+INV-DUD-001,10185.0,Dudgeon Offshore Wind Farm Generator,T_DDGNO-2,Dudgeon Generator BMU 2,Dudgeon Offshore Wind Ltd,WIND,90.0,,True,3,psd
+INV-DUD-001,10185.0,Dudgeon Offshore Wind Farm Generator,T_DDGNO-3,Dudgeon Generator BMU 3,Dudgeon Offshore Wind Ltd,WIND,102.0,,True,3,psd
+INV-DUD-001,10185.0,Dudgeon Offshore Wind Farm Generator,T_DDGNO-4,Dudgeon Generator BMU 4,Dudgeon Offshore Wind Ltd,WIND,102.0,,True,3,psd
+INV-DUD-002,10185.0,Dudgeon Offshore Wind Farm Generator,T_DDGNO-1,Dudgeon Generator BMU 1,Dudgeon Offshore Wind Ltd,WIND,108.0,,True,3,psd
+INV-DUD-002,10185.0,Dudgeon Offshore Wind Farm Generator,T_DDGNO-2,Dudgeon Generator BMU 2,Dudgeon Offshore Wind Ltd,WIND,90.0,,True,3,psd
+INV-DUD-002,10185.0,Dudgeon Offshore Wind Farm Generator,T_DDGNO-3,Dudgeon Generator BMU 3,Dudgeon Offshore Wind Ltd,WIND,102.0,,True,3,psd
+INV-DUD-002,10185.0,Dudgeon Offshore Wind Farm Generator,T_DDGNO-4,Dudgeon Generator BMU 4,Dudgeon Offshore Wind Ltd,WIND,102.0,,True,3,psd
+INV-DUD-003,10185.0,Dudgeon Offshore Wind Farm Generator,T_DDGNO-1,Dudgeon Generator BMU 1,Dudgeon Offshore Wind Ltd,WIND,108.0,,True,3,psd
+INV-DUD-003,10185.0,Dudgeon Offshore Wind Farm Generator,T_DDGNO-2,Dudgeon Generator BMU 2,Dudgeon Offshore Wind Ltd,WIND,90.0,,True,3,psd
+INV-DUD-003,10185.0,Dudgeon Offshore Wind Farm Generator,T_DDGNO-3,Dudgeon Generator BMU 3,Dudgeon Offshore Wind Ltd,WIND,102.0,,True,3,psd
+INV-DUD-003,10185.0,Dudgeon Offshore Wind Farm Generator,T_DDGNO-4,Dudgeon Generator BMU 4,Dudgeon Offshore Wind Ltd,WIND,102.0,,True,3,psd
+INV-HOR-001,10301.0,Hornsea,T_HOWAO-1,HORNSEA_1A,Hornsea 1 Limited,WIND,400.0,,True,6,psd
+INV-HOR-001,10301.0,Hornsea,T_HOWAO-2,HORNSEA_1B,Hornsea 1 Limited,WIND,400.0,,True,6,psd
+INV-HOR-001,10301.0,Hornsea,T_HOWAO-3,HORNSEA_1C,Hornsea 1 Limited,WIND,400.0,,True,6,psd
+INV-HOR-002,10301.0,Hornsea,T_HOWAO-1,HORNSEA_1A,Hornsea 1 Limited,WIND,400.0,,True,6,psd
+INV-HOR-002,10301.0,Hornsea,T_HOWAO-2,HORNSEA_1B,Hornsea 1 Limited,WIND,400.0,,True,6,psd
+INV-HOR-002,10301.0,Hornsea,T_HOWAO-3,HORNSEA_1C,Hornsea 1 Limited,WIND,400.0,,True,6,psd
+INV-HOR-003,10301.0,Hornsea,T_HOWAO-1,HORNSEA_1A,Hornsea 1 Limited,WIND,400.0,,True,6,psd
+INV-HOR-003,10301.0,Hornsea,T_HOWAO-2,HORNSEA_1B,Hornsea 1 Limited,WIND,400.0,,True,6,psd
+INV-HOR-003,10301.0,Hornsea,T_HOWAO-3,HORNSEA_1C,Hornsea 1 Limited,WIND,400.0,,True,6,psd
+INV-LYN-001,10010.0,Lynemouth Generator,E_LYNE1,LYNEMOUTH GENERATOR 1,EP UK INVESTMENTS LIMITED,BIOMASS,140.0,_F,True,1,psd
+INV-LYN-001,10010.0,Lynemouth Generator,E_LYNE2,LYNEMOUTH GENERATOR 2,EP UK INVESTMENTS LIMITED,BIOMASS,140.0,_F,True,1,psd
+INV-LYN-001,10010.0,Lynemouth Generator,E_LYNE3,LYNEMOUTH GENERATOR 3,EP UK INVESTMENTS LIMITED,BIOMASS,140.0,_F,True,1,psd
+INV-WAL-001,10246.0,Walney Offshore Windfarm,T_WLNYO-3,WALNEY_3,Walney Extension Ltd,WIND,330.0,,True,2,psd
+INV-WAL-001,10246.0,Walney Offshore Windfarm,T_WLNYO-4,WALNEY_4,Walney Extension Ltd,WIND,330.0,,True,2,psd
+INV-WAL-002,10246.0,Walney Offshore Windfarm,T_WLNYO-3,WALNEY_3,Walney Extension Ltd,WIND,330.0,,True,2,psd
+INV-WAL-002,10246.0,Walney Offshore Windfarm,T_WLNYO-4,WALNEY_4,Walney Extension Ltd,WIND,330.0,,True,2,psd

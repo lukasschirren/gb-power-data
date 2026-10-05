@@ -1,0 +1,40 @@
+site,kind,lat,lon,hub_height_m,turbine,tilt,azim,gsp_group,tech
+offshore__A,wind_offshore,53.0153,2.2153,120,Vestas V164 8000,,,_A,offshore
+offshore__B,wind_offshore,53.3062,0.6608,120,Vestas V164 8000,,,_B,offshore
+offshore__D,wind_offshore,53.4651,-3.5374,120,Vestas V164 8000,,,_D,offshore
+offshore__F,wind_offshore,54.9442,2.123,120,Vestas V164 8000,,,_F,offshore
+offshore__G,wind_offshore,54.062,-3.6247,120,Vestas V164 8000,,,_G,offshore
+offshore__J,wind_offshore,51.2997,1.0291,120,Vestas V164 8000,,,_J,offshore
+offshore__K,wind_offshore,51.4585,-5.5838,120,Vestas V164 8000,,,_K,offshore
+offshore__L,wind_offshore,50.364,-5.611,120,Vestas V164 8000,,,_L,offshore
+offshore__M,wind_offshore,54.1758,1.5951,120,Vestas V164 8000,,,_M,offshore
+offshore__N,wind_offshore,56.212,-2.0378,120,Vestas V164 8000,,,_N,offshore
+offshore__P,wind_offshore,57.6562,-2.4031,120,Vestas V164 8000,,,_P,offshore
+onshore__A,wind_onshore,52.3022,0.3157,80,Vestas V90 2000,,,_A,onshore
+onshore__B,wind_onshore,52.6105,-0.7402,80,Vestas V90 2000,,,_B,onshore
+onshore__C,wind_onshore,51.5132,0.113,80,Vestas V90 2000,,,_C,onshore
+onshore__D,wind_onshore,52.8475,-3.5414,80,Vestas V90 2000,,,_D,onshore
+onshore__E,wind_onshore,52.0645,-2.3472,80,Vestas V90 2000,,,_E,onshore
+onshore__F,wind_onshore,54.9965,-1.7,80,Vestas V90 2000,,,_F,onshore
+onshore__G,wind_onshore,54.2009,-2.7621,80,Vestas V90 2000,,,_G,onshore
+onshore__H,wind_onshore,51.5695,-1.506,80,Vestas V90 2000,,,_H,onshore
+onshore__J,wind_onshore,51.0618,0.7748,80,Vestas V90 2000,,,_J,onshore
+onshore__K,wind_onshore,51.7416,-3.7242,80,Vestas V90 2000,,,_K,onshore
+onshore__L,wind_onshore,50.838,-4.1855,80,Vestas V90 2000,,,_L,onshore
+onshore__M,wind_onshore,53.6936,-0.8041,80,Vestas V90 2000,,,_M,onshore
+onshore__N,wind_onshore,55.5351,-3.8114,80,Vestas V90 2000,,,_N,onshore
+onshore__P,wind_onshore,57.3687,-3.9969,80,Vestas V90 2000,,,_P,onshore
+solar__A,solar,52.2112,0.4697,,,35,180,_A,solar
+solar__B,solar,52.776,-0.943,,,35,180,_B,solar
+solar__C,solar,51.5076,0.0648,,,35,180,_C,solar
+solar__D,solar,53.0866,-3.1552,,,35,180,_D,solar
+solar__E,solar,52.1676,-2.2888,,,35,180,_E,solar
+solar__F,solar,54.4218,-1.4446,,,35,180,_F,solar
+solar__G,solar,54.1414,-2.8715,,,35,180,_G,solar
+solar__H,solar,51.212,-1.6848,,,35,180,_H,solar
+solar__J,solar,51.2528,0.7757,,,35,180,_J,solar
+solar__K,solar,51.6743,-3.8363,,,35,180,_K,solar
+solar__L,solar,50.7707,-3.8582,,,35,180,_L,solar
+solar__M,solar,53.5836,-0.6138,,,35,180,_M,solar
+solar__N,solar,56.0907,-3.5351,,,35,180,_N,solar
+solar__P,solar,56.708,-2.8217,,,35,180,_P,solar

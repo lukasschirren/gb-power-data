@@ -1,0 +1,29 @@
+# Manual corrections to the vendored Power Station Dictionary grouping (Stage: crosswalk).
+# Same pattern as plant_overrides.yaml / cfd_overrides.yaml: edit here, not in code.
+#
+# PSD groups BMUs by PHYSICAL SITE. A CfD is signed against a PROJECT, and several GB
+# sites host one CfD-backed project alongside an older RO-backed one sharing the site
+# name. Joining a CfD agent to every BMU at its site therefore over-attributes metered
+# output. `cfd_bmu_restrict` pins such a contract to the units that actually hold it.
+
+# CfD id -> the only BMUs whose metered output belongs to that contract.
+# Anything not listed keeps the full station BMU list.
+cfd_bmu_restrict:
+  # Burbo Bank Extension (258 MW, 2017, FIDeR CfD) shares PSD station 'Burbo Bank' with
+  # the original Burbo Bank (90 MW, 2007, RO). Only the Extension is on the CfD.
+  INV-BUR-001: [T_BRBEO-1]
+
+  # Walney Extension (659 MW, 2018, FIDeR CfD, two phases) shares PSD station 'Walney'
+  # with Walney 1 and 2 (367 MW, 2011-12, RO). T_WLNYO-3/-4 are the Extension units.
+  INV-WAL-001: [T_WLNYO-3, T_WLNYO-4]
+  INV-WAL-002: [T_WLNYO-3, T_WLNYO-4]
+
+  # PSD station 'Drax' is the whole 4 GW site: four converted biomass units, two coal
+  # units and three OCGTs. Only ONE unit holds the FIDeR CfD - the third conversion,
+  # which is Drax unit 1 (units 2 and 3 converted earlier and run on ROCs). The LCCC
+  # contract name carried into agents_{year}.csv says so explicitly: "Drax 3rd
+  # conversion unit (unit 1)". T_DRAXX-1 is 665 MW against the 645 MW contract.
+  INV-DRX-001: [T_DRAXX-1]
+
+# BMUs to drop from the crosswalk entirely, with a reason. Empty by default.
+exclude_bmus: {}

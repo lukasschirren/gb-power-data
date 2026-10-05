@@ -1,0 +1,528 @@
+station_id,station_name,elexon_bmu_id,ngc_bmu_id,bmu_name,lead_party,bmu_type,elexon_fuel_type,eic,gsp_group_id,generation_capacity_mw,in_elexon_register
+10000,Rothes Bio-Plant CHP,E_MARK-1,MARK-1,Rothes Bio-Plant CHP1,Edgware Energy Limited,E,BIOMASS,48W000000MARK-1D,_N,86.139,True
+10000,Rothes Bio-Plant CHP,E_MARK-2,MARK-2,,,,,,,,False
+10001,Didcot,E_DIDC1G,DIDC01G,Didcot OCGT Unit 1,RWE Generation UK plc,E,OCGT,48W00000DIDC01G1,_H,25.0,True
+10001,Didcot,E_DIDC2G,DIDC02G,Didcot OCGT Unit 2,RWE Generation UK plc,E,OCGT,48W00000DIDC02GZ,_H,25.0,True
+10001,Didcot,E_DIDC3G,DIDC03G,Didcot OCGT Unit 3,RWE Generation UK plc,E,OCGT,48W00000DIDC03GW,_H,25.0,True
+10001,Didcot,E_DIDC4G,DIDC04G,Didcot OCGT Unit 4,RWE Generation UK plc,E,OCGT,48W00000DIDC04GT,_H,25.0,True
+10001,Didcot,T_DIDC1,DIDC1,,,,,,,,False
+10001,Didcot,T_DIDC1G,DIDC1G,,,,,,,,False
+10001,Didcot,T_DIDC2,DIDC2,,,,,,,,False
+10001,Didcot,T_DIDC2G,DIDC2G,,,,,,,,False
+10001,Didcot,T_DIDC3,DIDC3,,,,,,,,False
+10001,Didcot,T_DIDC3G,DIDC3G,,,,,,,,False
+10001,Didcot,T_DIDC4,DIDC4,,,,,,,,False
+10001,Didcot,T_DIDC4G,DIDC4G,,,,,,,,False
+10001,Didcot,T_DIDCB5,DIDCB5,Didcot B main unit 5,RWE Generation UK plc,T,CCGT,48W000000DIDCB5C,,770.0,True
+10001,Didcot,T_DIDCB6,DIDCB6,Didcot B main unit 6,RWE Generation UK plc,T,CCGT,48W000000DIDCB6A,,720.0,True
+10002,Aberthaw B,T_ABTH7,ABTH7,,,,,,,,False
+10002,Aberthaw B,T_ABTH7G,ABTH7G,,,,,,,,False
+10002,Aberthaw B,T_ABTH8,ABTH8,,,,,,,,False
+10002,Aberthaw B,T_ABTH8G,ABTH8G,,,,,,,,False
+10002,Aberthaw B,T_ABTH9,ABTH9,,,,,,,,False
+10002,Aberthaw B,T_ABTH9G,ABTH9G,,,,,,,,False
+10003,Cottam,T_COTPS-1,COTPS-1,,,,,,,,False
+10003,Cottam,T_COTPS-2,COTPS-2,,,,,,,,False
+10003,Cottam,T_COTPS-3,COTPS-3,,,,,,,,False
+10003,Cottam,T_COTPS-4,COTPS-4,,,,,,,,False
+10004,Drax,T_DRAXX-1,DRAXX-1,T_DRAXX-1,Drax Power Ltd,T,BIOMASS,48W00000DRAXX-1E,,665.248,True
+10004,Drax,T_DRAXX-10G,DRAXX-10G,T_DRAXX-10G,Drax Power Ltd,T,OCGT,48W000DRAXX-10G9,,33.152,True
+10004,Drax,T_DRAXX-12G,DRAXX-12G,T_DRAXX-12G,Drax Power Ltd,T,OCGT,48W000DRAXX-12G3,,32.0,True
+10004,Drax,T_DRAXX-2,DRAXX-2,T_DRAXX-2,Drax Power Ltd,T,BIOMASS,48W00000DRAXX-2C,,669.4,True
+10004,Drax,T_DRAXX-3,DRAXX-3,T_DRAXX-3,Drax Power Ltd,T,BIOMASS,48W00000DRAXX-3A,,661.4,True
+10004,Drax,T_DRAXX-4,DRAXX-4,T_DRAXX-4,Drax Power Ltd,T,BIOMASS,48W00000DRAXX-48,,645.0,True
+10004,Drax,T_DRAXX-5,DRAXX-5,T_DRAXX-5,Drax Power Ltd,T,COAL,48W00000DRAXX-56,,645.0,True
+10004,Drax,T_DRAXX-6,DRAXX-6,T_DRAXX-6,Drax Power Ltd,T,COAL,48W00000DRAXX-64,,645.0,True
+10004,Drax,T_DRAXX-9G,DRAXX-9G,T_DRAXX-9G,Drax Power Ltd,T,OCGT,48W0000DRAXX-9GR,,32.454,True
+10005,Eggborough,T_EGGPS-1,EGGPS-1,,,,,,,,False
+10005,Eggborough,T_EGGPS-2,EGGPS-2,,,,,,,,False
+10005,Eggborough,T_EGGPS-3,EGGPS-3,,,,,,,,False
+10005,Eggborough,T_EGGPS-4,EGGPS-4,,,,,,,,False
+10006,Ferrybridge C,T_FERR-1,FERR-1,,,,,,,,False
+10006,Ferrybridge C,T_FERR-2,FERR-2,,,,,,,,False
+10006,Ferrybridge C,T_FERR-3,FERR-3,,,,,,,,False
+10006,Ferrybridge C,T_FERR-4,FERR-4,,,,,,,,False
+10006,Ferrybridge C,T_FERR-5G,FERR-5G,,,,,,,,False
+10006,Ferrybridge C,T_FERR-8G,FERR-8G,,,,,,,,False
+10007,Fiddlers Ferry,T_FIDL-1,FIDL-1,Fiddler's Ferry 1,Keadby Generation Limited,T,,48W000000FIDL-16,,68.0,True
+10007,Fiddlers Ferry,T_FIDL-2,FIDL-2,Fiddler's Ferry 2,Keadby Generation Limited,T,,48W000000FIDL-24,,20.0,True
+10007,Fiddlers Ferry,T_FIDL-2G,FIDL-2G,Fiddler's Ferry GT2,Keadby Generation Limited,T,,48W00000FIDL-2GF,,1.0,True
+10007,Fiddlers Ferry,T_FIDL-3,FIDL-3,Fiddler's Ferry 3,Keadby Generation Limited,T,,48W000000FIDL-32,,20.0,True
+10007,Fiddlers Ferry,T_FIDL-3G,FIDL-3G,Fiddler's Ferry GT 3,Keadby Generation Limited,T,,48W00000FIDL-3GC,,1.0,True
+10007,Fiddlers Ferry,T_FIDL-4,FIDL-4,Fiddler's Ferry 4,Keadby Generation Limited,T,,48W000000FIDL-40,,1.0,True
+10008,Fifoots,T_FIFO-13,,,,,,,,,False
+10008,Fifoots,T_FIFO-14,,,,,,,,,False
+10008,Fifoots,T_FIFO-15,,,,,,,,,False
+10009,Longannet,T_LOAN-1,LOAN-1,,,,,,,,False
+10009,Longannet,T_LOAN-2,LOAN-2,,,,,,,,False
+10009,Longannet,T_LOAN-3,LOAN-3,,,,,,,,False
+10009,Longannet,T_LOAN-4,LOAN-4,,,,,,,,False
+10010,Lynemouth Generator,E_LYNE1,LNMTH-1,LYNEMOUTH GENERATOR 1,EP UK INVESTMENTS LIMITED,E,BIOMASS,48W00000LNMTH-1R,_F,140.0,True
+10010,Lynemouth Generator,E_LYNE2,LNMTH-2,LYNEMOUTH GENERATOR 2,EP UK INVESTMENTS LIMITED,E,BIOMASS,48W00000LNMTH-2P,_F,140.0,True
+10010,Lynemouth Generator,E_LYNE3,LNMTH-3,LYNEMOUTH GENERATOR 3,EP UK INVESTMENTS LIMITED,E,BIOMASS,48W00000LNMTH-3N,_F,140.0,True
+10011,Ratcliffe on Soar,T_RATS-1,RATS-1,T_RATS-1,Uniper UK Limited,T,COAL,48W000000RATS-1A,,0.0,True
+10011,Ratcliffe on Soar,T_RATS-2,RATS-2,T_RATS-2,Uniper UK Limited,T,COAL,48W000000RATS-28,,0.0,True
+10011,Ratcliffe on Soar,T_RATS-3,RATS-3,T_RATS-3,Uniper UK Limited,T,COAL,48W000000RATS-36,,0.0,True
+10011,Ratcliffe on Soar,T_RATS-4,RATS-4,T_RATS-4,Uniper UK Limited,T,COAL,48W000000RATS-44,,0.0,True
+10011,Ratcliffe on Soar,T_RATSGT-2,RATSGT-2,T_RATSGT-2,Uniper UK Limited,T,OCGT,48W0000RATSGT-2V,,0.0,True
+10011,Ratcliffe on Soar,T_RATSGT-4,RATSGT-4,T_RATSGT-4,Uniper UK Limited,T,OCGT,48W0000RATSGT-4R,,0.0,True
+10012,Rugeley B,T_RUGGT-6,RUGGT-6,Rugeley B GT 06,Rugeley Power Generation Ltd,T,,48W00000RUGGT-6A,,0.0,True
+10012,Rugeley B,T_RUGGT-7,RUGGT-7,Rugeley B GT 07,Rugeley Power Generation Ltd,T,,48W00000RUGGT-78,,0.0,True
+10012,Rugeley B,T_RUGPS-6,RUGPS-6,Rugeley B Unit 06,Rugeley Power Generation Ltd,T,,48W00000RUGPS-66,,0.0,True
+10012,Rugeley B,T_RUGPS-7,RUGPS-7,Rugeley B Unit 07,Rugeley Power Generation Ltd,T,,48W00000RUGPS-74,,0.0,True
+10013,Uskmouth,T_USKM-13,USKM-13,Uskmouth 13,SIMEC Uskmouth Power Limited,T,BIOMASS,48W00000USKM-13T,,14.0,True
+10013,Uskmouth,T_USKM-14,USKM-14,Uskmouth 14,Marble Power Limited,T,BIOMASS,48W00000USKM-14R,,0.0,True
+10013,Uskmouth,T_USKM-15,USKM-15,Uskmouth 15,Marble Power Limited,T,BIOMASS,48W00000USKM-15P,,0.0,True
+10014,West Burton,T_WBUGT-1,WBUGT-1,West Burton GT 01,EDF Energy (Thermal Generation,T,OCGT,48W00000WBUGT-1T,,21.94,True
+10014,West Burton,T_WBUGT-4,WBUGT-4,West Burton GT 04,EDF Energy (Thermal Generation,T,OCGT,48W00000WBUGT-4N,,21.0,True
+10014,West Burton,T_WBUPS-1,WBUPS-1,West Burton Unit 01,EDF Energy (Thermal Generation,T,COAL,48W00000WBUPS-1P,,484.0,True
+10014,West Burton,T_WBUPS-2,WBUPS-2,West Burton Unit 02,EDF Energy (Thermal Generation,T,COAL,48W00000WBUPS-2N,,503.7,True
+10014,West Burton,T_WBUPS-3,WBUPS-3,West Burton Unit 03,EDF Energy (Thermal Generation,T,COAL,48W00000WBUPS-3L,,503.0,True
+10014,West Burton,T_WBUPS-4,WBUPS-4,West Burton Unit 04,EDF Energy (Thermal Generation,T,COAL,48W00000WBUPS-4J,,489.0,True
+10014,West Burton,T_WBURB-1,WBURB-1,West Burton B Unit 1,West Burton B Limited,T,CCGT,48W00000WBURB-19,,470.0,True
+10014,West Burton,T_WBURB-2,WBURB-2,West Burton B Unit 2,West Burton B Limited,T,CCGT,48W00000WBURB-27,,470.0,True
+10014,West Burton,T_WBURB-3,WBURB-3,West Burton B Unit 3,West Burton B Limited,T,CCGT,48W00000WBURB-35,,470.0,True
+10015,Cockenzie,T_COCK-1,COCK-1,,,,,,,,False
+10015,Cockenzie,T_COCK-2,COCK-2,,,,,,,,False
+10015,Cockenzie,T_COCK-3,COCK-3,,,,,,,,False
+10015,Cockenzie,T_COCK-4,COCK-4,,,,,,,,False
+10016,Drakelow,T_DRKPS-10,,,,,,,,,False
+10016,Drakelow,T_DRKPS-12,,,,,,,,,False
+10016,Drakelow,T_DRKPS-9,,,,,,,,,False
+10017,High Marnham,T_HMRPS-1,,,,,,,,,False
+10017,High Marnham,T_HMRPS-2,,,,,,,,,False
+10017,High Marnham,T_HMRPS-3,,,,,,,,,False
+10017,High Marnham,T_HMRPS-4,,,,,,,,,False
+10017,High Marnham,T_HMRPS-5,,,,,,,,,False
+10018,Ironbridge B,T_IRNPS-1,IRNPS-1,,,,,,,,False
+10018,Ironbridge B,T_IRNPS-2,IRNPS-2,,,,,,,,False
+10019,Kingsnorth,T_KINO-1,KINO-1,,,,,,,,False
+10019,Kingsnorth,T_KINO-2,KINO-2,,,,,,,,False
+10019,Kingsnorth,T_KINO-3,KINO-3,,,,,,,,False
+10019,Kingsnorth,T_KINO-4,KINO-4,,,,,,,,False
+10019,Kingsnorth,T_KINO1G,KINO1G,,,,,,,,False
+10019,Kingsnorth,T_KINO4G,KINO4G,,,,,,,,False
+10020,Tilbury B,T_TILB-7,TILB-7,,,,,,,,False
+10020,Tilbury B,T_TILB-8,TILB-8,,,,,,,,False
+10020,Tilbury B,T_TILB-9,TILB-9,,,,,,,,False
+10020,Tilbury B,T_TILB0G,TILB0G,,,,,,,,False
+10020,Tilbury B,T_TILB10,TILB10,,,,,,,,False
+10020,Tilbury B,T_TILB7G,TILB7G,,,,,,,,False
+10020,Tilbury B,T_TILB8G,TILB8G,,,,,,,,False
+10020,Tilbury B,T_TILB9G,TILB9G,,,,,,,,False
+10021,Baglan Bay,T_BAGE-1,BAGE-1,BAGE-1,Baglan Operations Ltd,T,CCGT,48W000000BAGE-1L,,500.0,True
+10021,Baglan Bay,T_BAGE-2,BAGE-2,BAGE-2,Baglan Operations Ltd,T,CCGT,48W000000BAGE-2J,,32.0,True
+10022,Barking 2 MGT,T_BARK-1,BARK-1,,,,,,,,False
+10022,Barking 2 MGT,T_BARKB2,BARKB2,,,,,,,,False
+10024,Barry,E_AESB-1,,,,,,,,,False
+10024,Barry,E_BRYP-1,BRYP-1,,,,,,,,False
+10026,Brigg,E_BRGG-1,BRGG-1,Glanford Brigg,CBS ENERGY STORAGE ASSETS LTD,E,CCGT,48W000000BRGG-1M,_M,50.0,True
+10027,Carrington,T_CARR-1,CARR-1,Carrington Power Ltd - Unit 1,Carrington Power Ltd,T,CCGT,48W000000CARR-1I,,470.0,True
+10027,Carrington,T_CARR-2,CARR-2,Carrington Power Ltd - Unit 2,Carrington Power Ltd,T,CCGT,48W000000CARR-2G,,470.0,True
+10028,Castleford CCGT,2__MPGEN002,YEP-PGU02,,,,,,,,False
+10029,Connahs Quay,T_CNQPS-1,CNQPS-1,T_CNQPS-1,Uniper UK Limited,T,CCGT,48W00000CNQPS-1E,,351.162,True
+10029,Connahs Quay,T_CNQPS-2,CNQPS-2,T_CNQPS-2,Uniper UK Limited,T,CCGT,48W00000CNQPS-2C,,352.0,True
+10029,Connahs Quay,T_CNQPS-3,CNQPS-3,T_CNQPS-3,Uniper UK Limited,T,CCGT,48W00000CNQPS-3A,,352.0,True
+10029,Connahs Quay,T_CNQPS-4,CNQPS-4,T_CNQPS-4,Uniper UK Limited,T,CCGT,48W00000CNQPS-48,,352.0,True
+10030,Corby,E_CORB-1,CORB-1,CORBY POWER LIMITED,EP UK INVESTMENTS LIMITED,E,CCGT,48W000000CORB-1Z,_B,240.0,True
+10031,Coryton,T_COSO-1,COSO-1,Coryton Power Station,Coryton Energy Company Ltd,T,CCGT,48W000000COSO-1F,,856.186,True
+10032,Cottam Development Centre Limited,T_CDCL-1,CDCL-1,T_CDCL-1,Uniper UK Limited,T,CCGT,48W000000CDCL-1P,,445.0,True
+10033,Damhead Creek,T_DAMC-1,DAMC-1,Damhead Creek Ltd.,VPI Power Limited,T,CCGT,48W000000DAMC-1M,,820.0,True
+10034,Deeside,T_DEEP-1,DEEP-1,,,,,,,,False
+10036,Enfield Energy,T_EECL-1,EECL-1,Enfield Energy Centre Ltd BMU1,Uniper UK Limited,T,CCGT,48W000000EECL-15,,444.0,True
+10037,Fife CCGT,T_FIFE-1,FIFE-1,,,,,,,,False
+10038,Great Yarmouth,E_GYAR-1,GYAR-1,Great Yarmouth Power Limited,RWE Generation UK plc,E,CCGT,48W000000GYAR-15,_A,402.0,True
+10039,Keadby,T_KEAD-1,KEAD-1,KGL CCGT 1,Keadby Generation Limited,T,CCGT,48W000000KEAD-15,,764.0,True
+10039,Keadby,T_KEADGT-3,KEADGT-3,KGL GT 3,Keadby Generation Limited,T,OCGT,48W0000KEADGT-3O,,30.0,True
+10040,Killingholme,T_KILLPG-1,KILLPG-1,T_KILLPG-1,Uniper UK Limited,T,CCGT,48W0000KILLPG-1Q,,311.0,True
+10040,Killingholme,T_KILLPG-2,KILLPG-2,T_KILLPG-2,Uniper UK Limited,T,CCGT,48W0000KILLPG-2O,,316.0,True
+10040,Killingholme,T_KILNS-1,KILNS-1,Centrica Killingholme,Centrica KPS Limited,T,,,,,True
+10042,Kings Lynn,E_KLYN-A-1,KLYN-A-1,Kings Lynn A,RWE Generation UK plc,E,CCGT,48W0000KLYN-A-1G,_A,392.0,True
+10043,Langage,T_LAGA-1,LAGA-1,Langage Power Station,EP UK INVESTMENTS LIMITED,T,CCGT,48W000000LAGA-14,,905.0,True
+10044,Little Barford,T_LBAR-1,LBAR-1,Little Barford main unit 1,RWE Generation UK plc,T,CCGT,48W000000LBAR-1Y,,750.0,True
+10044,Little Barford,T_LBAR-1G,LBAR-1G,Little Barford OCGT,RWE Generation UK plc,T,OCGT,48W00000LBAR-1G7,,25.0,True
+10045,Marchwood,T_MRWD-1,MRWD-1,Marchwood Power Ltd,Marchwood Power Limited,T,CCGT,48W000000MRWD-1P,,920.0,True
+10046,Medway,T_MEDP-1,MEDP-1,Medway Power,Medway Power Ltd,T,CCGT,48W000000MEDP-12,,750.0,True
+10047,Pembroke Power Station -,T_PEMB-11,PEMB-11,Pembroke Unit 11,RWE Generation UK plc,T,CCGT,48W00000PEMB-11T,,475.0,True
+10047,Pembroke Power Station -,T_PEMB-21,PEMB-21,Pembroke Unit 21,RWE Generation UK plc,T,CCGT,48W00000PEMB-21Q,,475.0,True
+10047,Pembroke Power Station -,T_PEMB-31,PEMB-31,Pembroke Unit 31,RWE Generation UK plc,T,CCGT,48W00000PEMB-31N,,475.0,True
+10047,Pembroke Power Station -,T_PEMB-41,PEMB-41,Pembroke Unit 41,RWE Generation UK plc,T,CCGT,48W00000PEMB-41K,,475.0,True
+10047,Pembroke Power Station -,T_PEMB-51,PEMB-51,Pembroke Unit 51,RWE Generation UK plc,T,CCGT,48W00000PEMB-51H,,475.0,True
+10048,Peterborough,E_PETEM1,PETEM1,Peterborough,River Nene Power Limited,E,CCGT,48W000000PETEM1O,_A,245.0,True
+10049,Rocksavage,T_ROCK-1,ROCK-1,Rocksavage Power Station,Rocksavage Power Company Ltd,T,CCGT,48W000000ROCK-16,,810.0,True
+10050,Roosecote,E_ROOS-1,ROOS-1,,,,,,,,False
+10051,Rye House,T_RYHPS-1,RYHPS-1,T_RYHPS-1,VPI Power Limited,T,CCGT,48W00000RYHPS-1J,,720.98,True
+10052,Saltend South,T_SCCL-1,SCCL-1,Unit 1,SCCL,T,CCGT,48W000000SCCL-1U,,408.2,True
+10052,Saltend South,T_SCCL-2,SCCL-2,Unit 2,SCCL,T,CCGT,48W000000SCCL-2S,,409.1,True
+10052,Saltend South,T_SCCL-3,SCCL-3,Unit 3,SCCL,T,CCGT,48W000000SCCL-3Q,,409.3,True
+10053,Seabank,T_SEAB-1,SEAB-1,Seabank Power Module,Seabank Power Limited,T,CCGT,48W000000SEAB-1V,,830.0,True
+10053,Seabank,T_SEAB-2,SEAB-2,Seabank Power Module 2,Seabank Power Limited,T,CCGT,48W000000SEAB-2T,,406.0,True
+10054,Severn Power,T_SVRP-10,SVRP-10,Dong Energy Severn Power Ut 10,Severn Power Limited,T,CCGT,48W00000SVRP-10A,,425.0,True
+10054,Severn Power,T_SVRP-20,SVRP-20,Dong Energy Severn Power Ut 20,Severn Power Limited,T,CCGT,48W00000SVRP-207,,425.0,True
+10055,Shoreham,E_SHOS-1,SHOS-1,Shoreham Power Station,VPI Power Limited,E,CCGT,48W000000SHOS-1N,_J,460.0,True
+10056,South Humber Bank,T_SHBA-1,SHBA-1,SOUTH HUMBER BANK P/S PHASE 1,EP UK INVESTMENTS LIMITED,T,CCGT,48W000000SHBA-1C,,821.4,True
+10056,South Humber Bank,T_SHBA-2,SHBA-2,SOUTH HUMBER BANK P/S PHASE 2,EP UK INVESTMENTS LIMITED,T,CCGT,48W000000SHBA-2A,,580.0,True
+10057,Spalding,T_SPLN-1,SPLN-1,Spalding Power Station,Spalding Energy Company Ltd,T,CCGT,48W000000SPLN-1A,,950.0,True
+10058,Staythorpe,T_STAY-1,STAY-1,Staythorpe Unit 1,RWE Generation UK plc,T,CCGT,48W000000STAY-1Y,,464.4,True
+10058,Staythorpe,T_STAY-2,STAY-2,Staythorpe Unit 2,RWE Generation UK plc,T,CCGT,48W000000STAY-2W,,464.4,True
+10058,Staythorpe,T_STAY-3,STAY-3,Staythorpe Unit 3,RWE Generation UK plc,T,CCGT,48W000000STAY-3U,,464.4,True
+10058,Staythorpe,T_STAY-4,STAY-4,Staythorpe Unit 4,RWE Generation UK plc,T,CCGT,48W000000STAY-4S,,464.4,True
+10059,Sutton Bridge,T_SUTB-1,SUTB-1,BMUid for Sutton Bridge Power,SUTTON BRIDGE POWER GENERATION,T,CCGT,48W000000SUTB-1P,,850.0,True
+10060,Teesside,T_TESI-1,TESI-1,,,,,,,,False
+10060,Teesside,T_TESI-2,TESI-2,,,,,,,,False
+10061,Thornhill CCGT,2__MPGEN001,YEP-PGU03,,,,,,,,False
+10063,,E_WINN-1,WINN-1,,,,,,,,False
+10064,Derwent,E_DERW-1,DERW-1,Derwent Cogeneration Ltd,UK Power Reserve Limited,E,,48W000000DERW-14,_B,218.0,True
+10065,Fawley Cogen,E_FAWN-1,FAWN-1,Fawley Cogen,ESSO Petroleum Company Ltd,E,CCGT,48W000000FAWN-1P,_H,155.0,True
+10066,Fellside,E_FELL-1,FELL-1,E_FELL-1,NDA,E,CCGT,48W000000FELL-1R,_G,140.0,True
+10067,Grain,T_GRAI-1,GRAI-1,,,,,,,,False
+10067,Grain,T_GRAI-2,GRAI-2,,,,,,,,False
+10067,Grain,T_GRAI-3,GRAI-3,,,,,,,,False
+10067,Grain,T_GRAI-4,GRAI-4,,,,,,,,False
+10067,Grain,T_GRAI-6,GRAI-6,T_GRAI-6,Uniper UK Limited,T,CCGT,48W100000GRAI-6N,,468.0,True
+10067,Grain,T_GRAI-7,GRAI-7,T_GRAI-7,Uniper UK Limited,T,CCGT,48W000000GRAI-7Y,,468.0,True
+10067,Grain,T_GRAI-8,GRAI-8,T_GRAI-8,Uniper UK Limited,T,CCGT,48W000000GRAI-8W,,468.0,True
+10068,Grangemouth CHP Ltd,T_GRMO-1,GRMO-1,T_GRMO-1,Grangemouth CHP Ltd,T,CCGT,48W100000GRMO-1N,,0.0,True
+10069,Hythe CHP,E_HYTHE,,,,,,,,,False
+10070,Immingham CHP,T_HUMR-1,HUMR-1,HUMR-1,VPI Immingham LLP,T,CCGT,48W100000HUMR-1N,,1283.0,True
+10071,Sandbach CHP,2__DPGEN001,MNW-PGU02,,,,,,,,False
+10072,Shotton CHP,E_SHOT-1,SHOT-1,,,,,,,,False
+10073,Slough,E_SLOUG,,,,,,,,,False
+10074,Stoke CHP,2__DPGEN002,MNW-PGU03,,,,,,,,False
+10075,Weaver Power Station,T__DICI002,,,,,,,,,False
+10076,Weston Point Power Station,T__DICI001,,,,,,,,,False
+10077,Aldershot Military Generator,E_ALDMG-1,,,,,,,,,False
+10078,Aberdare District Energy,E_ABERDARE,ABERU-1,Aberdare Power Station,UK Power Reserve Limited,E,,,_K,15.4,True
+10079,Bentinck,E_BENIG-1,,,,,,,,,False
+10080,Bridgewater District Energy,E_BRIDGWTR,BRIDU-1,Bridgwater Power Station,UK Power Reserve Limited,E,,,_L,10.18,True
+10081,Caythorpe,E_CAYTG-1,,,,,,,,,False
+10082,Fawley,T_FAWL1,FAWL1,,,,,,,,False
+10082,Fawley,T_FAWL1G,FAWL3G,,,,,,,,False
+10082,Fawley,T_FAWL2G,FAWL1G,,,,,,,,False
+10082,Fawley,T_FAWL3,FAWL3,,,,,,,,False
+10082,Fawley,T_FAWL3G,FAWL4G,,,,,,,,False
+10082,Fawley,T_FAWL4,FAWL2G,,,,,,,,False
+10082,Fawley,T_FAWL4G,,,,,,,,,False
+10083,Fort Dunlop,E_FDUN-1,FDUNT-1,Fort Dunlop,Whitetower Energy Limited,E,,48W00000FDUNT-15,_E,99.0,True
+10086,Pye Bridge,E_PYEBG-1,,,,,,,,,False
+10087,Redditch,E_REDGT-1,REDGT-1,,,,,,,,False
+10088,Sevington District Energy,E_SEVINGTN,SEVIU-1,Sevington District Energy,UK Power Reserve Limited,E,,,_J,10.3,True
+10089,Solutia District Energy,E_SOLUTIA,SOLUU-1,Solutia Power Station,UK Power Reserve Limited,E,,,_K,15.8,True
+10091,Cowes,E_COWE1,COWE1,Cowes Main Unit 1,RWE Generation UK plc,E,OCGT,48W0000000COWE13,_H,70.0,True
+10091,Cowes,E_COWE2,COWE2,Cowes Main Unit 2,RWE Generation UK plc,E,OCGT,48W0000000COWE21,_H,70.0,True
+10097,Indian Queens,T_INDQ-1,INDQ-1,Gas Turbine,Indian Queens Power Ltd,T,OCGT,48W000000INDQ-19,,140.08,True
+10101,Peterhead,T_PEHE-1,PEHE-1,Peterhead Block 1,SSE Thermal Generation,T,CCGT,48W000000PEHE-15,,1200.0,True
+10101,Peterhead,T_PEHE-2,PEHE-2,Peterhead Unit 2,SSE Thermal Generation,T,,48W000000PEHE-23,,0.0,True
+10101,Peterhead,T_PEHE-3G,PEHE-3,,,,,,,,False
+10101,Peterhead,T_PEHE-4G,PEHE-4,,,,,,,,False
+10104,Taylors Lane,E_TAYL2G,TAYL2G,E_TAYL2G,Uniper UK Limited,E,OCGT,48W000000TAYL2GY,_C,73.325,True
+10104,Taylors Lane,E_TAYL3G,TAYL3G,E_TAYL3G,Uniper UK Limited,E,OCGT,48W000000TAYL3GV,_C,72.0,True
+10107,Beauly Cascade,M_CAS-BEU01,CAS-BEU01,Beauly Cascade,SSE Generation Ltd,T,NPSHYD,48W000CAS-BEU01F,,93.514,True
+10108,Clachan Power Station,E_CLAC-1,CLAC-1,Clachan G1,SSE Generation Ltd,E,NPSHYD,48W000000CLAC-1N,_P,43.38,True
+10109,Clunie Cascade,M_CAS-CLU01,CAS-CLU01,Clunie Cascade,SSE Generation Ltd,T,NPSHYD,48W000CAS-CLU01B,,76.2,True
+10110,Conon Cascade,M_CAS-CON01,CAS-CON01,Conon Cascade,SSE Generation Ltd,T,NPSHYD,48W000CAS-CON01O,,95.226,True
+10111,Cwm Dyli,E_CWMD-1,CWMD-1,Cwm Dyli,RWE Generation UK plc,E,,,_D,9.9,True
+10112,Dolgarrog,E_DOLG-1,,,,,,,,,False
+10112,Dolgarrog,E_DOLG_H,,,,,,,,,False
+10112,Dolgarrog,E_DOLG_L,,,,,,,,,False
+10115,Errochty G,T_ERRO-1,ERRO-1,Errochty G1,SSE Generation Ltd,T,NPSHYD,48W000000ERRO-1P,,25.3,True
+10115,Errochty G,T_ERRO-2,ERRO-2,Errochty G2,SSE Generation Ltd,T,NPSHYD,48W000000ERRO-2N,,25.26,True
+10115,Errochty G,T_ERRO-3,ERRO-3,Errochty G3,SSE Generation Ltd,T,NPSHYD,48W000000ERRO-3L,,25.66,True
+10116,Fasnakyle G,E_FASN-2,FASN2,,,,,,,,False
+10116,Fasnakyle G,E_FASN-3,FASN-4,Fasnakyle  G3,SSE Generation Ltd,E,NPSHYD,48W0000000FASN33,_P,24.2,True
+10116,Fasnakyle G,E_FASN-4,,Fasnakyle G4,SSE Generation Ltd,E,NPSHYD,48W000000FASN-42,_P,8.32,True
+10116,Fasnakyle G,T_FASN-1,FASN-1,Fasnakyle G1,SSE Generation Ltd,T,NPSHYD,48W000000FASN-18,,23.04,True
+10116,Fasnakyle G,T_FASN-2,FASN3,Fasnakyle  G2,SSE Generation Ltd,T,NPSHYD,48W0000000FASN25,,23.28,True
+10116,Fasnakyle G,T_FASN-3,,,,,,,,,False
+10117,Finlarig,T_FINL-1,FINL-1,Finlarig,SSE Generation Ltd,T,NPSHYD,48W000000FINL-1U,,85.794,True
+10118,Garry Cascade,M_CAS-GAR01,CAS-GAR01,Garry Cascade,SSE Generation Ltd,T,NPSHYD,48W000CAS-GAR01H,,40.0,True
+10119,Glendoe,T_GLNDO-1,GLNDO-1,Glendoe Generator 1,SSE Generation Ltd,T,NPSHYD,48W00000GLNDO-1G,,100.0,True
+10120,Killin Cascade,M_CAS-KIL01,CAS-KIL01,Killin Cascade,SSE Generation Ltd,T,NPSHYD,48W000CAS-KIL01E,,70.0,True
+10121,Maentwrog,E_MAEN-1,,,,,,,,,False
+10122,Moriston Cascade,M_CAS-MOR01,CAS-MOR01,Moriston Cascade,SSE Generation Ltd,T,NPSHYD,48W000CAS-MOR01M,,74.0,True
+10123,Nant,T_NANT-1,NANT-1,Nant,SSE Generation Ltd,T,NPSHYD,48W000000NANT-1R,,20.0,True
+10124,Rheidol,E_RHEI-1,RHEI-1,E_RHEI-1,Statkraft Markets Gmbh,E,,,_D,50.0,True
+10124,Rheidol,E_RHEI-2,,,,,,,,,False
+10124,Rheidol,E_RHEI-3,,,,,,,,,False
+10125,Sloy G,M_SLOY-1,SLOY-1,Sloy G1,SSE Generation Ltd,T,NPSHYD,48W000000SLOY-1C,,50.0,True
+10125,Sloy G,M_SLOY-4,SLOY-4,Sloy G4,SSE Generation Ltd,T,NPSHYD,48W000000SLOY-46,,40.0,True
+10125,Sloy G,T_SLOY-2,SLOY-2,Sloy G2,SSE Generation Ltd,T,NPSHYD,48W000000SLOY-2A,,41.0,True
+10125,Sloy G,T_SLOY-3,SLOY-3,Sloy G3,SSE Generation Ltd,T,NPSHYD,48W000000SLOY-38,,41.46,True
+10126,Manx Power,E_MANXENR-1,MANXENR-1,ENRON MANX,Smartestenergy Limited,E,,,_G,63.74,True
+10127,Bradwell,T_BRWE-1,,,,,,,,,False
+10127,Bradwell,T_BRWE-2,,,,,,,,,False
+10127,Bradwell,T_BRWE-3,,,,,,,,,False
+10127,Bradwell,T_BRWE-4,,,,,,,,,False
+10127,Bradwell,T_BRWE-5,,,,,,,,,False
+10127,Bradwell,T_BRWE-6,,,,,,,,,False
+10128,Dungeness B,T_DNGB21,,Dungeness B Generator 21,EDF Energy Customers Limited,T,NUCLEAR,48W000000DNGB216,,0.0,True
+10128,Dungeness B,T_DNGB22,,Dungeness B Generator 22,EDF Energy Customers Limited,T,NUCLEAR,48W000000DNGB224,,0.0,True
+10128,Dungeness B,T_DUNG-1,DNGB21,,,,,,,,False
+10128,Dungeness B,T_DUNG-2,DNGB22,,,,,,,,False
+10128,Dungeness B,T_DUNG-3,,,,,,,,,False
+10128,Dungeness B,T_DUNG-4,,,,,,,,,False
+10130,Hartlepool,T_HRTL-1,HRTL-1,Hartlepool Generator 1,EDF Energy Nuclear Generation,T,NUCLEAR,48W000000HRTL-16,,620.0,True
+10130,Hartlepool,T_HRTL-2,HRTL-2,Hartlepool Generator 2,EDF Energy Nuclear Generation,T,NUCLEAR,48W000000HRTL-24,,620.0,True
+10131,Heysham,T_HEYM11,HEYM11,Heysham 1 Generator 1,EDF Energy Nuclear Generation,T,NUCLEAR,48W000000HEYM11C,,610.0,True
+10131,Heysham,T_HEYM12,HEYM12,Heysham 1 Generator 2,EDF Energy Nuclear Generation,T,NUCLEAR,48W000000HEYM12A,,585.0,True
+10131,Heysham,T_HEYM27,HEYM27,Heysham 2 Generator 7,EDF Energy Nuclear Generation,T,NUCLEAR,48W000000HEYM27Y,,660.0,True
+10131,Heysham,T_HEYM28,HEYM28,Heysham 2 Generator 8,EDF Energy Nuclear Generation,T,NUCLEAR,48W000000HEYM28W,,676.152,True
+10133,Hinkley Point B,T_HINB-7,HINB-7,Hinkley Point B Generator 7,EDF Energy Nuclear Generation,T,NUCLEAR,48W000000HINB-77,,0.0,True
+10133,Hinkley Point B,T_HINB-8,HINB-8,Hinkley Point B Generator 8,EDF Energy Nuclear Generation,T,NUCLEAR,48W000000HINB-85,,0.0,True
+10134,Hunterston Generator,T_HUNB-7,HUNB-7,Hunterston B Generator 7,EDF Energy Nuclear Generation,T,NUCLEAR,48W000000HUNB-79,,510.0,True
+10134,Hunterston Generator,T_HUNB-8,HUNB-8,Hunterston B Generator 8,EDF Energy Nuclear Generation,T,NUCLEAR,48W000000HUNB-87,,510.0,True
+10135,Oldbury,T_OLDS1,OLDS1,,,,,,,,False
+10135,Oldbury,T_OLDS2,OLDS2,,,,,,,,False
+10136,Sizewell,T_SIZB-1,,Sizewell B Genrator 1,EDF Energy Nuclear Generation,T,NUCLEAR,48W000000SIZB-1U,,656.92,True
+10136,Sizewell,T_SIZB-2,,Sizewell B Genrator 2,EDF Energy Nuclear Generation,T,NUCLEAR,48W000000SIZB-2S,,630.0,True
+10136,Sizewell,T_SIZEA1,SIZB-1,,,,,,,,False
+10136,Sizewell,T_SIZEA2,SIZB-2,,,,,,,,False
+10138,Torness Generator,T_TORN-1,TORN-1,Torness Generator 1,EDF Energy Nuclear Generation,T,NUCLEAR,48W000000TORN-1G,,652.0,True
+10138,Torness Generator,T_TORN-2,TORN-2,Torness Generator 2,EDF Energy Nuclear Generation,T,NUCLEAR,48W000000TORN-2E,,700.0,True
+10139,Wylfa,T_WYLF-1,WYLF-1,T_WYLF-1,NDA,T,,48W000000WYLF-1Y,,0.0,True
+10139,Wylfa,T_WYLF-2,WYLF-2,T_WYLF-2,NDA,T,,48W000000WYLF-2W,,0.0,True
+10139,Wylfa,T_WYLF-3,WYLF-3,T_WYLF-3,NDA,T,,48W000000WYLF-3U,,0.0,True
+10139,Wylfa,T_WYLF-4,WYLF-4,T_WYLF-4,NDA,T,,48W000000WYLF-4S,,0.0,True
+10141,Littlebrook D,T_LITTD1,LITTD1,,,,,,,,False
+10141,Littlebrook D,T_LITTD1G,LITT1G,,,,,,,,False
+10141,Littlebrook D,T_LITTD2,LITTD2,,,,,,,,False
+10141,Littlebrook D,T_LITTD2G,LITT2G,,,,,,,,False
+10141,Littlebrook D,T_LITTD3,LITTD3,,,,,,,,False
+10141,Littlebrook D,T_LITTD3G,LITT3G,,,,,,,,False
+10142,Fibropower,E_FIBRE,,,,,,,,,False
+10143,Crauchan,T_CRUA-1,CRUA-1,T_CRUA-1,Drax Pumped Storage Limited,T,PS,48W000000CRUA-16,,123.0,True
+10143,Crauchan,T_CRUA-2,CRUA-2,T_CRUA-2,Drax Pumped Storage Limited,T,PS,48W000000CRUA-24,,124.76,True
+10143,Crauchan,T_CRUA-3,CRUA-3,T_CRUA-3,Drax Pumped Storage Limited,T,PS,48W000000CRUA-32,,101.48,True
+10143,Crauchan,T_CRUA-4,CRUA-4,T_CRUA-4,Drax Pumped Storage Limited,T,PS,48W000000CRUA-40,,104.0,True
+10144,Dinorwig,T_DINO-1,DINO-1,Dinorwig 1,First Hydro Company,T,PS,48W000000DINO-1W,,320.0,True
+10144,Dinorwig,T_DINO-2,DINO-2,Dinorwig 2,First Hydro Company,T,PS,48W000000DINO-2U,,320.0,True
+10144,Dinorwig,T_DINO-3,DINO-3,Dinorwig 3,First Hydro Company,T,PS,48W000000DINO-3S,,320.0,True
+10144,Dinorwig,T_DINO-4,DINO-4,Dinorwig 4,First Hydro Company,T,PS,48W000000DINO-4Q,,320.0,True
+10144,Dinorwig,T_DINO-5,DINO-5,Dinorwig 5,First Hydro Company,T,PS,48W000000DINO-5O,,320.0,True
+10144,Dinorwig,T_DINO-6,DINO-6,Dinorwig 6,First Hydro Company,T,PS,48W000000DINO-6M,,320.0,True
+10145,Ffestiniog,T_FFES-1,FFES-1,Ffestioniog 1,First Hydro Company,T,PS,48W000000FFES-1S,,91.033,True
+10145,Ffestiniog,T_FFES-2,FFES-2,Ffestioniog 2,First Hydro Company,T,PS,48W000000FFES-2Q,,91.875,True
+10145,Ffestiniog,T_FFES-3,FFES-3,Ffestioniog 3,First Hydro Company,T,PS,48W000000FFES-3O,,90.0,True
+10145,Ffestiniog,T_FFES-4,FFES-4,Ffestioniog 4,First Hydro Company,T,PS,48W000000FFES-4M,,90.92,True
+10146,Foyers G,T_FOYE-1,FOYE-1,Foyers G1,SSE Generation Ltd,T,PS,48W000000FOYE-14,,160.0,True
+10146,Foyers G,T_FOYE-2,FOYE-2,Foyers G2,SSE Generation Ltd,T,PS,48W000000FOYE-22,,160.0,True
+10147,AChruach Wind Farm,T_ACHRW-1,ACHRW-1,AChruach Wind Farm,Mobius Renewables Gen. (GB2,T,WIND,48W00000ACHRW-1O,,42.6,True
+10148,Aikengall 2 Wind Farm Generation,T_AKGLW-2,AKGLW-2,AIKENGALL II,Aikengall 2 CWCL,T,WIND,48W00000AKGLW-22,,63.84,True
+10148,Aikengall 2 Wind Farm Generation,T_AKGLW-3,AKGLW-3,AIKENGALL2A-W,AIK2A Sustainable Energy Ltd,T,WIND,,,163.4,True
+10149,Airies Windfarm,E_AIRSW-1,AIRSW-1,Airies,ENGIE Power Limited,E,WIND,,_N,38.0,True
+10150,Andershaw Wind Farm,E_ASHWW-1,ASHWW-1,Andershaw Wind Farm,Statkraft Markets Gmbh,E,WIND,48W00000ASHWW-1Z,_N,35.0,True
+10151,An Suidhe Windfarm,T_ANSUW-1,ANSUW-1,An Suidhe 1,Statkraft Markets Gmbh,T,WIND,48W00000ANSUW-1E,,19.36,True
+10152,Arecleoch Windfarm,T_ARCHW-1,ARCHW-1,Arecleoch,SP Renewables (UK) Limited,T,WIND,48W10000ARCHW-1N,,114.0,True
+10153,Assel Valley Wind Farm,E_ASLVW-1,ASLVW-1,Assel Valley Wind Farm,Npower Commercial Gas Limited,E,WIND,,_N,26.0,True
+10154,Auchrobert Wind Farm,E_ABRTW-1,ABRTW-1,Auchrobert Wind Farm,Npower Commercial Gas Limited,E,WIND,48W00000ABRTW-1Z,_N,36.0,True
+10155,Baillie Wind Farm,E_BABAW-1,BABAW-1,Baillie Wind Farm,Statkraft Markets Gmbh,E,WIND,48W00000BABAW-13,_P,52.5,True
+10156,Barrow Offshore Windfarm,T_BOWLW-1,BOWLW-1,Barrow Offshore Wind,Barrow Offshore Wind Limited,T,WIND,48W00000BOWLW-1K,,90.0,True
+10157,Beinn An Tuirc 2 Windfarm,E_BTUIW-2,BTUIW-2,Beinn An Tuirc 2,SP Renewables (UK) Limited,E,WIND,48W00000BTUIW-2A,_P,43.7,True
+10157,Beinn An Tuirc 2 Windfarm,E_BTUIW-3,BTUIW-3,Beinn an Tuirc III Windfarm,SP Renewables (UK) Limited,E,WIND,,_P,52.0,True
+10158,Beinneun Wind Farm,T_BEINW-1,BEINW-1,Beinneun Wind farm,Beinneun Wind Farm Ltd,T,WIND,48W00000BEINW-1G,,108.8,True
+10159,Beinn Tharsuinn,E_BETHW-1,BETHW-1,BETHW-1,SP Renewables (UK) Limited,E,WIND,48W00000BETHW-1H,_P,29.75,True
+10160,Berry Burn Windfarm,E_BRYBW-1,BRYBW-1,Berry Burn Wind Farm,Statkraft Markets Gmbh,E,WIND,48W00000BRYBW-10,_P,62.708,True
+10161,Bhlaraidh Windfarm 1,T_BHLAW-1,BHLAW-1,Bhlaraidh Windfarm 1,SSE Generation Ltd,T,WIND,48W00000BHLAW-15,,108.0,True
+10162,Blackcraig Windfarm,T_BLKWW-1,BLKWW-1,Blackcraig Windfarm,Blackcraig Wind Farm Limited,T,WIND,48W00000BLKWW-1L,,56.216,True
+10163,Black Law Wind Farm,T_BLLA-1,BLLA-1,T_BLLA-1,SP Renewables (UK) Limited,T,WIND,48W000000BLLA-1K,,118.0,True
+10163,Black Law Wind Farm,T_BLLA-2,BLLA-2,Black Law Windfarm Extension,SP Renewables (UK) Limited,T,WIND,48W000000BLLA-2I,,69.0,True
+10165,Blyth Offshore Demonstrator Windfarm Generation,E_BODW-1,,,,,,,,,False
+10166,Braes of Doune,E_BRDUW-1,BRDUW-1,Braes of Doune,Erova Energy Limited,E,WIND,48W00000BRDUW-1V,_P,74.0,True
+10167,Brockloch Rig 2 Windfarm,T_WISTW-2,WISTW-2,Brockloch Rig 2 WF Exp A,BROCKLOCH RIG WINDFARM LTD,T,WIND,,,61.5,True
+10168,Brownieleys Windfarm,E_BRNLW-1,BRNLW-1,Brownieleys,ENGIE Power Limited,E,WIND,,_P,7.5,True
+10169,Burbo Bank Offshore Windfarm,E_BURBO,BURBW-1,Burbo Offshore Wind,Orsted Burbo (UK) Limited,E,WIND,48W00000BURBW-1L,_D,90.0,True
+10169,Burbo Bank Offshore Windfarm,T_BRBEO-1,BRBEO-1,BURBO_EXTENSION,Burbo Extension Limited,T,WIND,48W00000BRBEO-17,,257.7,True
+10171,Burn of Whilk Windfarm,E_BNWKW-1,BNWKW-1,Burn of Whilk Windfarm,Eneco Energy Trade,E,WIND,48W00000BNWKW-1W,_P,22.5,True
+10172,Cairn Uish / Rothes Windfarm Extension,2__PSTAT001,CAIRW-2,STAT P2 North Scotland,Statkraft Markets Gmbh,S,WIND,48W00000CAIRW-2E,_P,42.0,True
+10173,Camster Wind Farm,2__PPGEN003,CMSTW-1,,,,,,,,False
+10174,Carraig Gheal Wind Farm,T_CRGHW-1,CRGHW-1,Carraig Gheal Wind Farm,Statkraft Markets Gmbh,T,WIND,48W00000CRGHW-1X,,46.0,True
+10175,Clachan Flats Windfarm,E_CLFLW-1,CLFLW-1,Clachan Flats,SP Renewables (UK) Limited,E,WIND,48W00000CLFLW-1O,_P,15.0,True
+10176,Clashindarroch Wind Farm,E_CLDRW-1,CLDRW-1,CLDRW-1,Vattenfall Energy Trading,E,WIND,48W00000CLDRW-16,_P,39.0,True
+10177,"Clyde Central Windfarm, Clyde North Windfarm, Clyde South Windfarm",T_CLDCW-1,CLDCW-1,Clyde Central,Clyde Windfarm (Scotland) Ltd,T,WIND,48W00000CLDCW-17,,200.0,True
+10177,"Clyde Central Windfarm, Clyde North Windfarm, Clyde South Windfarm",T_CLDNW-1,CLDNW-1,Clyde North,Clyde Windfarm (Scotland) Ltd,T,WIND,48W00000CLDNW-1Q,,200.0,True
+10177,"Clyde Central Windfarm, Clyde North Windfarm, Clyde South Windfarm",T_CLDSW-1,CLDSW-1,Clyde South,Clyde Windfarm (Scotland) Ltd,T,WIND,48W00000CLDSW-11,,150.0,True
+10178,Corriegarth Wind Farm,T_CGTHW-1,CGTHW-1,Corriegarth WF,Corriegarth Wind Energy LTD,T,WIND,48W00000CGTHW-1W,,69.0,True
+10179,Corriemoillie Wind Farm,T_CRMLW-1,CRMLW-1,Corriemoillie,EDF Energy Customers Limited,T,WIND,48W00000CRMLW-1E,,48.0,True
+10180,Cour Wind Farm,T_COUWW-1,COUWW-1,Cour Wind Farm,Cour Wind farm (Scotland) Ltd,T,WIND,48W00000COUWW-16,,20.5,True
+10181,Crystal Rig Wind Farm,T_CRYRW-2,CRYRW-2,Crystal Rig II Windfarm,Eneco Energy Trade,T,WIND,48W00000CRYRW-2L,,150.62,True
+10181,Crystal Rig Wind Farm,T_CRYRW-3,CRYRW-3,Crystal Rig III,Eneco Energy Trade,T,WIND,,,13.8,True
+10183,Dalswinton Wind Farm,E_DALSW-1,DALSW-1,Dalswinton Windfarm,Mobius Renewables Gen. (GB),E,WIND,48W00000DALSW-1M,_N,30.0,True
+10184,Dersalloch Windfarm,T_DRSLW-1,DRSLW-1,Dersalloch Windfarm,SP Renewables (UK) Limited,T,WIND,48W00000DRSLW-17,,70.9,True
+10185,Dudgeon Offshore Wind Farm Generator,T_DDGNO-1,DDGNO-1,Dudgeon Generator BMU 1,Dudgeon Offshore Wind Ltd,T,WIND,48W00000DDGNO-1E,,108.0,True
+10185,Dudgeon Offshore Wind Farm Generator,T_DDGNO-2,DDGNO-2,Dudgeon Generator BMU 2,Dudgeon Offshore Wind Ltd,T,WIND,48W00000DDGNO-2C,,90.0,True
+10185,Dudgeon Offshore Wind Farm Generator,T_DDGNO-3,DDGNO-3,Dudgeon Generator BMU 3,Dudgeon Offshore Wind Ltd,T,WIND,48W00000DDGNO-3A,,102.0,True
+10185,Dudgeon Offshore Wind Farm Generator,T_DDGNO-4,DDGNO-4,Dudgeon Generator BMU 4,Dudgeon Offshore Wind Ltd,T,WIND,48W00000DDGNO-48,,102.0,True
+10186,Dun Law Extension Windfarm,T_DNLWW-1,DNLWW-1,Dunlaw Extension,SP Renewables (UK) Limited,T,WIND,,,29.75,True
+10187,Dunmglass Wind Farm,T_DUNGW-1,DUNGW-1,Dunmglass Windfarm 1,Dunmaglass Wind Farm Limited,T,WIND,48W00000DUNGW-14,,100.0,True
+10188,Edinbane Windfarm,T_EDINW-1,EDINW-1,Edinbane Windfarm,Vattenfall Wind Power Ltd,T,WIND,48W10000EDINW-1N,,41.4,True
+10189,Ewe Hill II Wind Farm,T_EWHLW-1,EWHLW-1,Ewe Hill II Windfarm,SP Renewables (UK) Limited,T,WIND,48W00000EWHLW-1U,,38.0,True
+10190,Fallago Rig Wind Farm,T_FALGW-1,FALGW-1,Fallago Rig Wind Farm,Fallago Rig Wind Farm Limited,T,WIND,48W00000FALGW-1T,,144.0,True
+10191,Farr Wind Farm,T_FARR-1,FAARW-1,Farr Unit 1,Smartestenergy Limited,T,WIND,48W00000FAARW-13,,92.0,True
+10191,Farr Wind Farm,T_FARR-2,FAARW-2,Farr Unit 2,Smartestenergy Limited,T,WIND,48W00000FAARW-21,,92.0,True
+10192,Freasdail Wind Farm,T_FSDLW-1,FSDLW-1,Freasdail Wind Farm,Freasdail Energy Limited,T,WIND,48W00000FSDLW-10,,22.2,True
+10193,Galawhistle Wind Farm,T_GLWSW-1,GLWSW-1,Galawhistle Wind Farm,GALAWHISTLE WIND FARM,T,WIND,48W00000GLWSW-13,,55.2,True
+10194,Galloper Offshore Windfarm 1,T_GANW-11,GAOFO-1,Galloper OSP 11,Galloper Offshore WindFarm Ltd,T,WIND,48W00000GAOFO-13,,88.0,True
+10194,Galloper Offshore Windfarm 1,T_GANW-13,GAOFO-3,Galloper OSP 13,Galloper Offshore WindFarm Ltd,T,WIND,48W10000GAOFO-3N,,88.0,True
+10194,Galloper Offshore Windfarm 1,T_GANW-22,GAOFO-2,Galloper OSP 22,Galloper Offshore WindFarm Ltd,T,WIND,48W00000GAOFO-21,,385.82,True
+10194,Galloper Offshore Windfarm 1,T_GANW-24,GAOFO-4,Galloper OSP 24,Galloper Offshore WindFarm Ltd,T,WIND,48W00000GAOFO-4Y,,88.0,True
+10195,Glen App Wind Farm,T_GNAPW-1,GNAPW-1,Glen App Windfarm,SP Renewables (UK) Limited,T,WIND,48W00000GNAPW-1P,,22.0,True
+10196,Glenchamber Wind Farm,E_GLCHW-1,GLCHW-1,Glenchamber,ENGIE Power Limited,E,WIND,,_N,27.44,True
+10197,Glens of Foudland,E_GLOFW-1,GLOFW-1,Glens of Foudland,Glens of Foudland Ltd,E,WIND,48W00000GLOFW-15,_P,26.7,True
+10198,Goole Fields 1 Windfarm,E_GFLDW-1,GFLDW-1,Goole Fields Wind Farm,Edgware Energy Limited,E,,48W00000GFLDW-11,_M,32.8,True
+10199,Gordonbush Wind Farm,T_GORDW-1,GORDW-1,Gordon Bush,SSE Generation Ltd,T,WIND,48W00000GORDW-1D,,86.764,True
+10199,Gordonbush Wind Farm,T_GORDW-2,GORDW-2,Gordonbush WF Extension,SSE Generation Ltd,T,WIND,,,58.733,True
+10200,Gordonstown Windfarm,E_GDSTW-1,GDSTW-1,Gordonstown,Mobius Renewables Gen. (GB),E,WIND,48W00000GDSTW-14,_P,13.289,True
+10201,Greater Gabbard Offshore Windfarm,T_GRGBW-1,GRGBW-1,Greater Gabbard Module 1,Greater Gabbard Offshore Winds,T,WIND,48W00000GRGBW-1V,,240.0,True
+10201,Greater Gabbard Offshore Windfarm,T_GRGBW-2,GRGBW-2,Greater Gabbard Module 2,Greater Gabbard Offshore Winds,T,WIND,48W00000GRGBW-2T,,240.0,True
+10201,Greater Gabbard Offshore Windfarm,T_GRGBW-3,GRGBW-3,Greater Gabbard Module 3,Greater Gabbard Offshore Winds,T,WIND,48W00000GRGBW-3R,,240.0,True
+10202,Griffin Wind Farm,T_GRIFW-1,GRIFW-1,Griffin Wind Farm 1,Griffin Wind Farm Ltd,T,WIND,48W10000GRIFW-1N,,102.0,True
+10202,Griffin Wind Farm,T_GRIFW-2,GRIFW-2,Griffin Wind Farm 2,Griffin Wind Farm Ltd,T,WIND,48W00000GRIFW-2Y,,104.0,True
+10204,Gunfleet Sands Windfarm,E_GNFSW-1,GNFSW-1,,,,,,,,False
+10204,Gunfleet Sands Windfarm,E_GNFSW-2,,,,,,,,,False
+10204,Gunfleet Sands Windfarm,E_GNFSW-3,,,,,,,,,False
+10204,Gunfleet Sands Windfarm,T_GNFSW-1,GNFSW-2,Gunfleet Sands 1,Gunfleet Sands Limited,T,WIND,48W00000GNFSW-1H,,108.0,True
+10204,Gunfleet Sands Windfarm,T_GNFSW-2,,Gunfleet Sands 2,Gunfleet Sands II Limited,T,WIND,48W00000GNFSW-2F,,64.48,True
+10206,Gwynt y Mor Offshore Wind Farm,T_GYMR-15,GYMRO-15,GyM OSPE 15,Gwynt y Mor Offshore Wind Farm,T,WIND,,,148.0,True
+10206,Gwynt y Mor Offshore Wind Farm,T_GYMR-17,GYMRO-17,GyM OSPE 17,Gwynt y Mor Offshore Wind Farm,T,WIND,,,148.0,True
+10206,Gwynt y Mor Offshore Wind Farm,T_GYMR-26,GYMRO-26,GyM OSPW 26,Gwynt y Mor Offshore Wind Farm,T,WIND,,,148.0,True
+10206,Gwynt y Mor Offshore Wind Farm,T_GYMR-28,GYMRO-28,GyM OSPW 28,Gwynt y Mor Offshore Wind Farm,T,WIND,,,148.0,True
+10206,Gwynt y Mor Offshore Wind Farm,T_GYMRW-1,GYMRW-1,,,,,,,,False
+10206,Gwynt y Mor Offshore Wind Farm,T_GYMRW-2,GYMRW-2,,,,,,,,False
+10208,Hadyard Hill Wind Farm,T_HADHW-1,HADHW-1,Hadyard Hill Wind Farm,SSE Renewables Wind Farms,T,WIND,48W00000HADHW-1J,,130.0,True
+10209,Harburnhead Wind Farm,E_HBHDW-1,HBHDW-1,HARBURNHEADWF,LDV Harburnhead Ltd,E,WIND,48W00000HBHDW-18,_N,51.7,True
+10210,Hare Hill Extension Wind Farm,E_HRHLW-1,HRHLW-1,Hare Hill Extension Windfarm,SP Renewables (UK) Limited,E,WIND,,_N,30.0,True
+10211,Harestanes Windfarm,T_HRSTW-1,HRSTW-1,Harestanes,SP Renewables (UK) Limited,T,WIND,48W00000HRSTW-19,,142.3,True
+10212,Hill of Glaschyle Windfarm,E_HLGLW-1,HLGLW-1,Hill of Glaschyle,ENGIE Power Limited,E,WIND,48W00000HLGLW-1F,_P,28.0,True
+10213,Hill of Towie Windfarm ,E_HLTWW-1,HLTWW-1,Hill of Towie,ScottishPower Energy Retail,E,WIND,48W00000HLTWW-1U,_P,48.0,True
+10214,Humber Offshore Wind Farm,T_HMGTO-1,HMGTO-1,Humber Offshore Wind Farm BMU1,RWE Renewables UK Humber Wind,T,WIND,48W00000HMGTO-10,,108.0,True
+10214,Humber Offshore Wind Farm,T_HMGTO-2,HMGTO-2,Humber Offshore Wind Farm BMU2,RWE Renewables UK Humber Wind,T,WIND,48W00000HMGTO-2Z,,111.0,True
+10215,Hywind Generator 1,E_HYWDW-1,HYWDW-1,Hywind Generator BMU1,HYWINDSC,E,WIND,48W00000HYWDW-1G,_P,30.0,True
+10216,Keith Hill Windfarm,T_KTHLW-1,KTHLW-1,KEITH HILL WINDFARM,Statkraft Markets Gmbh,T,WIND,,,4.54,True
+10217,Kilbraur Windfarm,T_KILBW-1,KILBW-1,KILBW,Kilbraur Wind Energy Ltd,T,WIND,48W00000KILBW-1W,,68.51,True
+10218,Kilgallioch Wind Farm,T_KLGLW-1,KLGLW-1,Kilgallioch Windfarm,SP Renewables (UK) Limited,T,WIND,48W00000KLGLW-1S,,228.0,True
+10219,Lincs Offshore Wind Farm,T_LNCSW-1,LNCSO-1,Lincs wind farm offshore BMU1,Lincs Wind Farm Ltd,T,WIND,48W00000LNCSO-1R,,150.0,True
+10219,Lincs Offshore Wind Farm,T_LNCSW-2,LNCSO-2,Lincs wind farm offshore BMU2,Lincs Wind Farm Ltd,T,WIND,48W00000LNCSO-2P,,150.0,True
+10219,Lincs Offshore Wind Farm,T_LNCSW-3,LNCSW-3,,,,,,,,False
+10220,Lochluichart Windfarm,T_LCLTW-1,LCLTW-1,Lochluichart Windfarm,Eneco Energy Trade,T,WIND,48W00000LCLTW-1D,,69.0,True
+10221,London Array Windfarm,T_LARYW-1,LARYO-1,London Array BMU1,London Array Limited,T,WIND,48W00000LARYO-1Z,,171.0,True
+10221,London Array Windfarm,T_LARYW-2,LARYO-2,London Array BMU2,London Array Limited,T,WIND,48W00000LARYO-2X,,171.0,True
+10221,London Array Windfarm,T_LARYW-3,LARYO-3,London Array BMU3,London Array Limited,T,WIND,48W00000LARYO-3V,,171.0,True
+10221,London Array Windfarm,T_LARYW-4,LARYO-4,London Array BMU4,London Array Limited,T,WIND,48W00000LARYO-4T,,191.099,True
+10222,Mark Hill Windfarm,T_MKHLW-1,MKHLW-1,Mark Hill,SP Renewables (UK) Limited,T,WIND,48W00000MKHLW-1D,,53.0,True
+10223,Mid Hill Windfarm,2__PSTAT002,MDHLW-1,STAT P3 North Scotland,Statkraft Markets Gmbh,S,WIND,48W00000MDHLW-1P,_P,76.0,True
+10224,Millennium Wind Farm,T_MILWW-1,MILWW-1,MILWW,Millennium Wind Energy Ltd,T,WIND,48W00000MILWW-1M,,65.0,True
+10225,Minnygap Wind Farm,T_MYGPW-1,MYGPW-1,Minnygap Wind Farm,Minnygap Energy Limited,T,WIND,,,25.0,True
+10226,Minsca Wind Farm,E_MINSW-1,MINSW-1,Minsca Wind Farm,Mobius Renewables Gen. (GB),E,WIND,48W00000MINSW-1U,_N,38.123,True
+10227,Moy Windfarm,E_MOYE-1,MOYEW-1,,,,,,,,False
+10227,Moy Windfarm,E_MOYEW-1,,Moy Windfarm,Eneco Energy Trade,E,WIND,,_P,60.0,True
+10229,Ormonde Windfarm,E_OMNDD-1,OMNDD-1,,,,,,,,False
+10229,Ormonde Windfarm,E_OMNDW-1,OMNDW-1,,,,,,,,False
+10229,Ormonde Windfarm,T_OMNDW-1,OMNDO-1,Ormonde Energy Limited 1,Ormonde Energy Ltd,T,WIND,48W00000OMNDO-1J,,150.76,True
+10231,Pauls Hill Windfarm,2__PPGEN002,PAUHW-1,,,,,,,,False
+10232,Pen y Cymoedd Wind Farm,T_PNYCW-1,PNYCW-1,PNYCW-1 Export,Pen y Cymoedd Wind Farm LTD,T,WIND,,,228.0,True
+10233,Race Bank Offshore Wind Farm,T_RCBKO-1,RCBKO-1,RACE_BANK_Z01,Race Bank Wind Farm Ltd,T,WIND,48W00000RCBKO-1S,,284.0,True
+10233,Race Bank Offshore Wind Farm,T_RCBKO-2,RCBKO-2,RACE_BANK_Z02,Race Bank Wind Farm Ltd,T,WIND,48W00000RCBKO-2Q,,290.0,True
+10234,Rampion Offshore Windfarm,T_RMPNO-1,RMPNO-1,Rampion Offshore Wind BMU 1,Rampion Offshore Windfarm Ltd,T,WIND,48W00000RMPNO-17,,200.1,True
+10234,Rampion Offshore Windfarm,T_RMPNO-2,RMPNO-2,Rampion Offshore Wind BMU 2,Rampion Offshore Windfarm Ltd,T,WIND,48W00000RMPNO-25,,200.1,True
+10235,Robin Rigg,T_RREW-1,RREW-1,T_RREW-1,RWE Renewables UK Robin Rigg,T,WIND,48W000000RREW-14,,114.293,True
+10235,Robin Rigg,T_RRWW-1,RRWW-1,T_RRWW-1,RWE Renewables UK Robin Rigg,T,WIND,48W000000RRWW-1P,,90.838,True
+10237,Rothes (Cairn Uish) Wind Farm,2__PPGEN001,CAIRW-1,,,,,,,,False
+10238,Sanquhar Community Wind Farm Generation,T_SANQW-1,SANQW-1,SANQUHAR,SANQUHAR CWCL,T,WIND,48W00000SANQW-1B,,32.08,True
+10239,Sheringham Shoals Windfarm ,E_SHRSW-1,SHRSW-1,,,,,,,,False
+10239,Sheringham Shoals Windfarm ,E_SHRSW-2,SHRSW-2,,,,,,,,False
+10239,Sheringham Shoals Windfarm ,T_SHRSW-1,SHRSO-1,Sheringham Shoal Unit 1,Scira Offshore Energy Limited,T,WIND,48W00000SHRSO-1Y,,158.4,True
+10239,Sheringham Shoals Windfarm ,T_SHRSW-2,SHRSO-2,Sheringham Shoal Unit 2,Scira Offshore Energy Limited,T,WIND,48W00000SHRSO-2W,,158.4,True
+10240,Strathy North Wind Farm 1,T_STRNW-1,STRNW-1,Strathy North Wind Farm 1,Strathy Wind Farm Limited,T,WIND,48W00000STRNW-1H,,70.0,True
+10242,Thanet Offshore Windfarm,E_THNTW-1,THNTW-1,,,,,,,,False
+10242,Thanet Offshore Windfarm,E_THNTW-2,THNTW-2,,,,,,,,False
+10242,Thanet Offshore Windfarm,T_THNTO-1,THNTO-1,Thanet Offshore Wind Limited 1,Thanet Offshore Wind Limited,T,WIND,,,287.699,True
+10242,Thanet Offshore Windfarm,T_THNTO-2,THNTO-2,Thanet Offshore Wind Limited 2,Thanet Offshore Wind Limited,T,WIND,,,230.159,True
+10243,Toddleburn Wind Farm,T_TDBNW-1,TDBNW-1,Toddleburn,SSE Generation Ltd,T,WIND,48W00000TDBNW-1W,,31.6,True
+10244,Tullo,E_TULWW-1,TULWW-1,Tullo Windfarm,Eneco Energy Trade,E,WIND,48W00000TULWW-1U,_P,17.0,True
+10244,Tullo,E_TULWW-2,TULWW-2,Tullo Extension,Eneco Energy Trade,E,WIND,48W00000TULWW-2S,_P,25.0,True
+10246,Walney Offshore Windfarm,E_WLNYW-2,WLNYW-2,,,,,,,,False
+10246,Walney Offshore Windfarm,T_WLNYO-2,WLNYO-2,WALNEY_2,Walney Offshore Windfarms Ltd,T,WIND,48W00000WLNYO-23,,183.6,True
+10246,Walney Offshore Windfarm,T_WLNYO-3,WLNYO-3,WALNEY_3,Walney Extension Ltd,T,WIND,48W00000WLNYO-31,,330.0,True
+10246,Walney Offshore Windfarm,T_WLNYO-4,WLNYO-4,WALNEY_4,Walney Extension Ltd,T,WIND,48W00000WLNYO-4-,,330.0,True
+10246,Walney Offshore Windfarm,T_WLNYW-1,WLNYW-1,WALNEY_1,Walney Offshore Windfarms Ltd,T,WIND,48W00000WLNYW-1A,,182.0,True
+10248,Westermost Rough Windfarm,T_WTMSD-1,WTMSD-1,,,,,,,,False
+10248,Westermost Rough Windfarm,T_WTMSO-1,WTMSO-1,WESTERMOST_ROUGH,Westermost Rough Limited,T,WIND,48W00000WTMSO-1M,,205.0,True
+10250,West of Duddon Sands,T_WDNSO-1,WDNSO-1,West of Duddon Sands Offshore1,Morecambe Wind Limited,T,WIND,48W00000WDNSO-1H,,197.0,True
+10250,West of Duddon Sands,T_WDNSO-2,WDNSO-2,West of Duddon Sands Offshore2,Morecambe Wind Limited,T,WIND,48W00000WDNSO-2F,,201.0,True
+10250,West of Duddon Sands,T_WDNSW-1,WDNSW-1,,,,,,,,False
+10250,West of Duddon Sands,T_WDNSW-2,WDNSW-2,,,,,,,,False
+10252,Whitelee Wind Farm,T_WHILW-1,WHILW-1,T_WHILW-1,SP Renewables (UK) Limited,T,WIND,48W00000WHILW-1M,,309.0,True
+10252,Whitelee Wind Farm,T_WHILW-2,WHILW-2,Whitelee Extension,SP Renewables (UK) Limited,T,WIND,48W00000WHILW-2K,,206.0,True
+10254,,2__AANGE001,,2__AANGE001,Limejump Energy Limited,S,,,_A,80.0,True
+10255,,2__AFLEX001,,2__AFLEX001,Flexitricity Limited,S,,,_A,49.0,True
+10256,,2__ALIME000,,2__ALIME000,Limejump Energy Limited,G,,,_A,40.0,True
+10257,,2__ALOND001,,EDFE Aggregate Eastern 01,EDF Energy Customers Limited,S,,48X000000000095K,_A,0.0,True
+10258,,2__BANGE001,,2__BANGE001,Limejump Energy Limited,S,,,_B,50.0,True
+10258,,2__BANGE002,,2__BANGE002,Limejump Energy Limited,S,,,_B,50.0,True
+10259,,2__BFLEX001,,2__BFLEX001,Flexitricity Limited,S,,,_B,49.0,True
+10260,,2__BLIME000,,2__BLIME000,Limejump Energy Limited,G,,,_B,50.0,True
+10261,,2__BUKPR001,,UKPR East Mids,UK Power Reserve Limited,S,,,_B,10.359,True
+10262,,2__DSMAR001,,,,,,,,,False
+10263,,2__EANGE001,,2__EANGE001,Limejump Energy Limited,S,,,_E,50.0,True
+10264,,2__EFLEX001,,2__EFLEX001,Flexitricity Limited,S,,,_E,49.0,True
+10265,,2__FANGE001,,2__FANGE001,Limejump Energy Limited,S,,,_F,50.0,True
+10266,,2__FFLEX001,,2__FFLEX001,Flexitricity Limited,S,,,_F,49.0,True
+10267,,2__GANGE001,,2__GANGE001,Limejump Energy Limited,S,,,_G,50.0,True
+10267,,2__GANGE002,,2__GANGE002,Limejump Energy Limited,S,,,_G,50.0,True
+10268,,2__HANGE001,,2__HANGE001,Limejump Energy Limited,S,,,_H,50.0,True
+10269,,2__LSTAT001,,2_LSTAT001,Statkraft Markets Gmbh,S,,,_L,20.0,True
+10270,,2__MANGE001,,2__MANGE001,Limejump Energy Limited,S,,,_M,50.0,True
+10271,,2__MFLEX001,,2__MFLEX001,Flexitricity Limited,S,,,_M,49.0,True
+10272,,2__MSMAR001,,,,,,,,,False
+10273,,E_ALCOA-1,,Alcoa,Conrad Energy (Trading) Ltd,E,,,_K,40.5,True
+10274,Bloxwich,E_ARNKB-1,,AR0006-BLOX,Octopus Energy Trading Limited,E,,,_E,41.66,True
+10275,,E_BURGH-1,,Burghfield Power Station,SSEPG (Operations) Ltd,E,,,_H,48.0,True
+10276,,E_CHICK-1,,Chickerell Power Station,SSEPG (Operations) Ltd,E,,,_H,48.0,True
+10277,Craig 2,E_CRGTW-1,,Craig 2 Wind Farm,British Gas Trading Ltd,E,WIND,,_N,4.7,True
+10278,Carnegie Road,E_CRSSB-1,,Carnegie Road 1,Arenko Cleantech Limited,E,,,_D,20.0,True
+10279,Letchworth,E_LCHWT-1,,Letchworth,Conrad Energy (Trading) Ltd,E,,,_A,15.0,True
+10280,,E_LSTWY-1,,Lester Way,Conrad Energy (Trading) Ltd,E,,,_H,12.72,True
+10281,,E_RDFRB-1,,Redfield Road B,Conrad Energy (Trading) Ltd,E,,,_B,20.0,True
+10282,,E_RDFRD-1,,Redfield Road,Conrad Energy (Trading) Ltd,E,,,_B,20.5,True
+10283,,E_ROOSB-1,,Roosecote BESS,CBS ENERGY STORAGE ASSETS LTD,E,,,_G,49.0,True
+10284,Stronelairg Windfarm,T_STLGW-1,STLGW-1,Stronelairg Windfarm 1,Stronelairg Windfarm Limited,T,WIND,48W00000STLGW-1E,,108.0,True
+10284,Stronelairg Windfarm,T_STLGW-2,STLGW-2,Stronelairg Windfarm 2,Stronelairg Windfarm Limited,T,WIND,48W00000STLGW-2C,,108.0,True
+10284,Stronelairg Windfarm,T_STLGW-3,STLGW-3,Stronelairg Windfarm 3,Stronelairg Windfarm Limited,T,WIND,48W00000STLGW-3A,,108.0,True
+10285,,E_TDRVE-1,,The Drove,Conrad Energy (Trading) Ltd,E,OTHER,,_L,6.0,True
+10286,,E_TRFPK-1,,Trafalgar Park,Conrad Energy (Trading) Ltd,E,,,_B,14.0,True
+10287,,E_WTRLN-1,,Water Lane,Conrad Energy (Trading) Ltd,E,,,_L,20.0,True
+10288,Achlachan,C__PSMAR001,ACHLW-1,C__PSMAR001-AAA-ACH-183,Smartestenergy Limited,S,WIND,,_P,11.282,True
+10289,Coire Na Cloiche,E_CNCLW-1,CNCLW-1,Coire Na Cloiche WF,Statkraft Markets Gmbh,E,WIND,,_P,30.52,True
+10290,Kincardine,E_KINCW-1,KINCW-1,Kincardine Offshore Windfarm,Statkraft Markets Gmbh,E,WIND,48W00000KINCW-1F,_P,49.6,True
+10291,Rosehall,E_RSHLW-1,RSHLW-1,,,,,,,,False
+10292,Tullymurdoch,E_TLYMW-1,TLYMW-1,Tullymurdoch Wind Farm,EDF Energy Customers Limited,E,WIND,48W00000TLYMW-1S,_P,13.856,True
+10293,Halsary,T_HALSW-1,,Halsary Windfarm,SP Renewables (UK) Limited,T,WIND,,,30.0,True
+10294,Aberdeen Bay,T_ABRBO-1,ABRBO-1,ABRBO-1,Aberdeen Offshore Wind Farm,T,WIND,48W00000ABRBO-19,,99.0,True
+10295,Afton,T_AFTOW-1,AFTOW-1,Afton Wind Farm,Afton Wind Farm Limited,T,WIND,,,50.0,True
+10296,Bad a Cheo,T_BDCHW-1,BDCHW-1,Bad a Cheo Wind Farm,RWE Generation UK plc,T,WIND,,,270.0,True
+10297,Beatrice,T_BEATO-1,BEATO-1,Beatrice Offshore WF 1,Beatrice Offshore Windfarm Ltd,T,WIND,48W00000BEATO-1T,,184.0,True
+10297,Beatrice,T_BEATO-2,BEATO-2,Beatrice Offshore WF 2,Beatrice Offshore Windfarm Ltd,T,WIND,48W00000BEATO-2R,,166.0,True
+10297,Beatrice,T_BEATO-3,BEATO-3,Beatrice Offshore WF 3,Beatrice Offshore Windfarm Ltd,T,WIND,48W00000BEATO-3P,,166.0,True
+10297,Beatrice,T_BEATO-4,BEATO-4,Beatrice Offshore WF 4,Beatrice Offshore Windfarm Ltd,T,WIND,48W00000BEATO-4N,,165.526,True
+10298,Crossdykes,T_CRDEW-1,CRDEW-1,Crossdykes WF-1,EDF Energy Customers Limited,T,WIND,,,24.0,True
+10298,Crossdykes,T_CRDEW-2,CRDEW-2,Crossdykes WF-2,EDF Energy Customers Limited,T,WIND,,,24.0,True
+10299,Dorenell,T_DOREW-1,DOREW-1,Dorenell Wind Farm One,Dorenell Windfarm Limited,T,WIND,,,156.92,True
+10299,Dorenell,T_DOREW-2,DOREW-2,Dorenell Wind Farm Two,Dorenell Windfarm Limited,T,WIND,,,156.92,True
+10300,East Anglia,T_EAAO-1,EAAO-1,East Anglia One Offshore 1,East Anglia One Limited,T,WIND,48W000000EAAO-1R,,358.0,True
+10300,East Anglia,T_EAAO-2,EAAO-2,East Anglia One Offshore 2,East Anglia One Limited,T,WIND,48W000000EAAO-2P,,367.0,True
+10301,Hornsea,T_HOWAO-1,HOWAO-1,HORNSEA_1A,Hornsea 1 Limited,T,WIND,48W00000HOWAO-1M,,400.0,True
+10301,Hornsea,T_HOWAO-2,HOWAO-2,HORNSEA_1B,Hornsea 1 Limited,T,WIND,48W00000HOWAO-2K,,400.0,True
+10301,Hornsea,T_HOWAO-3,HOWAO-3,HORNSEA_1C,Hornsea 1 Limited,T,WIND,48W00000HOWAO-3I,,400.0,True
+10302,Kype Muir,T_KPMRW-1,KPMRW-1,KYPE MUIR WIND FARM,OnPath Energy Limited,T,WIND,,,89.0,True
+10303,Middle Muir,T_MIDMW-1,MIDMW-1,MIDDLE MUIR WIND FARM,OnPath Energy Limited,T,WIND,48W00000MIDMW-19,,51.0,True
+10304,Moray East,T_MOWEO-1,MOWEO-1,Moray East OWF1,Moray Offshore Wind East Ltd,T,WIND,48W000000MOWEO11,,300.0,True
+10304,Moray East,T_MOWEO-2,MOWEO-2,Moray East OWF2,Moray Offshore Wind East Ltd,T,WIND,48W00000MOWEO-2Y,,300.0,True
+10304,Moray East,T_MOWEO-3,MOWEO-3,Moray East OWF3,Moray Offshore Wind East Ltd,T,WIND,48W00000MOWEO-3W,,300.0,True
+10305,Pogbie,T_PGBIW-1,PGBIW-1,Pogbie WF,EDF Energy Customers Limited,T,WIND,,,10.0,True
+10306,Triton Knoll,T_TKNEW-1,TKNEW-1,Triton Knoll OSP East 1,Triton Knoll Offshore Wind,T,WIND,,,412.0,True
+10306,Triton Knoll,T_TKNWW-1,TKNWW-1,Triton Knoll OSP west 1,Triton Knoll Offshore Wind,T,WIND,,,412.0,True
+10307,Tralorg,T_TRLGW-1,TRLGW-1,T_TRLGW-1,Smartestenergy Limited,T,WIND,,,18.742,True
+10308,Twenty Shillings,T_TWSHW-1,TWSHW-1,Twenty Shilling Wind Farm,Twentyshilling Limited,T,WIND,,,37.8,True
+10309,Windy Rig,T_WDRGW-1,WDRGW-1,Windy Rig Wind Farm,Windy Rig Wind Farm Limited,T,WIND,,,42.8,True
+10310,Whiteside Hill,T_WHIHW-1,WHIHW-1,Whiteside Hill WF,Whiteside Hill,T,WIND,48W00000WHIHW-15,,27.52,True
+10311,Wathegar,T_WTGRW-1,WTGRW-1,,,,,,,,False

@@ -1,0 +1,10 @@
+site,kind,lat,lon,hub_height_m,turbine,tilt,azim
+hornsea_offshore,wind_offshore,53.88,1.79,120,Vestas V164 8000,,
+dogger_bank_offshore,wind_offshore,54.75,2.20,120,Vestas V164 8000,,
+moray_firth_offshore,wind_offshore,58.15,-2.85,120,Vestas V164 8000,,
+whitelee_onshore,wind_onshore,55.68,-4.27,80,Vestas V90 2000,,
+clyde_onshore,wind_onshore,55.45,-3.60,80,Vestas V90 2000,,
+pen_y_cymoedd_onshore,wind_onshore,51.68,-3.55,80,Vestas V90 2000,,
+wessex_solar,solar,51.10,-2.20,,,35,180
+east_anglia_solar,solar,52.20,0.90,,,35,180
+kent_solar,solar,51.20,0.80,,,35,180

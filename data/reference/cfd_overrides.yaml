@@ -1,0 +1,26 @@
+# Manual CfD assignments for plants the Stage 1 keyword matcher misses, or where a
+# single powerplantmatching row bundles capacity across regimes / unbuilt phases.
+#
+# Each entry pins `cfd_capacity_mw` of the matched PPM plant to a CfD contract
+# (regime -> CfD, with the given strike & round); the remaining capacity is sent
+# to `remainder_regime` (a normal regime such as RO/None, or `drop` if that
+# capacity was not operational in the modelled year). Applied after the automatic
+# waterfall, so an override always wins.
+#
+# Only material misses are listed; the remaining unmatched AR1 contracts
+# (Charity Farm, Triangle Farm Solar, Nanclach, Bad A Cheo) are each <= 40 MW.
+
+- ppm_name: East Anglia Wind Farm
+  cfd_project: East Anglia ONE
+  cfd_allocation_round: Allocation Round 1
+  cfd_capacity_mw: 705          # AR1 East Anglia ONE (3 phases, ~705 MW), operational 2020
+  strike_gbp_mwh: 176.12
+  remainder_regime: drop        # bundled East Anglia THREE (~1.4 GW) not operational until 2026
+
+- ppm_name: Drax
+  ppm_fueltype: Solid Biomass
+  cfd_project: Drax 3rd conversion unit
+  cfd_allocation_round: Investment Contract
+  cfd_capacity_mw: 645          # only the 3rd conversion unit is on a CfD
+  strike_gbp_mwh: 146.51
+  remainder_regime: RO          # Drax's other converted biomass units remain on the RO
