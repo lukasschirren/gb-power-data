@@ -1,0 +1,29 @@
+# Single source of truth for paths and pipeline parameters (read by gbpowerdata.config).
+# To keep the data tree elsewhere, copy this file, change `paths`, and point
+# GBPOWERDATA_CONFIG at the copy; this file then stays untouched.
+year: 2023                 # the year a stage builds; scripts/run_pipeline.py overrides it per run
+timezone: UTC
+resolution_minutes: 30
+paths:                     # relative to the repo root unless absolute
+  raw: data/raw
+  processed: data/processed
+  reference: data/reference
+stage1:
+  powerplants: powerplants.csv               # data/raw/, powerplantmatching roster
+  cfd_register: CfD_Register_2026-05-22.xlsx # data/raw/, LCCC register download
+  fit_threshold_mw: 5.0
+  ro_closure_year: 2017
+agents:
+  individual_threshold_mw: 500
+  bucket_keys:
+  - technology
+  - support_regime
+  - is_offshore
+timeseries:
+  fuel_carbon_interpolation: linear
+  cf_source: observed
+  mid_gap_fill_n2ex: true  # fill gaps in Elexon's MID with N2EX if data/raw/nordpool/ exists (licensed:
+                           # set false to build a mid_target that may be shared)
+validation:
+  capacity_tolerance_pct: 5
+  fail_on_breach: true

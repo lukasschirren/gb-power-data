@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=77"]   # SPDX `license` string (PEP 639)
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gb-power-data"
+version = "0.1.0"
+description = "GB electricity-market data pipeline: source pulls (Elexon, NESO, LCCC, Ofgem, ENTSO-E, weather) to half-hourly 2018-2025 panels"
+readme = "README.md"
+license = "BSD-3-Clause"        # Imperial College's preferred open-source licence; code only, not data
+license-files = ["LICENSE"]
+requires-python = ">=3.12"
+authors = [{ name = "Lukas Schirren", email = "lukas.schirren@imperial.ac.uk" }]
+
+# Every pull and build stage except the two optional source groups below.
+dependencies = [
+    "pandas>=2.0",
+    "numpy>=1.24",
+    "requests>=2.31",
+    "pyyaml>=6.0",
+    "openpyxl>=3.1",    # CfD register, Ofgem and DESNZ workbooks
+    "xlrd>=2.0",        # legacy .xls workbooks (EPEX archives, DNO charging statements)
+    "lxml>=4.9",        # pandas.read_html (UK ETS auction table on gov.uk)
+    "geopandas>=1.0",   # GSP / DNO / NUTS-2 point-in-polygon
+    "shapely>=2.0",
+    "pyproj>=3.6",
+]
+
+[project.optional-dependencies]
+# EPEX SPOT sFTP puller (needs a paid market-data subscription).
+epex = ["paramiko>=3.0"]
+# Copernicus CDS PECD v4.2 climate/energy capacity factors (needs a free CDS account).
+pecd = ["cdsapi>=0.7", "xarray>=2024.1", "netCDF4>=1.6", "cftime>=1.6"]
+dev = ["pytest>=7.4"]
+all = ["gb-power-data[epex,pecd,dev]"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]   # tests run from a fresh clone without `pip install -e .`

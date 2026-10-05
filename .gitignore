@@ -1,0 +1,69 @@
+# ---- data: nothing under data/ is tracked unless re-included here --------------------------------
+# `dir/*` not `dir/`: a trailing slash would stop git descending, and the re-includes below
+# would silently do nothing.
+data/*
+!data/raw/
+data/raw/*
+# provenance notes for hand-downloaded sources
+!data/raw/manual/
+data/raw/manual/*
+!data/raw/manual/README.md
+# OSUKED Power Station Dictionary snapshot (MIT licence, 277 rows)
+!data/raw/psd/
+!data/reference/
+data/reference/*
+!data/reference/README.md
+# hand-curated tables and overrides: the pipeline cannot be reproduced without them
+!data/reference/plant_overrides.yaml
+!data/reference/cfd_overrides.yaml
+!data/reference/tech_parameters.yaml
+!data/reference/bmu_crosswalk_overrides.yaml
+!data/reference/wind_farm_map_overrides.csv
+!data/reference/gsp_overrides.csv
+!data/reference/cfd_round_params.csv
+!data/reference/gsp_group_demand_weights.csv
+!data/reference/ninja_sites.csv
+!data/reference/benchmarks_*.csv
+# small derived tables whose inputs are large or slow to pull (generator named in data/reference/README.md)
+!data/reference/pecd_onshore_zone_to_nuts2.csv
+!data/reference/pecd_offshore_zone_to_nuts2.csv
+!data/reference/nuts2_to_gsp_group_area_weights.csv
+!data/reference/ninja_sites_by_zone.csv
+!data/reference/tech_flexibility_empirical.csv
+!data/reference/nuclear_availability_by_year.csv
+!data/reference/bmu_crosswalk.csv
+!data/reference/cfd_bmu_map.csv
+!data/reference/wind_farm_map.csv
+
+# ---- licensed market data: Nord Pool / N2EX and EPEX SPOT, and anything derived from it ----------
+# Kept after every re-include above so none of them can let such a file through.
+data/**/*nordpool*
+data/**/*n2ex*
+data/**/*N2EX*
+data/**/*epex*
+data/**/*EPEX*
+data/**/dayahead_price_*
+data/**/curve_compare_*
+data/**/demand_curves_*
+data/**/mid_target_*
+
+# ---- credentials ---------------------------------------------------------------------------------
+*token*.txt
+*credential*.txt
+*.pem
+*.key
+.env
+
+# ---- local configuration and tooling -------------------------------------------------------------
+config.local.yaml
+__pycache__/
+*.py[cod]
+*.egg-info/
+/build/
+/dist/
+.pytest_cache/
+.ipynb_checkpoints/
+*.log
+.vscode/
+.idea/
+.claude/

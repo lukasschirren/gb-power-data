@@ -1,0 +1,28 @@
+# Conda environment for gb-power-data (all optional source groups included).
+#   conda env create -f environment.yml      # run from the repo root
+#   conda activate gb-power-data
+# Keep in step with pyproject.toml, which is the dependency list for plain pip installs.
+name: gb-power-data
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - pandas>=2.0
+  - numpy>=1.24
+  - requests>=2.31
+  - pyyaml>=6.0
+  - openpyxl>=3.1
+  - xlrd>=2.0
+  - lxml>=4.9
+  - geopandas>=1.0
+  - shapely>=2.0
+  - pyproj>=3.6
+  - paramiko>=3.0      # [epex]
+  - cdsapi>=0.7        # [pecd]
+  - xarray>=2024.1     # [pecd]
+  - netcdf4>=1.6       # [pecd]
+  - cftime>=1.6        # [pecd]
+  - pytest>=7.4        # [dev]
+  - pip
+  - pip:
+      - -e .
