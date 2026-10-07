@@ -1,40 +1,61 @@
 # Technology parameters for agent construction (Stage 3). Editable, not hardcoded.
 # SRMC = fuel_price/efficiency + carbon_price * emissions_factor/efficiency + vom
+#
+# HEATING-VALUE BASIS (Oct 2026). Efficiency, emission factor and fuel price must be on ONE basis.
+# Gas is priced per therm, a gross calorific value (GCV) unit, so every gas efficiency and the gas
+# emission factor here are GCV. Coal is priced from the World Bank API4 series, which is NAR
+# (net as received), so coal is on the net (NCV) basis. The values and their sources are in
+# gb-power-data data/reference/thermal_parameters.csv (gb_default rows) and docs/thermal_parameters.md.
+# Until Oct 2026 the CCGT values mixed bases (fleet capacity-weighted 0.504 in 2023 against DUKES's
+# GCV sent-out 0.479), which put gas SRMC about 5% low.
 
 # Electrical efficiency (used when PPM Efficiency is missing AND no DateIn for the
 # vintage curve below, or for non-gas fuels).
 efficiency_defaults:
-  CCGT: 0.50
-  OCGT: 0.35
-  Hard Coal: 0.36
-  Oil: 0.35
+  CCGT: 0.479       # GCV, sent-out: DUKES 2026 Table 5.10.C x 5.6 supplied/generated, mean 2018-2024
+  OCGT: 0.315       # GCV: 0.35 LHV x 0.900; between existing GB units (JRC 0.29 LHV) and new build (EGC 0.34-0.36 HHV)
+  Hard Coal: 0.34   # NCV: Parsons Brinckerhoff (2014) for DECC, existing sub-critical coal, central case (Table 19)
+  Oil: 0.35         # DUKES 5.6 major power producers' oil 35-36% GCV gross output (2020-2025); the oil price states no basis
   Solid Biomass: 0.38
   Biomass: 0.38
   Waste: 0.28
   Nuclear: 0.33
 
-# Vintage-sloped efficiency for gas plant WITHOUT a measured PPM Efficiency. The flat
-# defaults made the CCGT stack horizontal (34/37 agents at 0.50) -> no demand->price
-# response within the day. Anchors are (commissioning_year, electrical_efficiency),
-# linearly interpolated by DateIn and clamped outside the range. Grounded in the
-# powerplantmatching efficiency-vs-DateIn trend (CCGT-ish medians ~0.52 in the late
-# 1990s/2000s rising to ~0.56 by the mid-2010s, ~0.5pp/yr) plus CCGT engineering history.
+# Vintage-sloped efficiency for gas plant WITHOUT a measured PPM Efficiency, so the gas stack has
+# a slope within the day. Anchors are (commissioning_year, electrical_efficiency), linearly
+# interpolated by DateIn and clamped outside the range. All GCV (see the basis note above).
+#   CCGT: the median net efficiency of GB CCGT units commissioned in each period (JRC Open Power
+#   Plants Database v1.00, OEM-derived, LHV; units matched to the BM-unit register) x natural gas
+#   NCV/GCV 0.900 (DUKES 2026 A.1/A.2), at the period midpoint: 1990-94 0.46 LHV (n=3), 1995-99 0.525
+#   (n=10), 2000-04 0.54 (n=11), 2005-09 0.535 (n=2), 2010-16 0.53 (n=19). Capacity-weighted they give
+#   0.474 GCV against DUKES's fleet 0.474-0.482 sent-out (2018-2024). The 2023 anchor is new-build H
+#   class (Keadby 2), DESNZ Electricity Generation Costs 2025, 0.54 HHV through-life.
+#   OCGT: the former LHV-type anchors x 0.900, which reproduces DESNZ EGC new-build OCGT 0.34-0.36 HHV
+#   (2020) and existing GB open-cycle units, JRC 0.29 LHV = 0.26 GCV (1990).
 efficiency_vintage:
-  CCGT:                 # spread AROUND the 0.50 default (fleet cap-wtd mean ~0.50, data
-    - [1990, 0.46]      # mean 0.502) so it adds slope/heterogeneity without re-levelling
-    - [2000, 0.49]
-    - [2010, 0.52]
-    - [2020, 0.55]
+  CCGT:
+    - [1992, 0.414]
+    - [1997, 0.4725]
+    - [2002, 0.486]
+    - [2007, 0.4815]
+    - [2013, 0.477]
+    - [2023, 0.54]
   OCGT:
-    - [1990, 0.30]
-    - [2010, 0.36]
-    - [2020, 0.39]
+    - [1990, 0.27]
+    - [2010, 0.324]
+    - [2020, 0.351]
 
-# Fuel carbon content, tCO2 per MWh-thermal (divided by efficiency in SRMC).
+# A measured powerplantmatching efficiency is net LHV. Multiplying it by the fuel's NCV/GCV ratio puts
+# it on the basis of that fuel's price: gas 0.900 (DUKES 2026 A.1/A.2: 35.61 / 39.56 MJ/m3). Coal is
+# priced net, so it takes no factor. Three GB gas plants carry one (Didcot, Marchwood, Severn).
+ppm_efficiency_basis_factor:
+  Natural Gas: 0.900
+
+# Fuel carbon content, tCO2 per MWh-thermal (divided by efficiency in SRMC), on the price's basis.
 emissions_factor:
-  Natural Gas: 0.184
-  Hard Coal: 0.340
-  Oil: 0.280
+  Natural Gas: 0.184      # GCV: DESNZ GHG conversion factors 2025, natural gas (100% mineral blend) 0.1846 gross CV
+  Hard Coal: 0.334        # NCV: DESNZ GHG conversion factors 2025, coal (electricity generation) 0.3344 net CV
+  Oil: 0.280              # DESNZ fuel oil 0.284 NCV / 0.267 GCV; the flat oil price states no basis
   Solid Biomass: 0.0      # carbon-neutral under UK ETS
   Biomass: 0.0
   Waste: 0.0

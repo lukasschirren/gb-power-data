@@ -23,6 +23,7 @@ docstring has the method, the source quirks it handles, and its full CLI.
 | `elexon_bod_pull` | Elexon per-unit bid-offer data and acceptances | free, slow | `raw/bod/`, `raw/boalf/` | 4.5 GB |
 | `b1610_pull` | Elexon per-unit metered generation (thermal) | free, slow | `raw/b1610/` | 0.6 GB |
 | `mels_pull` | Elexon MEL/PN/BOD for chosen days | free | `raw/mels/` | 0.2 GB |
+| `bm_dynamic_pull [dates] [--sp 24]` | Elexon BM dynamic data of every unit at one settlement period (SEL, SIL, run-up and run-down rates, NDZ, NTO, NTB, MZT, MNZT, MDV, MDP) with its MEL and PN; default the 15th of Jan, Apr, Jul and Oct 2018–2025 | free | `raw/bm_dynamic/{dynamic,rates,mels,pn}_{date}_sp{sp}.csv` | ~0.5 MB a date |
 | `lccc_pull` (+ `--levy`) | LCCC CfD portal (CKAN): register status, CfD↔BMU map, actual generation and payments, strike prices, levy rates | free | `raw/lccc/` | 20 MB |
 | `neso_pull` | NESO data portal: BSUoS, AAHEDC, TNUoS | free | `raw/neso/` | 18 MB |
 | `cm_register_pull` | NESO Capacity Market register: every CM unit and its components (applicant, parent company, technology, capacities, agreements); the trading contacts' columns are dropped | free | `raw/neso/cm_register/{cmu,components}_{date}.csv` | 16 MB |
@@ -112,6 +113,7 @@ stage stops the run, except the two marked *soft*, which are skipped when their 
 | `build_cap_tariff` | Ofgem cap tariff model xlsx in `raw/ofgem/` | `cap_tariff_by_region.csv` |
 | `build_subnational_domestic` | `raw/manual/desnz_subnational/` | `domestic_supply_by_year.csv` |
 | `bm_units [--years 2018 2026]` (default to the current year) | `raw/bm_units_*.csv` (every kept snapshot), `raw/{fpn,b1610,bod}/` | `bm_unit_register_{y}.csv` |
+| `bm_dynamic [--pull]` | `raw/bm_dynamic/` (`--pull` fetches the missing snapshots first), `bm_unit_register_{y}.csv` | `bm_dynamic_units.csv` (one row per snapshot and active thermal or pumped-storage unit: declared values and the derived minimum stable share, ramp rates, run-up time) and `reference/bm_dynamic_by_tech.csv` (by technology, each year and 2018–2025; [thermal_parameters.md](thermal_parameters.md)) |
 | `build_company_control [--stamp YYYYMMDD]` | `raw/companies_house/` (the newest snapshot of each company; with `--stamp`, those up to that pull date) | `company_control.csv` (`company_control_{stamp}.csv` with `--stamp`) |
 | `build_ownership [--years 2018 2026]` | `raw/dukes/`, `raw/ofgem/RO_*` (optional), CfD register and `raw/lccc/`, `raw/neso/cm_register/`, `bm_unit_register_{y}.csv`, `company_control.csv` (optional, basis `ch_psc`), `reference/{company_groups,company_owners,bmu_lead_parties,companies_house_numbers,dukes_bmu_map,wind_farm_map}.csv` | `ownership_{y}.csv`, `ownership_bmu_{y}.csv` ([ownership.md](ownership.md)) |
 | `ancillary_services [--years 2020 2026]` | `raw/neso/ancillary/`, `raw/bm_units_*.csv` (every kept snapshot, to map NESO's unit ids), `reference/company_groups.csv` and the other company tables (the bidder's group) | `ancillary_by_unit_{y}.csv` ([storage_revenues.md](storage_revenues.md)) |

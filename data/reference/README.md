@@ -24,6 +24,8 @@ ignored, including the credential files the pullers read (`*token*.txt`, `*crede
 | `bmu_lead_parties.csv` | documented lead parties of a BM unit over a period, where the kept register snapshots do not cover the date; columns of evidence as `company_owners.csv` (empty so far) | `common.companies`, `build.build_ownership` |
 | `dukes_bmu_map.csv` | the main gas, coal, nuclear, pumped-storage and biomass stations: DUKES site pattern, technology class, BM units | `build.build_ownership` |
 | `crown_estate_farms.csv` | The Crown Estate's farm names (one row per spelling; matched without case, accents and punctuation) -> the company under which `company_owners.csv` keys the farm, with the register that names that company | `build.build_crown_estate`, tests |
+| `thermal_parameters.csv` | operating and cost parameters of thermal plant (CCGT, OCGT, engines, coal, oil, nuclear, biomass, and the fuels' emission factors and NCV/GCV ratios) from 22 sources: one row per technology, class, parameter and source, with value, range, unit, basis (heating value, output, price year), region, locator (sheet and cell, or table and page), status (`transcribed`, `converted` for a unit change only, `derived` from data) and `gb_default` = `yes` on the recommended GB value; explained, with the comparison against PyPSA, in `docs/thermal_parameters.md` | no stage yet (models read it); tests |
+| `thermal_parameter_sources.csv` | every source `thermal_parameters.csv` cites: id, publisher, title, date published, kind, URL, date accessed, licence | tests |
 | `companies_house_numbers.csv` | the companies whose persons with significant control are pulled: Companies House number (eight characters as text: zero-padded, prefixes such as SC kept), the register's name, why it is listed; seeded 6 Oct 2026 with the 183 CfD counterparties of at least 30 MW that resolve to themselves | `pull.companies_house_pull`, `common.company_control` (a company's number by its name) |
 
 **Local only, never committed:** `crown_estate_ownership_reports.csv`, The Crown Estate's operational
@@ -46,6 +48,7 @@ the PECD masks).
 | `wind_farm_map.csv` | `python scripts/build_wind_farm_map.py` | `build.stage2d_wind_farms` |
 | `ninja_sites_by_zone.csv` | `python -m gbpowerdata.pull.build_zone_sites` | `pull.renninja_pull --sites-file`, `build.stage2b_zone_cf` |
 | `tech_flexibility_empirical.csv` | `python -m gbpowerdata.build.analyze_flexibility` | `build.stage3_build_agents` |
+| `bm_dynamic_by_tech.csv` | `python -m gbpowerdata.build.bm_dynamic --pull` | the GB rows of `thermal_parameters.csv` (a test checks they agree) |
 | `nuclear_availability_by_year.csv` | `python -m gbpowerdata.build.nuclear_availability` | `build.stage3_build_agents` |
 | `nuts2_to_gsp_group_area_weights.csv` | `python -m gbpowerdata.common.pecd_regions --build-nuts2-gsp` | `common.pecd_regions`, `build.pecd_national_cf` |
 | `pecd_onshore_zone_to_nuts2.csv`, `pecd_offshore_zone_to_nuts2.csv` | `python -m gbpowerdata.common.pecd_regions --build-wind-zones` | `build.pecd_build` |

@@ -75,7 +75,7 @@ PROCESSED_YEARLY = (
 # ancillary_by_unit_{y} (0.7 GB for 2020-2026; python -m gbpowerdata.pull.ancillary_pull, then
 # python -m gbpowerdata.build.ancillary_services, about ten minutes)
 PROCESSED_SINGLE = (
-    "cfd_status.csv", "cap_tariff_by_region.csv", "consumer_levy_annual.csv",
+    "bm_dynamic_units.csv", "cfd_status.csv", "cap_tariff_by_region.csv", "consumer_levy_annual.csv",
     "consumer_levy_daily.csv", "domestic_supply_by_year.csv", "duos_domestic_tariffs.csv",
 )
 # Hand-downloaded raw inputs, as glob patterns under data/raw/ ({cfd_register} is the file name
@@ -135,6 +135,7 @@ FILE_SOURCES = {
     # rules and spellings (the registers' names, Companies House's control register); not packed (see above)
     "ancillary_by_unit": ("neso", "elexon", "govuk", "ofgem", "lccc", "companies_house"),
     "bm_unit_register": ("elexon",),
+    "bm_dynamic_units": ("elexon",),                  # BM dynamic data snapshots, units mapped by the register
     "capacity_factors": ("espeni", "elexon", "govuk"),
     "capacity_factors_by_zone": ("ninja", "espeni", "elexon", "govuk"),
     "capacity_factors_pecd": ("pecd", "ppm"),

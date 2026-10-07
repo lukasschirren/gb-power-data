@@ -42,6 +42,9 @@ RO_CLOSURE = int(CFG["stage1"]["ro_closure_year"])
 TP = cfg.load_reference_yaml("tech_parameters.yaml")
 EFF, EMIT, ROC, CFD_TECH = TP["efficiency_defaults"], TP["emissions_factor"], TP["roc_value"], TP["cfd_tech_map"]
 VINTAGE_EFF = TP.get("efficiency_vintage", {})  # gas efficiency by commissioning year (DateIn)
+# A measured PPM efficiency is net LHV; this factor (NCV/GCV) puts it on the basis of the fuel's price
+# (gas per therm = GCV). See the heating-value note at the top of tech_parameters.yaml.
+PPM_EFF_FACTOR = TP.get("ppm_efficiency_basis_factor", {})
 
 AGENT_COLS = ["agent_id", "name", "tech", "support_regime", "capacity_mw", "n_plants",
               "efficiency", "emissions_factor", "support_value_gbp_mwh", "is_offshore",
@@ -208,7 +211,7 @@ def _vintage_eff(gas_tech: str, year: float) -> float:
 def _eff(row):
     e = pd.to_numeric(row.get("Efficiency"), errors="coerce")
     if pd.notna(e) and 0.2 < e < 0.65:          # measured PPM efficiency, if physically sane
-        return float(e)
+        return float(e) * float(PPM_EFF_FACTOR.get(row["Fueltype"], 1.0))
     if row["Fueltype"] == "Natural Gas":
         gt = _gas_tech(row)
         yr = pd.to_numeric(row.get("DateIn"), errors="coerce")

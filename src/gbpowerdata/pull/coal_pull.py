@@ -6,7 +6,11 @@ for ARA-delivered coal (highly correlated with API 2). Converted USD/tonne -> GB
 (ECB FX via Frankfurter) -> GBP/MWh-thermal for use in the SRMC:
 
     coal_cost £/MWh_e = coal_gbp_per_mwh_thermal / efficiency
-    (+ carbon: emissions_factor[Hard Coal]=0.34 tCO2/MWh-th × carbon_price / eff)
+    (+ carbon: emissions_factor[Hard Coal]=0.334 tCO2/MWh-th × carbon_price / eff)
+
+The World Bank series is quoted for 6,000 kcal/kg NAR (net as received), so the price per MWh is on
+the net calorific value (NCV) basis, and the coal efficiency and emission factor in
+data/reference/tech_parameters.yaml are NCV to match it.
 
 Output (data/raw/): coal_monthly.csv [month, coal_usd_per_tonne, coal_gbp_per_mwh_thermal]
 Note: GB coal generation fell to ~0 by Sept 2024 (last plant closed), so this
@@ -25,7 +29,7 @@ from gbpowerdata import config as cfg
 # World Bank Commodity Markets "Pink Sheet" historical monthly workbook.
 WB_URL = ("https://thedocs.worldbank.org/en/doc/"
           "18675f1d1639c7a34d463f59263ba0a2-0050012025/related/CMO-Historical-Data-Monthly.xlsx")
-MWH_PER_TONNE = 6.978  # ~6000 kcal/kg GCV steam coal (API 2 spec)
+MWH_PER_TONNE = 6.978  # 6,000 kcal/kg NAR (net as received) steam coal, as the World Bank series is quoted
 UA = {"User-Agent": "Mozilla/5.0 (research data pull)"}
 
 

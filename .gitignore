@@ -33,6 +33,8 @@ data/reference/*
 # never re-include crown_estate_ownership_reports.csv (a transcription of The Crown Estate's report tables):
 # its terms allow own use only and forbid passing digital copies to third parties
 !data/reference/dukes_bmu_map.csv
+!data/reference/thermal_parameters.csv
+!data/reference/thermal_parameter_sources.csv
 # small derived tables whose inputs are large or slow to pull (generator named in data/reference/README.md)
 !data/reference/pecd_onshore_zone_to_nuts2.csv
 !data/reference/pecd_offshore_zone_to_nuts2.csv
@@ -43,6 +45,7 @@ data/reference/*
 !data/reference/bmu_crosswalk.csv
 !data/reference/cfd_bmu_map.csv
 !data/reference/wind_farm_map.csv
+!data/reference/bm_dynamic_by_tech.csv
 
 # ---- licensed market data: Nord Pool / N2EX and EPEX SPOT, and anything derived from it ----------
 # Kept after every re-include above so none of them can let such a file through.
