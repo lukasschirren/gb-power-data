@@ -24,6 +24,15 @@ data/reference/*
 !data/reference/gsp_group_demand_weights.csv
 !data/reference/ninja_sites.csv
 !data/reference/benchmarks_*.csv
+!data/reference/company_groups.csv
+!data/reference/company_owners.csv
+!data/reference/ownership_sources.csv
+!data/reference/bmu_lead_parties.csv
+!data/reference/companies_house_numbers.csv
+!data/reference/crown_estate_farms.csv
+# never re-include crown_estate_ownership_reports.csv (a transcription of The Crown Estate's report tables):
+# its terms allow own use only and forbid passing digital copies to third parties
+!data/reference/dukes_bmu_map.csv
 # small derived tables whose inputs are large or slow to pull (generator named in data/reference/README.md)
 !data/reference/pecd_onshore_zone_to_nuts2.csv
 !data/reference/pecd_offshore_zone_to_nuts2.csv
@@ -56,6 +65,7 @@ data/**/mid_target_*
 
 # ---- local configuration and tooling -------------------------------------------------------------
 config.local.yaml
+*.local.cmd
 __pycache__/
 *.py[cod]
 *.egg-info/

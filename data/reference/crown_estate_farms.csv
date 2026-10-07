@@ -1,0 +1,45 @@
+farm,entity,note
+Beatrice,Beatrice Offshore Windfarm Limited,the CfD counterparty
+Blyth Demonstration,Blyth Offshore Demonstrator Limited,"the name in the reports for the ends of 2018 and 2019 (not Blyth, E.ON's farm of 2000 in the same table)"
+Blyth Demonstration Phase 1,Blyth Offshore Demonstrator Limited,"the RO accreditation holder; ""Blyth Demonstration (Phase 1)"" in the report for the end of 2020"
+Burbo Bank Extension,Burbo Extension Limited,the CfD counterparty
+Dogger Bank A,Doggerbank Offshore Wind Farm Project 1 Projco Limited,the CfD counterparty
+Dogger Bank B,Doggerbank Offshore Wind Farm Project 2 Projco Limited,the CfD counterparty
+Dogger Bank C,Doggerbank Offshore Wind Farm Project 3 Projco Limited,the CfD counterparty
+Dudgeon,Dudgeon Offshore Wind Limited,the CfD counterparty
+East Anglia ONE,East Anglia One Limited,the CfD counterparty
+East Anglia THREE,EAST ANGLIA THREE LIMITED,the CfD counterparty
+Galloper,Galloper Wind Farm Limited,the RO accreditation holder
+Greater Gabbard,Greater Gabbard Offshore Winds Limited,the RO accreditation holder
+Gunfleet Sands I,Gunfleet Sands Limited,the BM lead party (the RO register names Orsted Burbo (UK) Limited for both phases)
+Gunfleet Sands II,Gunfleet Sands II Limited,the BM lead party (the RO register names Orsted Burbo (UK) Limited for both phases)
+Gwynt y Môr,Gwynt y Mor Offshore wind farm limited,the RO accreditation holder
+Hornsea 1,Hornsea 1 Limited,the CfD counterparty
+Hornsea 2,Breesea Limited,the CfD counterparty of phase 1; Soundmark Wind and Sonningmay Wind (phases 2 and 3) carry the same rows in company_owners.csv
+Humber Gateway,RWE Renewables UK Humber Wind Limited,the RO accreditation holder
+Hywind 2 Demonstration,Hywind (Scotland) Limited,"the name in the report for the end of 2019: the same holders as Hywind Scotland (Equinor 75%, Masdar 25%), and no other Hywind farm in that table"
+Hywind Scotland,Hywind (Scotland) Limited,the RO accreditation holder
+Hywind Scotland (Buchan Deep),Hywind (Scotland) Limited,the name in the table for the end of 2024
+Inner Dowsing,Inner Dowsing Wind Farm Ltd,the RO accreditation holder
+Lincs,Lincs Wind Farm Ltd,the RO accreditation holder
+London Array,London Array Ltd,the RO accreditation holder
+Lynn,Lynn Wind Farm Ltd,the RO accreditation holder
+Moray East,Moray Offshore Windfarm (East) Limited,the CfD counterparty
+Moray West,MORAY OFFSHORE WINDFARM (WEST) LIMITED,the CfD counterparty
+Neart na Gaoithe,Neart na Gaoithe Offshore Wind Limited,the CfD counterparty
+North Hoyle,North Hoyle Wind Farm Limited,the RO accreditation holder
+Ormonde,Ormonde Energy Limited,the RO accreditation holder
+Race Bank,Race Bank Wind Farm Ltd,the RO accreditation holder
+Rampion,Rampion Offshore Wind Ltd,the RO accreditation holder
+Robin Rigg East,ECRGEN,the RO accreditation holder of Robin Rigg (East) and (West) and Scroby Sands; the ECRGEN rows of company_owners.csv cover all three
+Robin Rigg West,ECRGEN,the RO accreditation holder of Robin Rigg (East) and (West) and Scroby Sands; the ECRGEN rows of company_owners.csv cover all three
+Scroby Sands,ECRGEN,the RO accreditation holder of Robin Rigg (East) and (West) and Scroby Sands; the ECRGEN rows of company_owners.csv cover all three
+Seagreen Phase 1,Seagreen Wind Energy Limited,the CfD counterparty
+Sheringham Shoal,Scira Offshore Energy Limited,the RO accreditation holder
+Teesside,Teesside Windfarm Ltd,the RO accreditation holder
+Triton Knoll,Triton Knoll Offshore Wind Farm Limited,the CfD counterparty
+Walney 1,Walney (UK) Offshore Windfarms Ltd.,the RO accreditation holder of Walney phases I and II
+Walney 2,Walney (UK) Offshore Windfarms Ltd.,the RO accreditation holder of Walney phases I and II
+Walney Extension,Walney Extension Limited,the CfD counterparty
+West of Duddon Sands,Morecambe Wind Limited,the RO accreditation holder
+Westermost Rough,Westermost Rough Limited,the RO accreditation holder

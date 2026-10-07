@@ -82,6 +82,35 @@ def read_system_prices(year: int, hourly: bool = False) -> pd.DataFrame:
     return pd.concat([r[prices].mean(), r[volumes].sum(min_count=1)], axis=1)[prices + volumes]
 
 
+def read_bm_unit_register(year: int, active_only: bool = False) -> pd.DataFrame:
+    """Elexon's register of generating BM units for `year` (gbpowerdata.build.bm_units): lead party, technology,
+    capacity and whether the unit produced in the year. `active_only` keeps the units that did. Kept out of
+    KIND_FILE, like read_lolp, so load_year() does not require it."""
+    df = pd.read_csv(cfg.processed_dir() / f"bm_unit_register_{year}.csv")
+    return df[df["active"]].reset_index(drop=True) if active_only else df
+
+
+def read_ownership(year: int, register: str | None = None, role: str | None = None) -> pd.DataFrame:
+    """Owners, operators and traders by register record for `year` (gbpowerdata.build.build_ownership): one row
+    per record, role and group. `register` (dukes, ro, cfd, cm, bm) and `role` (owner, operator, trader) filter.
+    A group's capacity in a register is sum(capacity_mw * share) over its rows of one role."""
+    df = pd.read_csv(cfg.processed_dir() / f"ownership_{year}.csv", dtype={"company_number": str, "record_id": str})
+    if register is not None:
+        df = df[df["register"] == register]
+    if role is not None:
+        df = df[df["role"] == role]
+    return df.reset_index(drop=True)
+
+
+def read_ownership_bmu(year: int, role: str | None = None) -> pd.DataFrame:
+    """Owners, operators and traders of every BM unit active in `year` (gbpowerdata.build.build_ownership): one
+    row per unit, role and group, with the register each came from. `role` filters."""
+    df = pd.read_csv(cfg.processed_dir() / f"ownership_bmu_{year}.csv", dtype={"record_id": str})
+    if role is not None:
+        df = df[df["role"] == role]
+    return df.reset_index(drop=True)
+
+
 def load_year(year: int) -> dict[str, pd.DataFrame]:
     """All per-year tables for one year, keyed by friendly name."""
     return {k: read_kind(k, year) for k in KIND_FILE}

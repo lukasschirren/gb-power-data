@@ -25,6 +25,10 @@ docstring has the method, the source quirks it handles, and its full CLI.
 | `mels_pull` | Elexon MEL/PN/BOD for chosen days | free | `raw/mels/` | 0.2 GB |
 | `lccc_pull` (+ `--levy`) | LCCC CfD portal (CKAN): register status, CfD↔BMU map, actual generation and payments, strike prices, levy rates | free | `raw/lccc/` | 20 MB |
 | `neso_pull` | NESO data portal: BSUoS, AAHEDC, TNUoS | free | `raw/neso/` | 18 MB |
+| `cm_register_pull` | NESO Capacity Market register: every CM unit and its components (applicant, parent company, technology, capacities, agreements); the trading contacts' columns are dropped | free | `raw/neso/cm_register/{cmu,components}_{date}.csv` | 16 MB |
+| `dukes_pull` | DESNZ DUKES 5.11, power stations in the UK (one sheet per edition), found through the gov.uk content API | free | `raw/dukes/DUKES_5.11_{edition}.xlsx` | 1 MB |
+| `crown_estate_pull` (+ `--archived`) | The Crown Estate's offshore wind farm ownership tables (operator or lead developer, holders and shares; earlier years from the Internet Archive's captures), one file per as-at date | free; The Crown Estate's terms: own use only, never packed | `raw/crown_estate/wind_farm_ownership_{YYYYMMDD}.html` | 0.1 MB a page |
+| `companies_house_pull [--follow 2]` | Companies House: profile and persons with significant control (ceased ones included) of the companies in `reference/companies_house_numbers.csv`, and with `--follow` their UK-registered corporate controllers; an individual is kept only as its kind, natures of control and dates | free key | `raw/companies_house/{YYYYMMDD}/{number}.json` | <5 MB |
 | `ofgem_pull` | Ofgem price-cap annexes (scraped from the levels page) | free | `raw/ofgem/` | ~0.4 GB |
 | `octopus_pull` | Octopus Agile and standard variable tariffs | free | `raw/octopus/` | 0.4 GB |
 | `entsoe_pull`, `entsoe_capacity_pull` | ENTSO-E Transparency: neighbour day-ahead prices, interconnector NTC | free token | `raw/entsoe/` | 0.6 GB |
@@ -39,6 +43,17 @@ docstring has the method, the source quirks it handles, and its full CLI.
 | `nordpool_pull` | Nord Pool N2EX prices, aggregated curves, blocks, flows | **paid API** | `raw/nordpool/` | 13 GB |
 | `epex_pull` | EPEX SPOT GB day-ahead and intraday prices, curves, blocks, trades | **paid sFTP** | `raw/epex/` | 3.4 GB |
 
+Two hand-downloaded Ofgem reports feed the ownership tables: `raw/ofgem/RO_Accredited_Stations_*.csv` and
+`raw/ofgem/RO_Certificates_*.csv` (Renewables and CHP Register; see `raw/manual/README.md`).
+
+Three sources behind the ownership tables publish only their current state: Elexon's BM unit register
+(`elexon_pull bmunits`), NESO's Capacity Market register (`cm_register_pull`) and The Crown Estate's
+ownership page (`crown_estate_pull`). `python scripts/snapshot_registers.py [--only bmunits cm crown_estate]`
+pulls Elexon's and NESO's registers when today's snapshot is missing (never overwriting one) and The Crown
+Estate's page when its as-at date is new; run it once a month (its docstring has the Task Scheduler and cron
+lines, and says where the snapshots go) so the ownership tables get a history from now on: `bm_units` gives
+each year the register snapshot of its as-of date. About 17 MB a month, nearly all of it the CM register.
+
 Credentials are read from an environment variable first, then from a gitignored file in
 `data/reference/`:
 
@@ -49,6 +64,7 @@ Credentials are read from an environment variable first, then from a gitignored 
 | Copernicus CDS | `CDSAPI_KEY` | `cds_api_token.txt` |
 | Nord Pool | `NORDPOOL_USER`, `NORDPOOL_PASS` | `nordpool_credentials.txt` (user, password) |
 | EPEX SPOT | `EPEX_USER`, `EPEX_PASS` | `epex_credentials.txt` (user, password) |
+| Companies House | `CH_API_KEY` | `companies_house_token.txt` |
 
 ## 2. Reference tables: one-off builders
 
@@ -93,6 +109,10 @@ stage stops the run, except the two marked *soft*, which are skipped when their 
 | `build_duos_tariffs` | `raw/manual/dno_duos/`, `raw/ofgem/duos_per_customer.csv` | `duos_domestic_tariffs.csv` |
 | `build_cap_tariff` | Ofgem cap tariff model xlsx in `raw/ofgem/` | `cap_tariff_by_region.csv` |
 | `build_subnational_domestic` | `raw/manual/desnz_subnational/` | `domestic_supply_by_year.csv` |
+| `bm_units [--years 2018 2026]` (default to the current year) | `raw/bm_units_*.csv` (every kept snapshot), `raw/{fpn,b1610,bod}/` | `bm_unit_register_{y}.csv` |
+| `build_company_control [--stamp YYYYMMDD]` | `raw/companies_house/` (the newest snapshot of each company; with `--stamp`, those up to that pull date) | `company_control.csv` (`company_control_{stamp}.csv` with `--stamp`) |
+| `build_ownership [--years 2018 2026]` | `raw/dukes/`, `raw/ofgem/RO_*` (optional), CfD register and `raw/lccc/`, `raw/neso/cm_register/`, `bm_unit_register_{y}.csv`, `company_control.csv` (optional, basis `ch_psc`), `reference/{company_groups,company_owners,bmu_lead_parties,companies_house_numbers,dukes_bmu_map,wind_farm_map}.csv` | `ownership_{y}.csv`, `ownership_bmu_{y}.csv` ([ownership.md](ownership.md)) |
+| `build_crown_estate [--strict]` | `raw/crown_estate/`, `reference/crown_estate_farms.csv`, `reference/crown_estate_ownership_reports.csv` (local only, optional), `reference/{company_owners,company_groups}.csv` | `crown_estate_ownership.csv` (local only, not packed); prints the differences between `company_owners.csv` and The Crown Estate's tables; `--strict` exits 1 on an unexplained difference, an unmapped farm, a changed not-compared farm or an unused known difference |
 | `pecd_build`, then `pecd_national_cf` | `raw/pecd/historical/`, PECD region weights, agents | `pecd/cf_historical.csv`, `pecd/temperature_popweighted_historical.csv`, `capacity_factors_pecd_{y}.csv` |
 | `pecd_build --stream future` | `raw/pecd/projection/{gcm}/{ssp}/` (from `pecd_pull --stream projection`) | `pecd/cf_future_{gcm}_{ssp}.csv` (~0.7 GB each) |
 
@@ -122,6 +142,7 @@ Use `gbpowerdata.processed` instead of globbing file names:
 ```python
 from gbpowerdata import processed, venue
 d = processed.load_year(2023)            # {"demand", "cf", "fuel", "mid", "agents", ...}
+own = processed.read_ownership_bmu(2023, role="owner")   # owners of every active BM unit
 hh = processed.merge_drivers(2023)       # half-hourly demand + CF + fuel + MID on one index
 p = venue.get("epex").load_da_price(2023)   # day-ahead price of one auction (licensed data)
 ```

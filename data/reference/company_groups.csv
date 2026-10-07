@@ -1,0 +1,110 @@
+name,group,same_as,note,source
+RWE Npower,RWE,,DESNZ's label for RWE's stations,DUKES 5.11
+RWE Generation UK plc,RWE,,,register name
+ECRGEN,RWE,,Robin Rigg: E.ON Climate and Renewables; its renewables went to RWE in the 2019-2020 asset swap,author's table of 5 Oct 2026
+Beaufort Wind Ltd,RWE,,Farr: RWE Innogy,author's table of 5 Oct 2026
+SSE Group,SSE,,DESNZ's label for SSE's stations,DUKES 5.11
+Keadby Generation Limited,SSE,,parent SSE plc in the CM register; DUKES lists Keadby under SSE Group,NESO Capacity Market register; DUKES 5.11
+Medway Power Ltd,SSE,,parent SSE plc in the CM register; DUKES lists Medway under SSE Group,NESO Capacity Market register; DUKES 5.11
+Medway Power Limited,SSE,,as above,NESO Capacity Market register
+Griffin Wind Farm Limited,SSE,,,author's table of 5 Oct 2026
+Strathy Wind Farm Limited,SSE,,,author's table of 5 Oct 2026
+Uniper UK,Uniper,,DESNZ's label,DUKES 5.11
+Uniper UK Limited,Uniper,,,register name
+Uniper Global Commodities SE,Uniper,,the CM applicant for Uniper's stations,NESO Capacity Market register
+EPUKi,EPUKi,,EP UK Investments (EPH's UK holding),DUKES 5.11
+EPPDII Ltd,EPUKi,,EP UK Power Development II; its parent in the CM register is EP UK Investments Ltd,NESO Capacity Market register
+EP UK Investments Ltd,EPUKi,,,NESO Capacity Market register
+TTEP UK&I Investments Ltd,EPUKi,,TTEP: the EPH/TotalEnergies joint venture named in later CM applications; grouped with EPUKi as the operator,NESO Capacity Market register; to verify
+Vitol,VPI,,DESNZ's label for VPI's stations (Vitol),DUKES 5.11
+VPI Holding Limited,VPI,,,NESO Capacity Market register
+Intergen,InterGen,,DESNZ's label,DUKES 5.11
+INTERGEN POWER LTD,InterGen,,parent of Spalding Coryton and Rocksavage in the CM register,NESO Capacity Market register
+Spalding Energy Company Ltd,InterGen,,,NESO Capacity Market register
+Spalding Energy Expansion Ltd,InterGen,,,NESO Capacity Market register
+Coryton Energy Company Ltd,InterGen,,,NESO Capacity Market register
+Rocksavage Power Company Ltd,InterGen,,,NESO Capacity Market register
+ESB,ESB,,,DUKES 5.11
+ESBII UK LIMITED,ESB,,parent of Carrington and Corby in the CM register,NESO Capacity Market register
+Carrington Power Ltd,ESB,,,NESO Capacity Market register
+Calon Energy,Calon,,DESNZ's label (Severn Sutton Bridge Baglan),DUKES 5.11
+Sutton Bridge Power Generation,Calon,,DUKES lists Sutton Bridge under Calon Energy,DUKES 5.11
+Marchwood Power,Marchwood Power,,a joint venture; owners not resolved here,DUKES 5.11; to verify
+Marchwood Power Limited,Marchwood Power,,as above,register name
+Energy Capital Partners,Triton Power,,DESNZ's label for Saltend and Indian Queens: Triton Power's stations,DUKES 5.11
+Triton Power Limited,Triton Power,,,NESO Capacity Market register
+SCCL,Triton Power,,Saltend Cogeneration Company Limited (Triton Power),Elexon BM register
+UK Transition Limited,EIG,,DESNZ's label for West Burton CCGT: West Burton Energy (EIG) since 31 Aug 2021,DUKES 5.11; Business Wire 31 Aug 2021
+UK Transition Power Limited,EIG,,parent of West Burton B in the CM register,NESO Capacity Market register
+West Burton B Limited,EIG,,,Business Wire 31 Aug 2021
+EDF Energy,EDF,,DESNZ's label,DUKES 5.11
+Part of Drax Group,Drax,,DESNZ's label,DUKES 5.11
+Drax Power Ltd,Drax,,,register name
+Scottish Power,ScottishPower,,DESNZ's label,DUKES 5.11
+ScottishPower Renewables (UK) Limited,ScottishPower,,,author's table of 5 Oct 2026
+Orsted,Orsted,,DESNZ's label,DUKES 5.11
+Orsted Burbo (UK) Limited,Orsted,,,author's table of 5 Oct 2026
+Barrow Offshore Wind Limited,Orsted,,,author's table of 5 Oct 2026
+Vattenfall Wind Power Ltd,Vattenfall,,,author's table of 5 Oct 2026
+Ormonde Energy Limited,Vattenfall,,,author's table of 5 Oct 2026
+RES White Limited,Vattenfall,,Pen y Cymoedd belongs to Vattenfall; RES White holds a small station there,author's table of 5 Oct 2026
+Pen y Cymoedd Wind Farm Limited,Vattenfall,,,author's table of 5 Oct 2026
+Fred Olsen Renewables Ltd,Fred Olsen,,,author's table of 5 Oct 2026
+RES Ltd,RES,,,author's table of 5 Oct 2026
+Renantis UK Limited,Renantis,,,author's table of 5 Oct 2026
+Ventient Energy Limited,Ventient,,,author's table of 5 Oct 2026
+ROWAN ONSHORE WINDFARMS LIMITED,Rowan,,,author's table of 5 Oct 2026
+Beinneun Wind Farm Limited,Blue Energy,,,author's table of 5 Oct 2026
+Corriegarth Wind Energy Limited,Greencoat,,,author's table of 5 Oct 2026
+LZN Ltd,Eneco,,,author's table of 5 Oct 2026
+Aikengall II Community Wind Company Limited,Community Windpower,,,author's table of 5 Oct 2026
+Aikengall Community Wind Company Limited,Community Windpower,,,author's table of 5 Oct 2026
+GreenPower (Carraig Gheal) Limited,GreenPower,,,author's table of 5 Oct 2026
+Cour Wind Farm (Scotland) Limited,Cour,,,author's table of 5 Oct 2026
+A'Chruach Wind Farm Limited,A'Chruach,,,author's table of 5 Oct 2026
+Hornsea 1 Limited,Orsted,,Hornsea One: Orsted and Global Infrastructure Partners; Orsted operates,CfD register; to verify
+Breesea Limited,Orsted,,Hornsea Two project company; Orsted operates,CfD register (Orsted's address)
+Sonningmay Wind Limited,Orsted,,Hornsea Two project company; Orsted operates,CfD register (Orsted's address)
+Soundmark Wind Limited,Orsted,,Hornsea Two project company; Orsted operates,CfD register (Orsted's address)
+Walney Extension Limited,Orsted,,Orsted operates,CfD register (Orsted's address)
+Burbo Extension Limited,Orsted,,Orsted operates,CfD register (Orsted's address)
+Dudgeon Offshore Wind Limited,Equinor,,Equinor operates,CfD register (Equinor's address); to verify
+Beatrice Offshore Windfarm Limited,SSE,,SSE operates,CfD register (SSE's Perth address)
+Triton Knoll Offshore Wind Farm Limited,RWE,,RWE operates,CfD register (RWE's Swindon address)
+East Anglia One Limited,ScottishPower,,ScottishPower Renewables (Iberdrola) operates,to verify
+Moray Offshore Windfarm (East) Limited,Ocean Winds,,Ocean Winds operates,to verify
+Neart na Gaoithe Offshore Wind Limited,EDF,,EDF Renewables and ESB; EDF operates,CfD register (EDF Renewables' address)
+Seagreen Wind Energy Limited,SSE,,SSE and TotalEnergies; SSE operates,CfD register (SSE's Reading address)
+Doggerbank Offshore Wind Farm Project 1 Projco Limited,SSE,,SSE Equinor and Varg Gronn; registered at SSE's address,CfD register (SSE's Reading address); to verify
+Doggerbank Offshore Wind Farm Project 2 Projco Limited,SSE,,as above,CfD register (SSE's Reading address); to verify
+Doggerbank Offshore Wind Farm Project 3 Projco Limited,SSE,,as above,CfD register (SSE's Reading address); to verify
+Sofia Offshore Wind Farm,RWE,,,CfD register (RWE's Swindon address)
+EP Lynemouth Power Limited,EPUKi,,,CfD register
+Drax Power Limited,Drax,,,CfD register
+Galloper Offshore WindFarm Ltd,RWE,Galloper Wind Farm Limited,the BM lead party of Galloper (RWE operates the joint venture),author's table of 5 Oct 2026; to verify
+Rampion Offshore Windfarm Ltd,RWE,Rampion Offshore Wind Ltd,the BM lead party of Rampion (RWE operates the joint venture),author's table of 5 Oct 2026; to verify
+Thanet Offshore Wind Limited,Vattenfall,,Thanet: Vattenfall's farm (Ofgem's holder is Vattenfall Wind Power),Ofgem RO register; to verify
+Pivot Power (Holding) Limited,EDF,,Pivot Power: EDF Renewables since 2019,to verify
+Pivoted Power LLP,EDF,,Pivot Power's battery units (BM lead party),to verify
+Walney Offshore Windfarms Ltd,Orsted,Walney (UK) Offshore Windfarms Ltd.,the BM lead party of Walney 1 and 2,registers (6 Oct 2026)
+Moray Offshore Wind East Ltd,Ocean Winds,Moray Offshore Windfarm (East) Limited,the BM lead party of Moray East,registers (6 Oct 2026)
+Moray Offshore Wind West Ltd,Ocean Winds,MORAY OFFSHORE WINDFARM (WEST) LIMITED,the BM lead party of Moray West,registers (6 Oct 2026)
+Doggerbank OWF Project 1,SSE,Doggerbank Offshore Wind Farm Project 1 Projco Limited,the BM lead party of Dogger Bank A,registers (6 Oct 2026)
+Doggerbank OWF Project 2,SSE,Doggerbank Offshore Wind Farm Project 2 Projco Limited,the BM lead party of Dogger Bank B,registers (6 Oct 2026)
+Triton Knoll Offshore Wind,RWE,Triton Knoll Offshore Wind Farm Limited,the BM lead party of Triton Knoll (Elexon cuts names at 30 characters),registers (6 Oct 2026)
+Dorenell Windfarm Limited,EDF,Dorenell Wind Farm Limited,the BM lead party of Dorenell,registers (6 Oct 2026)
+Fallago Rig Wind Farm Limited,EDF,Fallago Rig Windfarm Limited,the BM lead party of Fallago Rig (North British Windpower until 2012),registers (6 Oct 2026)
+Stronelairg Wind Farm Limited,SSE,Stronelairg Windfarm Limited,the RO generator name of Stronelairg,registers (6 Oct 2026)
+EDF Energy Customers Limited,EDF,,"EDF's supply company, the BM lead party of Dungeness B",registers (6 Oct 2026)
+CBS Energy Storage Assets Ltd,Centrica,,"Centrica Business Solutions' storage and peaking company (Roosecote, Brigg): the BM lead party name of CBS Energy Storage Assets UK Limited",NESO Capacity Market register (parent Centrica plc); Elexon BM register (6 Oct 2026)
+CBS Energy Storage Assets UK Limited,Centrica,,the CM applicant for Roosecote and Brigg,NESO Capacity Market register (parent Centrica plc)
+HARMONY (PW) LIMITED,HEIT,HEIT PW Limited,Pillswood's CM applicant in the 2023-24 T-1 auction,NESO Capacity Market register (6 Oct 2026): the same CM unit under the HEIT name in the other auctions
+HARMONY (PW) 2 LIMITED,HEIT,HEIT PW2 Limited,Pillswood 2's CM applicant in the 2023-24 T-1 auction,NESO Capacity Market register (6 Oct 2026): the same CM unit under the HEIT name in the other auctions
+HARMONY BD LIMITED,HEIT,HEIT BD Limited,Broadditch's CM applicant in the 2023-24 T-1 auction,NESO Capacity Market register (6 Oct 2026): the same CM unit under the HEIT name in the other auctions
+HARMONY FM LIMITED,HEIT,HEIT FM Limited,Farnham's CM applicant in the 2023-24 T-1 auction,NESO Capacity Market register (6 Oct 2026): the same CM unit under the HEIT name in the other auctions
+HARMONY RH LTD,HEIT,HEIT RH Limited,Rusholme's CM applicant in the 2023-24 T-1 auction,NESO Capacity Market register (6 Oct 2026): the same CM unit under the HEIT name in the other auctions
+Infinis Wind Holdings Limited,Ventient,,"now Mobius Wind Holdings Limited (07086998), Ventient Energy Limited's since 10 May 2017; filings still name it so",Companies House PSC register (pulled 7 Oct 2026)
+Infinis Wind Holdings 2 Limited,Ventient,,"now Mobius Wind Holdings 2 Limited (09058809, renamed 23 May 2017), Ventient Energy Limited's since 10 May 2017",Companies House PSC register (pulled 7 Oct 2026)
+Infinis Gala Limited,Ventient,,"now Mobius Gala Limited (09413491), under Mobius Wind Holdings; Galawhistle's parent",Companies House PSC register (pulled 7 Oct 2026)
+Infinis Gala 1 Limited,Ventient,,"now Mobius Gala 1 Limited (09413190), under Mobius Wind Holdings 2",Companies House PSC register (pulled 7 Oct 2026)
+Infinis Argyle Limited,Ventient,,"now Mobius Argyle Limited (09232065), under Argyle Wind (Holdings) and Mobius Wind Holdings 2; A'Chruach's parent",Companies House PSC register (pulled 7 Oct 2026)

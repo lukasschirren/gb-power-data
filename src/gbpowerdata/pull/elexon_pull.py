@@ -186,11 +186,15 @@ def pull_indod(start: datetime, end: datetime) -> pd.DataFrame:
 
 
 def pull_bmunits(start: datetime, end: datetime) -> pd.DataFrame:
-    """BM Units reference list — current snapshot; date args ignored."""
-    payload = _get(f"{BASE_URL}/reference/bmunits/all", params={})
-    df = pd.DataFrame(payload)
+    """BM Units reference list — current snapshot; date args ignored. Elexon publishes only the register of the
+    day, so a day's snapshot is kept and never overwritten: gbpowerdata.build.bm_units dates lead parties by them."""
     today = datetime.now(timezone.utc).date()
     path = RAW_DIR / f"bm_units_{today:%Y%m%d}.csv"
+    if path.exists():
+        print(f"  {path.name} exists (raw snapshots are immutable), skipped", flush=True)
+        return pd.read_csv(path)
+    payload = _get(f"{BASE_URL}/reference/bmunits/all", params={})
+    df = pd.DataFrame(payload)
     df.to_csv(path, index=False)
     print(f"  Saved {len(df):,} BM units -> {path}", flush=True)
     return df

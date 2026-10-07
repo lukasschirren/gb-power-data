@@ -2,7 +2,8 @@
 
 Nord Pool (N2EX) and EPEX SPOT data are commercial: the raw files AND everything derived from
 them (day-ahead prices, curve features, block orders, trade panels) must stay out of git. The
-same holds for API tokens and passwords. Two checks, both against git itself:
+same holds for API tokens and passwords, and for copies of The Crown Estate's ownership tables
+(its terms: own use only). Two checks, both against git itself:
 
   1. .gitignore ignores representative paths of each kind, so `git add .` cannot pick them up;
   2. no file already tracked looks like one.
@@ -40,6 +41,11 @@ MUST_BE_IGNORED = [
     "data/reference/cds_api_token.txt",
     "data/reference/epex_credentials.txt",
     "data/reference/nordpool_credentials.txt",
+    "data/reference/companies_house_token.txt",
+    # The Crown Estate's terms: what is downloaded is for own use, digital copies are not passed on
+    "data/reference/crown_estate_ownership_reports.csv",
+    "data/raw/crown_estate/wind_farm_ownership_20241231.html",
+    "data/processed/crown_estate_ownership.csv",
 ]
 COMMERCIAL_MARKERS = ("nordpool", "n2ex", "epex", "dayahead_price", "mid_target")
 SECRET_MARKERS = ("token", "credential", "password", ".pem", ".key")

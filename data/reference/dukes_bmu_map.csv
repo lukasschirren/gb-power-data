@@ -1,0 +1,49 @@
+station,tech_class,dukes_pattern,bmu_ids,note
+Aberthaw B,coal,^Aberthaw,,closed 31 March 2020; no BM unit in the 2026 register
+Baglan Bay,gas,^Baglan,T_BAGE-1;T_BAGE-2,
+Carrington,gas,^Carrington,T_CARR-1;T_CARR-2,
+Connah's Quay,gas,^Connah,T_CNQPS-1;T_CNQPS-2;T_CNQPS-3;T_CNQPS-4,
+Coryton,gas,^Coryton,T_COSO-1,
+Cottam,coal,^Cottam$|^Cottam \(|^Cottam power,,closed September 2019; not Cottam Development Centre (the CCGT)
+Damhead Creek,gas,^Damhead Creek,T_DAMC-1,
+Deeside,gas,^Deeside,,mothballed CCGT (synchronous compensation); no BM unit in the 2026 register
+Didcot B,gas,^Didcot,E_DIDC1G;E_DIDC2G;E_DIDC3G;E_DIDC4G;T_DIDCB5;T_DIDCB6,Didcot B and its gas turbines
+Drax coal units,coal,^Drax,T_DRAXX-5;T_DRAXX-6,commercial coal generation ended March 2021
+Drax biomass units,bioenergy,^Drax,T_DRAXX-1;T_DRAXX-2;T_DRAXX-3;T_DRAXX-4,units 1-4 converted to biomass
+Eggborough,coal,^Eggborough,,closed September 2018
+Fiddler's Ferry,coal,^Fiddler,T_FIDL-1;T_FIDL-2;T_FIDL-3;T_FIDL-4;T_FIDLST1,closed 31 March 2020; units still registered to Keadby Generation (SSE)
+Grain,gas,^Grain$|^Grain \(CCGT|^Grain CCGT|^Grain CHP,T_GRAI-6;T_GRAI-7;T_GRAI-8,the CCGT units (Grain OCGT and the synchronous compensators are not in it)
+Immingham CHP,gas,^VPI$|^Immingham|^VPI Immingham,T_HUMR-1,DESNZ's site name is VPI
+Keadby,gas,^Keadby,T_KEAD-1;T_KEAD-2;T_KEADGT-3,Keadby 1 and Keadby 2
+Killingholme,gas,^Killingholme,T_KILLPG-1;T_KILLPG-2,
+Langage,gas,Langage,T_LAGA-1,
+Little Barford,gas,^Little Barford,T_LBAR-1;T_LBAR-1G,
+Marchwood,gas,^Marchwood,T_MRWD-1,
+Medway,gas,^Medway,T_MEDP-1,
+Pembroke,gas,^Pembroke,T_PEMB-11;T_PEMB-21;T_PEMB-31;T_PEMB-41;T_PEMB-51,
+Peterhead,gas,^Peterhead,T_PEHE-1,
+Ratcliffe-on-Soar,coal,^Ratcliffe,T_RATS-1;T_RATS-2;T_RATS-3;T_RATS-4,closed 30 September 2024
+Rocksavage,gas,^Rocksavage,T_ROCK-1,
+Rye House,gas,^Rye House,T_RYHPS-1,
+Saltend,gas,^Saltend,T_SCCL-1;T_SCCL-2;T_SCCL-3,
+Seabank,gas,^Seabank,T_SEAB-1;T_SEAB-2,
+Severn,gas,^Severn,T_SVRP-10;T_SVRP-20,
+South Humber Bank,gas,SHB|South Humber,T_SHBA-1;T_SHBA-2,
+Spalding,gas,^Spalding Energy|^Spalding$|^Spalding CCGT,T_SPLN-1,the CCGT; the expansion OCGT (T_SEEL-1) is not in it
+Staythorpe,gas,^Staythorpe,T_STAY-1;T_STAY-2;T_STAY-3;T_STAY-4,
+Sutton Bridge,gas,^Sutton Bridge,T_SUTB-1,the CCGT (the class keeps EDF's Sutton Bridge solar farm out)
+West Burton B,gas,^West Burton (?:B|CCGT),T_WBURB-1;T_WBURB-2;T_WBURB-3,the CCGT
+West Burton A,coal,^West Burton$|^West Burton A|^West Burton \(coal,T_WBUPS-1;T_WBUPS-2;T_WBUPS-3;T_WBUPS-4,closed 30 September 2022
+Dungeness B,nuclear,^Dungeness,T_DNGB21;T_DNGB22,offline from September 2018; closure announced June 2021
+Hartlepool,nuclear,^Hartlepool,T_HRTL-1;T_HRTL-2,
+Heysham 1,nuclear,^Heysham 1,T_HEYM11;T_HEYM12,
+Heysham 2,nuclear,^Heysham 2,T_HEYM27;T_HEYM28,
+Hinkley Point B,nuclear,^Hinkley,T_HINB-7;T_HINB-8,closed 1 August 2022
+Hunterston B,nuclear,^Hunterston,T_HUNB-7;T_HUNB-8,closed 7 January 2022
+Sizewell B,nuclear,^Sizewell,T_SIZB-1;T_SIZB-2,
+Torness,nuclear,^Torness,T_TORN-1;T_TORN-2,
+Dinorwig,pumped_storage,^Dinorwig,T_DINO-1;T_DINO-2;T_DINO-3;T_DINO-4;T_DINO-5;T_DINO-6,
+Ffestiniog,pumped_storage,^Ffestiniog,T_FFES-1;T_FFES-2;T_FFES-3;T_FFES-4,
+Cruachan,pumped_storage,^Cruachan,T_CRUA-1;T_CRUA-2;T_CRUA-3;T_CRUA-4,
+Foyers,pumped_storage,^Foyers,T_FOYE-1;T_FOYE-2,
+Lynemouth,bioenergy,^Lynemouth,E_LYNE1;E_LYNE2;E_LYNE3,the class keeps ScottishPower's Lynemouth wind farm out

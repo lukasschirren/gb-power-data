@@ -32,8 +32,31 @@ Three more inputs are **not** in the inputs pack:
 | `powerplants.csv` | powerplantmatching (PyPSA) merged European plant roster, CC BY 4.0; stage 1 keeps the GB rows | `python -m gbpowerdata.pull.ppm_pull` downloads the pinned release (v0.8.1, byte-identical to the file used since May 2026) and verifies its checksum |
 | `psd/ids.csv` | OSUKED Power Station Dictionary, MIT licence; see `../psd/PROVENANCE.md` | small, so it is tracked in git |
 | `pecd/masks/ANCI_PE{ON,OF}-mask_PECD4.2_fv1.nc` | Copernicus CDS `sis-energy-pecd` region masks (240 MB; one-off request, see `common/pecd_regions.py`) | only rebuild the PECD weight tables, which are tracked in `data/reference/` |
+| `ofgem/RO_Accredited_Stations_*.csv`, `ofgem/RO_Certificates_*.csv` | Ofgem Renewables and CHP Register, public reports; see below | they hold the names and addresses of individuals' small stations; what `build.build_ownership` takes from them (GB stations of 1 MW or more, no addresses) is in `ownership_{y}` |
 
 Naming convention inside `manual/`: `<publisher>_<dataset>`, lowercase, underscores.
+
+---
+
+## `ofgem/RO_*`: Ofgem register of RO stations and their certificates
+
+Kept in `data/raw/ofgem/` (Ofgem's own file names), downloaded by hand.
+
+- **What**: Renewables and CHP Register, public reports. "Accredited Stations (RO)": one row per RO accredited
+  station (26,578 on 5 Oct 2026; 23,790 in Northern Ireland) with accreditation reference, station name,
+  organisation name (the accreditation holder), declared net capacity (kW), technology, commissioning and
+  accreditation dates, country, organisation and station addresses. "RO Certificates": every batch of ROCs
+  (station, output month, certificates, MWh per certificate, generator; output from April 2015, the register
+  keeps seven years).
+- **Where**: https://rer.ofgem.gov.uk/Reports/Dashboard > Accredited Stations (RO) / RO Certificates > Download.
+  The link points to Ofgem's SharePoint, which asks for a Microsoft sign-in, so no script can pull it. The
+  reports are refreshed overnight and are switched off at busy times.
+- **Used by**: `build.build_ownership` (the RO register's holders; a station counts in a year if it was issued
+  ROCs for output in it). Optional: without them the ownership tables leave the RO out, with a warning.
+- **Gaps**: the holder and the certificates' generator are today's for every past month; the register keeps
+  accreditations of stations that no longer generate (the coal stations accredited for co-firing), which the
+  certificates filter out.
+- **Not packed**: small stations are often held by individuals, whose names and addresses the reports carry.
 
 ---
 

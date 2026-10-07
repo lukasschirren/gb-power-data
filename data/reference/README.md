@@ -18,6 +18,22 @@ ignored, including the credential files the pullers read (`*token*.txt`, `*crede
 | `ninja_sites.csv` | national renewables.ninja reference sites | `pull.renninja_pull`, `pull.pecd_pull`, `build.pecd_build` |
 | `bmu_crosswalk_overrides.yaml` | corrections to the Power Station Dictionary grouping (which BMUs hold a CfD at a shared site) | `scripts/build_bmu_crosswalk.py` |
 | `wind_farm_map_overrides.csv` | wind BMU → REPD rows pinned by hand, each with its reason | `scripts/build_wind_farm_map.py` |
+| `company_groups.csv` | a company name a register uses → its group, and `same_as`, the name of the same legal entity in `company_owners.csv`; each row with its source | `common.companies`, `build.build_ownership` |
+| `company_owners.csv` | joint ventures and sales: owners with shares, the operator, validity dates, sources (ids into `ownership_sources.csv`), evidence, status (`verified`, `partly verified`, `to verify`, `judgement`) and the date checked, keyed `company:<name>` or `station:<station>`; listed with its evidence in `docs/ownership_references.md` (`python -m gbpowerdata.common.companies --references` after an edit) | `common.companies`, `build.build_ownership` |
+| `ownership_sources.csv` | every source `company_owners.csv` and `bmu_lead_parties.csv` cite: id, publisher, title, date published, kind, URL, date accessed | `common.companies` (the reference document), tests |
+| `bmu_lead_parties.csv` | documented lead parties of a BM unit over a period, where the kept register snapshots do not cover the date; columns of evidence as `company_owners.csv` (empty so far) | `common.companies`, `build.build_ownership` |
+| `dukes_bmu_map.csv` | the main gas, coal, nuclear, pumped-storage and biomass stations: DUKES site pattern, technology class, BM units | `build.build_ownership` |
+| `crown_estate_farms.csv` | The Crown Estate's farm names (one row per spelling; matched without case, accents and punctuation) -> the company under which `company_owners.csv` keys the farm, with the register that names that company | `build.build_crown_estate`, tests |
+| `companies_house_numbers.csv` | the companies whose persons with significant control are pulled: Companies House number (eight characters as text: zero-padded, prefixes such as SC kept), the register's name, why it is listed; seeded 6 Oct 2026 with the 183 CfD counterparties of at least 30 MW that resolve to themselves | `pull.companies_house_pull`, `common.company_control` (a company's number by its name) |
+
+**Local only, never committed:** `crown_estate_ownership_reports.csv`, The Crown Estate's operational
+offshore wind ownership tables at the ends of 2018, 2019 and 2020, transcribed by hand from its offshore wind
+operational reports (`ce-2018`, `ce-2019`, `ce-2020` in `ownership_sources.csv`): as_at, section, farm,
+operator, holder (the full name, completed from the table's footnote where the bar cuts it short),
+holder_printed (the label as printed, with its footnote marker), share_pct, source_id, page. The Crown
+Estate's terms allow own use only and forbid passing digital copies to third parties, so `.gitignore` keeps it
+out; `build.build_crown_estate` reads it where it exists, and the tables can be transcribed again from the
+reports the source ids cite.
 
 ## Derived: tracked for convenience, rebuild when their inputs change
 

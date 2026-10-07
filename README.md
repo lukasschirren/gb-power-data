@@ -78,6 +78,10 @@ series has one row per half-hour with its UTC start time in the column `startTim
 | | `cfd_status`, `cfd_fleet_{y}` | each CfD contract, and the actual payments LCCC settled |
 | | `agents_{y}` | the fleet grouped into units ready for a market model |
 | | `wind_farms_{y}`, `wind_farm_fpn_{y}` | output of each transmission-connected wind farm |
+| Ownership | `bm_unit_register_{y}` | every BM unit of the kept register snapshots with its lead party (the company that trades it; the register snapshot for the year, today's as a proxy before the first kept snapshot), technology, capacity and whether it produced in the year (the current year: the last pulled year's activity); units deregistered before the first snapshot, such as Cottam and Aberthaw B, are not in it |
+| | `ownership_{y}`, `ownership_bmu_{y}` | owners (with joint-venture shares), operators and traders in the year, by register (DUKES, RO, CfD, Capacity Market, Balancing Mechanism) and by BM unit, 2018 to the current year ([docs/ownership.md](docs/ownership.md); every curated share with its sources in [docs/ownership_references.md](docs/ownership_references.md)) |
+| | `company_control` | Companies House persons with significant control as a dated table: each pulled company's corporate controllers (names and numbers), ownership and voting bands, notified and ceased dates; individuals only as anonymous rows (not packed) |
+| | `crown_estate_ownership` | The Crown Estate's offshore wind ownership tables by date, against which `build_crown_estate` checks `company_owners.csv` (local only: The Crown Estate's terms) |
 | Forecasts and tightness | `forecast_state_{y}` | what was forecast the day before (wind, solar, demand, margin) |
 | | `lolp_drm_{y}` | loss-of-load probability and de-rated margin |
 | Household bills | `consumer_levy_daily`, `consumer_levy_annual` | the CfD levy in £/MWh and £ per household |
@@ -120,7 +124,10 @@ Most sources need no account. The others read an environment variable, or else a
 
 2. Run the pullers you need, one module per source (section 1 of
    [docs/pipeline.md](docs/pipeline.md)). The per-unit Elexon pulls (FPN, BOD) take hours and
-   several GB, and renewables.ninja allows about 50 requests an hour (about 8 h in all).
+   several GB, and renewables.ninja allows about 50 requests an hour (about 8 h in all). Elexon's BM
+   unit register, NESO's Capacity Market register and The Crown Estate's ownership page keep no
+   history: schedule `python scripts/snapshot_registers.py` once a month (its docstring shows how) to
+   keep a dated snapshot of each.
 
 3. Build.
 
@@ -130,6 +137,10 @@ Most sources need no account. The others read an environment variable, or else a
    python -m gbpowerdata.build.build_lolp --years 2018 2025
    python -m gbpowerdata.build.build_forecast_state --start 2018 --end 2025
    python -m gbpowerdata.build.build_consumer_levy
+   python -m gbpowerdata.build.bm_units                # needs the per-unit FPN/B1610 pulls (~2 min)
+   python -m gbpowerdata.build.build_company_control   # optional: after companies_house_pull --follow 2 (free key)
+   python -m gbpowerdata.build.build_ownership         # after cm_register_pull, dukes_pull and the Ofgem RO reports
+   python -m gbpowerdata.build.build_crown_estate --strict   # company_owners.csv against The Crown Estate's tables
    ```
 
 The hourly regional PECD tables are in no pack because of their size, and a free Copernicus key
@@ -188,15 +199,18 @@ them. Every other stage runs without the licensed data.
 The code licence does not cover data. Every file keeps the terms of its sources, and the
 `MANIFEST.json` of each data pack lists, per file, its `sources`, a `non_commercial` flag and a
 `check_terms` flag, with each source's licence and required attribution. The terms below were
-checked on 5 Oct 2026.
+checked on 5 Oct 2026 (The Crown Estate and Companies House on 6 Oct 2026).
 
 | Source | Terms | Attribution | Files in the packs |
 | --- | --- | --- | --- |
-| Elexon BMRS | [BMRS open data licence](https://www.elexon.co.uk/bsc/data/balancing-mechanism-reporting-agent/copyright-licence-bmrs-data/), commercial use allowed | "Contains BMRS data © Elexon Limited copyright and database right [year]" | `demand`, `mid_target`, `system_prices`, `lolp_drm`, `forecast_state`, `wind_farm*`, `capacity_factors`, `capacity_factors_by_zone`, `agents` |
-| NESO Data Portal | [NESO Open Licence](https://www.neso.energy/data-portal/neso-open-licence), OGL-based and set per dataset | source and licence link | `forecast_state`, GSP and DNO boundaries, `powerplants_located`, `agents` |
-| LCCC | Open Government Licence v3.0 | source and licence link | `cfd_fleet`, `cfd_status`, `consumer_levy_*`, CfD register |
-| DESNZ, ONS, gov.uk | Open Government Licence v3.0 | source and licence link | REPD, `domestic_supply_by_year`, gas and UK ETS prices in `fuel_prices` |
-| Ofgem | Open Government Licence v3.0 | source and licence link | `cap_tariff_by_region`, `duos_domestic_tariffs` |
+| Elexon BMRS | [BMRS open data licence](https://www.elexon.co.uk/bsc/data/balancing-mechanism-reporting-agent/copyright-licence-bmrs-data/), commercial use allowed | "Contains BMRS data © Elexon Limited copyright and database right [year]" | `demand`, `mid_target`, `system_prices`, `lolp_drm`, `forecast_state`, `wind_farm*`, `capacity_factors`, `capacity_factors_by_zone`, `agents`, `bm_unit_register`, `ownership*` |
+| NESO Data Portal | [NESO Open Licence](https://www.neso.energy/data-portal/neso-open-licence), OGL-based and set per dataset | source and licence link | `forecast_state`, GSP and DNO boundaries, `powerplants_located`, `agents`, `ownership*` (Capacity Market register) |
+| LCCC | Open Government Licence v3.0 | source and licence link | `cfd_fleet`, `cfd_status`, `consumer_levy_*`, CfD register, `ownership*` |
+| DESNZ, ONS, gov.uk | Open Government Licence v3.0 | source and licence link | REPD, `domestic_supply_by_year`, gas and UK ETS prices in `fuel_prices`, `ownership*` (DUKES 5.11) |
+| Ofgem | Open Government Licence v3.0 | source and licence link | `cap_tariff_by_region`, `duos_domestic_tariffs`, `ownership*` (RO register; the raw reports are not packed, see [data/raw/manual/README.md](data/raw/manual/README.md)) |
+| The Crown Estate | [terms of use](https://www.thecrownestate.co.uk/about-us/terms-of-use): what is downloaded from its site is for the user's own use; digital copies are not to be passed to third parties | source | none: the pulled pages, the transcription of its 2018-2020 report tables and `crown_estate_ownership` stay local; `company_owners.csv` cites the shares it takes from them (`ce-2018` ... `ce-2024`) |
+| Companies House | no licence stated: Companies House imposes no rules on how the public register's information is used, and requires credit where its guidance, website, publications or statistical tables are used ([public task statement](https://www.gov.uk/government/publications/companies-house-accreditation-to-information-fair-traders-scheme/public-task-copyright-and-crown-copyright)) | "Source: Companies House" | none so far (`company_control` is not packed); `ownership*` where basis `ch_psc` is used |
+| OSUKED Power Station Dictionary | MIT | source and licence | `wind_farm*`, `ownership*` (the wind-farm map's links to BM units) |
 | powerplantmatching (v0.8.1) | CC BY 4.0 | source | `powerplants_*`, `regime_summary`, `cfd_ppm_matches`, `agents` (the roster itself is pulled, not packed) |
 | Copernicus PECD v4.2 | CC BY 4.0 | "Generated using Copernicus Climate Change Service information [year]" | `capacity_factors_pecd` |
 | World Bank Pink Sheet | CC BY 4.0 | source | coal price in `fuel_prices` |
@@ -238,17 +252,19 @@ environment.yml       conda environment; pyproject.toml is the pip equivalent
 src/gbpowerdata/
   pull/               one module per source -> data/raw/
   build/              processing stages     -> data/processed/
-  common/             GSP geolocation, REPD, name matching, PECD regions
+  common/             GSP geolocation, REPD, name matching, PECD regions, company groups
   config.py           config loader and path helpers
   processed.py        loaders for the processed tables
   venue.py            which day-ahead auction a consumer reads (N2EX / EPEX hourly / EPEX half-hourly)
   datapack.py         export / verify / unpack the data packs
-scripts/              run_pipeline.py, build_fuel_prices.py and the two reference-map builders
+scripts/              run_pipeline.py, build_fuel_prices.py, snapshot_registers.py (monthly register
+                      snapshots) and the two reference-map builders
 data/raw/             source snapshots (not in git; manual/README.md lists hand-downloaded files)
 data/reference/       small tables the pipeline needs (in git; see its README)
 data/processed/       stage outputs (not in git; shipped as the processed pack)
 dist/                 packs built locally for a release (not in git)
 docs/pipeline.md      every stage, its inputs and outputs
+docs/ownership.md     the ownership tables: roles, registers, links to BM units, limits
 tests/                pytest
 ```
 
@@ -264,8 +280,11 @@ pytest
 ```
 
 The suite runs synthetic-data tests of the stage logic (LoLP vintage, PECD calendar and region
-weights, system prices, wind-farm FPN gaps), the data-pack round trip and its guards, an import
-test of every module, and the licensed-data guard. None of it needs data beyond `data/reference/`.
+weights, system prices, wind-farm FPN gaps, the BM-unit register's activity dating, the ownership
+rules, The Crown Estate's tables and their check, Companies House control, the monthly register
+snapshot), checks that the curated ownership tables are sourced and add up, the data-pack round trip
+and its guards, an import test of every module, and the licensed-data guard. None of it needs data
+beyond `data/reference/`.
 
 ## Licence and citation
 

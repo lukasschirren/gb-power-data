@@ -66,10 +66,10 @@ MANIFEST = "MANIFEST.json"
 
 # Per-year processed tables built from open sources: {family}_{year}.csv
 PROCESSED_YEARLY = (
-    "agents", "capacity_factors", "capacity_factors_by_zone", "capacity_factors_pecd", "cfd_fleet",
-    "cfd_ppm_matches", "demand", "demand_by_zone", "forecast_state", "fuel_prices", "lolp_drm",
-    "mid_target", "powerplants_located", "powerplants_tagged", "regime_summary", "system_prices",
-    "wind_farm_fpn", "wind_farm_fpn_gaps", "wind_farms",
+    "agents", "bm_unit_register", "capacity_factors", "capacity_factors_by_zone", "capacity_factors_pecd",
+    "cfd_fleet", "cfd_ppm_matches", "demand", "demand_by_zone", "forecast_state", "fuel_prices", "lolp_drm",
+    "mid_target", "ownership", "ownership_bmu", "powerplants_located", "powerplants_tagged", "regime_summary",
+    "system_prices", "wind_farm_fpn", "wind_farm_fpn_gaps", "wind_farms",
 )
 PROCESSED_SINGLE = (
     "cfd_status.csv", "cap_tariff_by_region.csv", "consumer_levy_annual.csv",
@@ -98,6 +98,10 @@ SOURCES = {
     "ofgem": dict(name="Ofgem", licence="Open Government Licence v3.0", url="https://www.ofgem.gov.uk"),
     "ppm": dict(name="powerplantmatching", licence="CC BY 4.0", url="https://github.com/PyPSA/powerplantmatching"),
     "psd": dict(name="OSUKED Power Station Dictionary", licence="MIT", url="https://github.com/OSUKED/Power-Station-Dictionary"),
+    "companies_house": dict(name="Companies House (persons with significant control)",
+                            licence="no licence stated; credit required where its guidance, website, publications or statistical tables are used",
+                            url="https://www.gov.uk/government/publications/companies-house-accreditation-to-information-fair-traders-scheme/public-task-copyright-and-crown-copyright",
+                            attribution="Source: Companies House"),
     "espeni": dict(name="ESPENI (Wilson & Godfrey, Univ. of Birmingham)", licence="CC BY-NC 4.0", nc=True,
                    url="https://doi.org/10.5281/zenodo.4739408",
                    attribution="Wilson et al. (2021), Calculating Great Britain's half-hourly electrical demand from publicly available data, Energy Strategy Reviews"),
@@ -124,6 +128,7 @@ SOURCES = {
 # Which sources feed which file: processed family (or single file) / raw input pattern -> keys.
 FILE_SOURCES = {
     "agents": ("ppm", "lccc", "govuk", "neso", "elexon"),
+    "bm_unit_register": ("elexon",),
     "capacity_factors": ("espeni", "elexon", "govuk"),
     "capacity_factors_by_zone": ("ninja", "espeni", "elexon", "govuk"),
     "capacity_factors_pecd": ("pecd", "ppm"),
@@ -135,6 +140,11 @@ FILE_SOURCES = {
     "fuel_prices": ("govuk", "worldbank", "ecb"),     # + "eex" for EEX_YEARS, see sources_for
     "lolp_drm": ("elexon",),
     "mid_target": ("elexon",),
+    # DUKES 5.11 (govuk), Ofgem's RO register, LCCC's CfD register, NESO's CM register, Elexon's BM register, the
+    # wind-farm map (REPD, the Power Station Dictionary), and Companies House's control register (basis ch_psc,
+    # after a pull)
+    "ownership": ("govuk", "ofgem", "lccc", "neso", "elexon", "psd", "companies_house"),
+    "ownership_bmu": ("govuk", "ofgem", "lccc", "neso", "elexon", "psd", "companies_house"),
     "powerplants_located": ("ppm", "lccc", "neso"),
     "powerplants_tagged": ("ppm", "lccc"),
     "regime_summary": ("ppm", "lccc"),
