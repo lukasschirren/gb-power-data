@@ -69,8 +69,11 @@ PROCESSED_YEARLY = (
     "agents", "bm_unit_register", "capacity_factors", "capacity_factors_by_zone", "capacity_factors_pecd",
     "cfd_fleet", "cfd_ppm_matches", "demand", "demand_by_zone", "forecast_state", "fuel_prices", "lolp_drm",
     "mid_target", "ownership", "ownership_bmu", "powerplants_located", "powerplants_tagged", "regime_summary",
-    "system_prices", "wind_farm_fpn", "wind_farm_fpn_gaps", "wind_farms",
+    "storage_revenue", "system_prices", "wind_farm_fpn", "wind_farm_fpn_gaps", "wind_farms",
 )
+# Built from open sources but not packed for their size; each user rebuilds them (docs/storage_revenues.md):
+# ancillary_by_unit_{y} (0.7 GB for 2020-2026; python -m gbpowerdata.pull.ancillary_pull, then
+# python -m gbpowerdata.build.ancillary_services, about ten minutes)
 PROCESSED_SINGLE = (
     "cfd_status.csv", "cap_tariff_by_region.csv", "consumer_levy_annual.csv",
     "consumer_levy_daily.csv", "domestic_supply_by_year.csv", "duos_domestic_tariffs.csv",
@@ -128,6 +131,9 @@ SOURCES = {
 # Which sources feed which file: processed family (or single file) / raw input pattern -> keys.
 FILE_SOURCES = {
     "agents": ("ppm", "lccc", "govuk", "neso", "elexon"),
+    # NESO's results by unit, Elexon's register for the unit ids, and the bidders' groups by the ownership tables'
+    # rules and spellings (the registers' names, Companies House's control register); not packed (see above)
+    "ancillary_by_unit": ("neso", "elexon", "govuk", "ofgem", "lccc", "companies_house"),
     "bm_unit_register": ("elexon",),
     "capacity_factors": ("espeni", "elexon", "govuk"),
     "capacity_factors_by_zone": ("ninja", "espeni", "elexon", "govuk"),
@@ -148,6 +154,9 @@ FILE_SOURCES = {
     "powerplants_located": ("ppm", "lccc", "neso"),
     "powerplants_tagged": ("ppm", "lccc"),
     "regime_summary": ("ppm", "lccc"),
+    # Elexon's notifications, market index, cash-out and BM cashflows, NESO's ancillary results, and the traders and
+    # optimisers of the ownership tables
+    "storage_revenue": ("elexon", "neso", "govuk", "ofgem", "lccc", "psd", "companies_house"),
     "system_prices": ("elexon",),
     "wind_farm_fpn": ("elexon", "govuk", "lccc", "psd"),
     "wind_farm_fpn_gaps": ("elexon", "govuk", "lccc", "psd"),

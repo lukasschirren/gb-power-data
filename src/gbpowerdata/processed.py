@@ -111,6 +111,27 @@ def read_ownership_bmu(year: int, role: str | None = None) -> pd.DataFrame:
     return df.reset_index(drop=True)
 
 
+def read_ancillary_by_unit(year: int) -> pd.DataFrame:
+    """NESO's frequency response and reserve results by unit and delivery period (gbpowerdata.build.
+    ancillary_services): MW, GBP/MW/h and revenue, the company that bid the unit and its group, with UTC
+    delivery_start and delivery_end. Kept out of KIND_FILE, like read_lolp."""
+    df = pd.read_csv(cfg.processed_dir() / f"ancillary_by_unit_{year}.csv", low_memory=False)
+    for c in ("delivery_start", "delivery_end"):
+        df[c] = pd.to_datetime(df[c], utc=True)
+    return df
+
+
+def read_storage_revenue(year: int, annual: bool = False) -> pd.DataFrame:
+    """What each storage unit in the BM earned by month, estimated from public data (gbpowerdata.build.
+    storage_revenues): wholesale, BM and ancillary streams in GBP, with trader and optimiser. `annual=True` gives
+    one row per unit and year (gbpowerdata.build.storage_revenues.annual). Kept out of KIND_FILE, like read_lolp."""
+    df = pd.read_csv(cfg.processed_dir() / f"storage_revenue_{year}.csv")
+    if not annual:
+        return df
+    from gbpowerdata.build.storage_revenues import annual as by_unit
+    return by_unit(df)
+
+
 def load_year(year: int) -> dict[str, pd.DataFrame]:
     """All per-year tables for one year, keyed by friendly name."""
     return {k: read_kind(k, year) for k in KIND_FILE}

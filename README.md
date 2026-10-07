@@ -82,6 +82,8 @@ series has one row per half-hour with its UTC start time in the column `startTim
 | | `ownership_{y}`, `ownership_bmu_{y}` | owners (with joint-venture shares), operators and traders in the year, by register (DUKES, RO, CfD, Capacity Market, Balancing Mechanism) and by BM unit, 2018 to the current year ([docs/ownership.md](docs/ownership.md); every curated share with its sources in [docs/ownership_references.md](docs/ownership_references.md)) |
 | | `company_control` | Companies House persons with significant control as a dated table: each pulled company's corporate controllers (names and numbers), ownership and voting bands, notified and ceased dates; individuals only as anonymous rows (not packed) |
 | | `crown_estate_ownership` | The Crown Estate's offshore wind ownership tables by date, against which `build_crown_estate` checks `company_owners.csv` (local only: The Crown Estate's terms) |
+| Storage and ancillary services | `storage_revenue_{y}` | what each battery and pumped storage unit in the Balancing Mechanism earned per month, estimated from public data: its notified position valued at Elexon's market index price, its Balancing Mechanism cashflows and its frequency response and reserve payments, with its trader and optimiser ([docs/storage_revenues.md](docs/storage_revenues.md)) |
+| | `ancillary_by_unit_{y}` | NESO's frequency response and reserve results by unit and delivery period: MW, price, payment and the company that bid the unit, from October 2020 (built locally, 0.7 GB: not in the data pack) |
 | Forecasts and tightness | `forecast_state_{y}` | what was forecast the day before (wind, solar, demand, margin) |
 | | `lolp_drm_{y}` | loss-of-load probability and de-rated margin |
 | Household bills | `consumer_levy_daily`, `consumer_levy_annual` | the CfD levy in £/MWh and £ per household |
@@ -141,6 +143,8 @@ Most sources need no account. The others read an environment variable, or else a
    python -m gbpowerdata.build.build_company_control   # optional: after companies_house_pull --follow 2 (free key)
    python -m gbpowerdata.build.build_ownership         # after cm_register_pull, dukes_pull and the Ofgem RO reports
    python -m gbpowerdata.build.build_crown_estate --strict   # company_owners.csv against The Crown Estate's tables
+   python -m gbpowerdata.build.ancillary_services      # after ancillary_pull
+   python -m gbpowerdata.build.storage_revenues        # after ebocf_pull, bm_units, build_ownership, ancillary_services
    ```
 
 The hourly regional PECD tables are in no pack because of their size, and a free Copernicus key
