@@ -40,3 +40,7 @@ where = ["src"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]   # tests run from a fresh clone without `pip install -e .`
+markers = [
+    "realdata: tests on the built tables and raw pulls (tests/realdata; skipped where the data are absent)",
+    "licensed: tests that read local N2EX/EPEX-derived outputs (never written or shared)",
+]
