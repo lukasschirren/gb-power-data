@@ -10,9 +10,16 @@ Caveat: the unit list comes from the CURRENT BM-unit snapshot, so plants that
 retired AND were delisted before that snapshot (e.g. some 2018-2021 coal:
 Aberthaw, Cottam, Fiddlers Ferry) are not covered.
 
+The default list holds the T_ units only. Elexon publishes B1610 for the embedded (E_) units
+too: the CCGTs connected to a distribution network (Shoreham E_SHOS-1, Great Yarmouth E_GYAR-1,
+King's Lynn E_KLYN-A-1, Peterborough E_PETEM1, Corby E_CORB-1, Fawley E_FAWN-1, Fellside
+E_FELL-1, Glanford Brigg E_BRGG-1) are pulled by naming them with --units, as for the run and
+down times of gbpowerdata.build.unit_runs.
+
 Usage:
   python -m gbpowerdata.pull.b1610_pull                          # all thermal T_ units, 2018-2026
   python -m gbpowerdata.pull.b1610_pull --start 2022-01-01 --end 2023-01-01
+  python -m gbpowerdata.pull.b1610_pull --units E_SHOS-1 E_GYAR-1 --start 2019-01-01
 """
 
 from __future__ import annotations
@@ -68,12 +75,15 @@ def main(argv: list[str]) -> None:
     p = argparse.ArgumentParser(description="Pull per-unit B1610 for thermal BM units.")
     p.add_argument("--start", default="2018-01-01")
     p.add_argument("--end", default="2026-01-01")
+    p.add_argument("--units", nargs="+", metavar="BMUNIT",
+                   help="Elexon BM unit ids to pull instead of the register's thermal T_ units")
     args = p.parse_args(argv[1:])
     years = range(int(args.start[:4]), int(args.end[:4]))
 
     OUT.mkdir(parents=True, exist_ok=True)
-    units = thermal_units()
-    print(f"{len(units)} thermal T_ units x {len(list(years))} years -> {OUT}", flush=True)
+    units = args.units or thermal_units()
+    what = "named" if args.units else "thermal T_"
+    print(f"{len(units)} {what} units x {len(list(years))} years -> {OUT}", flush=True)
     for u in units:
         pull_unit(u, years)
     print("Done.")
