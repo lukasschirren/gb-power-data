@@ -17,8 +17,17 @@ Outputs (data/processed/, one file per year, mirroring mid_target_{year}.csv):
     dayahead_price_epex_hourly_{year}.csv  "
     dayahead_price_epex_hh_{year}.csv      "
   combined (wide, the two like-for-like morning auctions):
-    dayahead_price_gb_{year}.csv           startTime, n2ex_gbp_per_mwh,
-                                           epex_hourly_gbp_per_mwh, spread_epex_minus_n2ex
+    dayahead_price_gb_{year}.csv           startTime, n2ex_gbp_per_mwh, epex_hourly_gbp_per_mwh,
+                                           n2ex_volume_mwh, epex_volume_mwh, blend_gbp_per_mwh,
+                                           blend_basis, spread_epex_minus_n2ex
+    dayahead_price_blend_{year}.csv        the blend as a venue of its own (startTime, price_gbp_per_mwh,
+                                           native_granularity, blend_basis)
+  The blend weights each auction's price by the volume it traded (VOLUME_SOURCES; N2EX's measured
+  from its curves and accepted blocks by gbpowerdata.build.dayahead_curves, which must run first),
+  the way LCCC computes the IMRP from 2021; blend_basis says where it had to fall back to the plain
+  mean. LCCC's published IMRP (gbpowerdata.common.lccc, open data) is the check: the volume-weighted
+  blend tracks it far more closely than the plain mean of the two prices does (the measurement is
+  derived from the licensed prices, so it stays in the local report, not in this repository).
 
 Conventions & modelling choices:
   * Spine = UTC calendar-year half-hourly (same index as mid_target: 17 520 rows,
@@ -41,6 +50,7 @@ from __future__ import annotations
 
 import sys
 
+import numpy as np
 import pandas as pd
 
 from gbpowerdata import config as cfg
@@ -92,21 +102,29 @@ def _load_venue(glob: str, col: str, upsample: bool) -> pd.Series:
     return s
 
 
-# Traded-capacity (cleared-volume) sources for the volume-weighted blend of the two like-for-like
-# morning auctions. N2EX cleared volume from the processed bid panel; EPEX hourly cleared volume
-# from the SFTP pull (auction_spot_volumes_* -> epex_gb_dayahead_hourly_volumes_*.csv). Both are
-# hourly and upsampled to half-hourly the same way as the prices.
+# Traded-volume sources for the volume-weighted blend of the two like-for-like morning auctions, in order of
+# preference; the first with files is used. N2EX: the volume bought at the clearing price, its hourly orders plus
+# its accepted block orders, measured from the curves by gbpowerdata.build.dayahead_curves (n2ex_curve_checks_{y});
+# else the research code's bid panel (n2ex_bid_panel_{y}, not built here), whose cleared volume leaves the blocks out.
+# EPEX hourly: the auction's published volume from the SFTP pull (auction_spot_volumes_* ->
+# epex_gb_dayahead_hourly_volumes_*.csv). All hourly, upsampled to half-hourly the same way as the prices. LCCC's
+# IMRP (gbpowerdata.common.lccc), the same volume-weighted average computed by LCCC with the exchanges' own volumes,
+# is the open check on the result.
 VOLUME_SOURCES = {
-    "n2ex": (cfg.processed_dir(), "n2ex_bid_panel_*.csv", "cleared_volume_mw"),
-    "epex": (RAW / "epex" / "great-britain", "epex_gb_dayahead_hourly_volumes_*.csv", "volume_mwh"),
+    "n2ex": [(cfg.processed_dir(), "n2ex_curve_checks_*.csv", "traded_mwh"),
+             (cfg.processed_dir(), "n2ex_bid_panel_*.csv", "cleared_volume_mw")],
+    "epex": [(RAW / "epex" / "great-britain", "epex_gb_dayahead_hourly_volumes_*.csv", "volume_mwh")],
 }
 
 
 def _load_volume(key: str) -> pd.Series:
-    """Cleared volume (MWh/h) for a venue as a half-hourly UTC series; empty if absent."""
-    base, glob, vcol = VOLUME_SOURCES[key]
-    files = sorted(base.glob(glob), key=lambda p: p.stat().st_mtime)
-    if not files:
+    """Cleared volume (MWh/h) for a venue as a half-hourly UTC series, from its first source with files; empty if
+    none has any."""
+    for base, glob, vcol in VOLUME_SOURCES[key]:
+        files = sorted(base.glob(glob), key=lambda p: p.stat().st_mtime)
+        if files:
+            break
+    else:
         return pd.Series(dtype=float)
     df = pd.concat([pd.read_csv(f, usecols=["deliveryStart", vcol]) for f in files],
                    ignore_index=True)
@@ -117,19 +135,27 @@ def _load_volume(key: str) -> pd.Series:
     return s[~s.index.duplicated()].sort_index()
 
 
-def _blend(n_p: pd.Series, e_p: pd.Series, v_n: pd.Series, v_e: pd.Series) -> pd.Series:
+def _blend(n_p: pd.Series, e_p: pd.Series, v_n: pd.Series, v_e: pd.Series) -> tuple[pd.Series, pd.Series]:
     """Traded-capacity-weighted composite of the N2EX and EPEX-hourly day-ahead prices:
         P = (P_n2ex*V_n2ex + P_epex*V_epex) / (V_n2ex + V_epex)
-    weighting each venue's price by its cleared volume that half-hour. A venue contributes only
-    where BOTH its price and volume exist; where volumes are absent but a price exists (e.g. pre-
-    2018 N2EX, before the bid panel) the simple mean of the present prices is used as a fallback,
-    so the blend is defined on the whole spine. Pre-2020 (no EPEX) the blend is just N2EX."""
+    weighting each venue's price by its cleared volume that half-hour, and the basis of each half-hour: "volume"
+    where every venue with a price has a volume, "mean" where one does not and the simple mean of the present prices
+    stands in (so the blend is defined on the whole spine), "n2ex" or "epex" where only one venue has a price
+    (pre-2020: just N2EX), empty where none has. A venue contributes to the weighted price only where BOTH its price
+    and volume exist."""
     w_n = v_n.where(n_p.notna())
     w_e = v_e.where(e_p.notna())
     num = (n_p * w_n).fillna(0.0) + (e_p * w_e).fillna(0.0)
     den = w_n.fillna(0.0) + w_e.fillna(0.0)
-    blend = (num / den).where(den > 0)
-    return blend.fillna(pd.concat([n_p, e_p], axis=1).mean(axis=1))
+    weighted = (num / den).where(den > 0)
+    both = n_p.notna() & e_p.notna()
+    full = both & w_n.notna() & w_e.notna()
+    blend = weighted.where(full | ~both).fillna(pd.concat([n_p, e_p], axis=1).mean(axis=1))
+    basis = pd.Series(pd.NA, index=n_p.index, dtype=object)
+    basis[n_p.notna() & e_p.isna()] = "n2ex"
+    basis[e_p.notna() & n_p.isna()] = "epex"
+    basis[both] = np.where(full[both], "volume", "mean")
+    return blend, basis
 
 
 def _covered_years(*series: pd.Series) -> list[int]:
@@ -167,20 +193,21 @@ def build(year: int, venues: dict[str, pd.Series],
     n, e = onspine["n2ex"], onspine["epex_hourly"]
     v_n = vol.get("n2ex", pd.Series(index=spine, dtype=float))
     v_e = vol.get("epex", pd.Series(index=spine, dtype=float))
-    blend = _blend(n, e, v_n, v_e)
+    blend, basis = _blend(n, e, v_n, v_e)
     comb = pd.DataFrame({"startTime": spine,
                          "n2ex_gbp_per_mwh": n.values,
                          "epex_hourly_gbp_per_mwh": e.values,
                          "n2ex_volume_mwh": v_n.values,
                          "epex_volume_mwh": v_e.values,
-                         "blend_gbp_per_mwh": blend.values})
+                         "blend_gbp_per_mwh": blend.values,
+                         "blend_basis": basis.values})
     comb["spread_epex_minus_n2ex"] = comb["epex_hourly_gbp_per_mwh"] - comb["n2ex_gbp_per_mwh"]
     comb.to_csv(proc / f"dayahead_price_gb_{year}.csv", index=False)
 
     # Per-venue blend file (venue key "blend"), so the model can target it like any other venue.
     if _present(blend):
         pd.DataFrame({"startTime": spine, "price_gbp_per_mwh": blend.values,
-                      "native_granularity": "hourly"}).to_csv(
+                      "native_granularity": "hourly", "blend_basis": basis.values}).to_csv(
             proc / f"dayahead_price_blend_{year}.csv", index=False)
 
     n_cov, e_cov = n.notna().mean() * 100, e.notna().mean() * 100

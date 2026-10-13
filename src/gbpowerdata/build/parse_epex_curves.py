@@ -150,9 +150,14 @@ def _normalise(raw: bytes, inner: str) -> pd.DataFrame:
     if "dst_b" in df.columns:                    # legacy .xls: hour 3 twin came from Period
         hours = [f"{h}b" if b else str(h) for h, b in zip(df["hour"], df["dst_b"])]
     else:
-        hours = df["hour"]
-    df["deliveryStart"] = [_ts_cet(d, h, hh) for d, h, hh
-                           in zip(df["date"], hours, df["half_hour"])]
+        hours = df["hour"].astype(str)
+    # one conversion per delivery period, not per curve point (a day holds tens of thousands of points
+    # but at most 50 periods)
+    keys = pd.DataFrame({"date": df["date"].to_numpy(), "hour": np.asarray(hours, dtype=str),
+                         "half_hour": df["half_hour"].astype(int).to_numpy()})
+    uniq = keys.drop_duplicates().copy()
+    uniq["deliveryStart"] = [_ts_cet(d, h, hh) for d, h, hh in zip(uniq["date"], uniq["hour"], uniq["half_hour"])]
+    df["deliveryStart"] = keys.merge(uniq, on=["date", "hour", "half_hour"], how="left")["deliveryStart"].to_numpy()
     return df[["deliveryStart", "side", "price", "volume"]]
 
 
@@ -185,9 +190,10 @@ def _normalise_legacy(raw: bytes) -> pd.DataFrame:
     return out
 
 
-def _daily_frames(zf: zipfile.ZipFile, inner: str):
+def daily_frames(zf: zipfile.ZipFile, inner: str):
     """Yield normalised frames for one archive member — pre-2020 members are themselves
-    zips holding 24 per-hour .xls files."""
+    zips holding 24 per-hour .xls files. Public so that gbpowerdata.build.dayahead_curves
+    reads the curves the same way."""
     if inner.lower().endswith(".zip"):
         with zipfile.ZipFile(io.BytesIO(zf.read(inner))) as z2:
             for m in sorted(z2.namelist()):
@@ -232,7 +238,7 @@ def build(year: int, modality: str) -> None:
     with zipfile.ZipFile(zpath) as zf:
         for inner in sorted(zf.namelist()):
             try:
-                frames = list(_daily_frames(zf, inner))
+                frames = list(daily_frames(zf, inner))
             except Exception as e:                    # a stray day with an unexpected layout
                 print(f"    skip {inner}: {e}", flush=True)
                 continue
