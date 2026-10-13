@@ -5,7 +5,10 @@ Everything else (ESPENI, powerplantmatching, the CfD/RO registers, gas, carbon)
 is a manual download and lives in data/raw/ as a curated snapshot.
 
 Datasets:
-  MID      — Market Index Data (day-ahead clearing price, GBP/MWh) — validation target
+  MID      — Market Index Data (GBP/MWh and MWh): the volume-weighted price of the half-hour's
+             short-term trades on the data provider's exchange (APXMIDP: EPEX SPOT GB), not a
+             day-ahead auction price; a period without trades is published at price 0, volume 0
+             (gbpowerdata.common.elexon.mid_prices leaves it out)
   FUELHH   — Half-hourly generation outturn by fuel type (MW)
   ITSDO    — Initial Transmission System Demand Out-turn (MW)
   INDO     — Initial National Demand Out-turn (half-hourly, MW): the outturn of the NDF forecast

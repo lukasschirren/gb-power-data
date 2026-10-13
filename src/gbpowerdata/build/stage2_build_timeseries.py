@@ -1,11 +1,22 @@
 """Stage 2 — build the half-hourly time-series spine the ABM reads each period.
 
 Outputs (data/processed/, UTC half-hourly, year-suffixed, aligned on startTime):
-  demand_{year}.csv          transmission + embedded + grossed-up national demand
+  demand_{year}.csv          transmission demand (ITSDO), embedded wind and solar, and national demand (their
+                             sum), with transmission_demand_source (ITSDO, interpolated, missing). ITSDO is
+                             Elexon's transmission system demand: it INCLUDES interconnector exports, pumped
+                             storage pumping and station load (measured on 2018-2025: ITSDO - INDO = 0.56 GW +
+                             1.00 x exports + 1.00 x pumping), so national_demand_mw is not the demand a model
+                             with its own interconnectors and storage should serve (README, data caveats).
   capacity_factors_{year}.csv  wind_offshore / wind_onshore / solar capacity factors
   fuel_prices_{year}.csv     gas (p/therm), coal (GBP/MWh-th), carbon ETS + total
                              (ETS+CPS, GBP/tonne), filled to half-hourly
-  mid_target_{year}.csv      observed MID day-ahead price (validation target, NOT an input)
+  mid_target_{year}.csv      Elexon's market index price (MID: the volume-weighted price of the half-hour's
+                             short-term trades on EPEX SPOT GB, not a day-ahead auction price; validation
+                             target, NOT an input), with mid_source. A half-hour without traded volume is
+                             published at price 0 and is a gap here, not a price of GBP 0/MWh.
+Gaps: a gap of at most MAX_GAP_HH half-hours is interpolated (fill_short_gaps); a longer one stays empty. Elexon
+published neither ITSDO nor INDO for whole days in 2018, 2020 and 2021 (500 half-hours), and those days keep an
+empty transmission and national demand.
 
 Capacity-factor split (onshore vs offshore):
   - offshore proxied by transmission-connected wind (espeni ELEX_WIND); offshore
@@ -30,7 +41,7 @@ import numpy as np
 import pandas as pd
 
 from gbpowerdata import config as cfg
-from gbpowerdata.common import repd
+from gbpowerdata.common import elexon, repd
 
 CFG = cfg.load_config()
 YEAR = int(CFG["year"])
@@ -82,6 +93,53 @@ def _load_n2ex_price(idx: pd.DatetimeIndex) -> pd.Series:
     df["deliveryStart"] = pd.to_datetime(df["deliveryStart"], utc=True)
     s = df.drop_duplicates("deliveryStart").set_index("deliveryStart")["price"].sort_index()
     return s.reindex(idx, method="ffill", limit=1)
+
+
+MAX_GAP_HH = 6        # a gap of at most this many half-hours is interpolated; a longer one stays empty
+
+
+def fill_short_gaps(s: pd.Series, max_gap: int = MAX_GAP_HH) -> pd.Series:
+    """Linear interpolation across interior gaps of at most `max_gap` values; longer gaps stay NaN whole. (pandas'
+    interpolate(limit=n) also fills the first n values of a LONGER gap, from the values on either side of it.)"""
+    na = s.isna()
+    run = (na != na.shift()).cumsum()
+    length = na.groupby(run).transform("sum")
+    short = na & (length <= max_gap)
+    filled = s.interpolate(limit_area="inside")
+    return s.where(~short, filled)
+
+
+def mid_target(mid_apx: pd.Series, n2ex: pd.Series) -> pd.DataFrame:
+    """The MID validation target on the spine of `mid_apx`: Elexon's APX market index where the half-hour had traded
+    volume (gbpowerdata.common.elexon.mid_prices), else N2EX (only where config allows it: licensed), else
+    interpolated across a gap of at most MAX_GAP_HH half-hours, else missing; mid_source says which."""
+    mid = mid_apx.fillna(n2ex.reindex(mid_apx.index))
+    n2ex_filled = mid_apx.isna() & mid.notna()
+    before = mid.isna()
+    mid = fill_short_gaps(mid)
+    source = pd.Series("APXMIDP", index=mid_apx.index)
+    source[n2ex_filled] = "N2EX"
+    source[before & mid.notna()] = "interpolated"
+    source[mid.isna()] = "missing"
+    return pd.DataFrame({"price_gbp_per_mwh": mid, "mid_source": source})
+
+
+def demand_table(itsdo: pd.Series, esp: pd.DataFrame) -> pd.DataFrame:
+    """Demand on the spine of `itsdo` (ITSDO, MW, NaN where Elexon published none) and `esp` (ESPENI's embedded wind
+    and solar). transmission_demand_mw is ITSDO, interpolated across a gap of at most MAX_GAP_HH half-hours;
+    national_demand_mw adds the embedded generation and is empty wherever ITSDO is (500 half-hours of 2018, 2020 and
+    2021 in whole days, when Elexon published neither ITSDO nor INDO): read as zero they put national demand at
+    0.7-11 GW. transmission_demand_source is ITSDO, interpolated or missing."""
+    filled = fill_short_gaps(itsdo)
+    source = pd.Series("ITSDO", index=itsdo.index)
+    source[itsdo.isna() & filled.notna()] = "interpolated"
+    source[filled.isna()] = "missing"
+    d = pd.DataFrame({"startTime": itsdo.index, "transmission_demand_mw": filled.values,
+                      "embedded_wind_mw": esp["embedded_wind_mw"].values,
+                      "embedded_solar_mw": esp["embedded_solar_mw"].values})
+    d["national_demand_mw"] = d["transmission_demand_mw"] + d["embedded_wind_mw"] + d["embedded_solar_mw"]
+    d["transmission_demand_source"] = source.values
+    return d
 
 
 def capacities() -> dict:
@@ -185,19 +243,11 @@ def main() -> None:
     print("CF denominators (MW):", {k: round(v) for k, v in caps.items()})
 
     esp = load_espeni(idx)
-    itsdo = _load_elexon_series("itsdo_*.csv", "demand").reindex(idx).interpolate(limit=6)
-    # MID validation target: APXMIDP primary; its gaps backfilled from Nord Pool
-    # N2EX, then any residual short gaps interpolated. mid_source tags provenance.
-    mid_apx = _load_elexon_series("mid_apx_*.csv", "price").reindex(idx)
-    apx_missing = mid_apx.isna()
-    mid = mid_apx.fillna(_load_n2ex_price(idx))
-    n2ex_filled = apx_missing & mid.notna()
-    pre_interp_missing = mid.isna()
-    mid = mid.interpolate(limit=6)
-    mid_source = pd.Series("APXMIDP", index=idx)
-    mid_source.loc[n2ex_filled] = "N2EX"
-    mid_source.loc[pre_interp_missing & mid.notna()] = "interpolated"
-    mid_source.loc[mid.isna()] = "missing"
+    itsdo = _load_elexon_series("itsdo_*.csv", "demand").reindex(idx)
+    # MID validation target: APXMIDP where it had traded volume; its gaps backfilled from Nord Pool N2EX (if
+    # allowed), then short gaps interpolated. mid_source tags provenance.
+    target = mid_target(elexon.mid_prices().reindex(idx), _load_n2ex_price(idx))
+    mid_source = target["mid_source"]
 
     # Peak-floor each CF denominator so observed peaks stay below ~0.95/0.98.
     caps["offshore"] = max(caps["offshore"], esp["transmission_wind_mw"].max() / 0.95)
@@ -206,15 +256,7 @@ def main() -> None:
     print("CF denominators after peak-floor (MW):", {k: round(v) for k, v in caps.items()})
 
     # --- demand ---
-    demand = pd.DataFrame({"startTime": idx})
-    demand["transmission_demand_mw"] = itsdo.values
-    demand["embedded_wind_mw"] = esp["embedded_wind_mw"].values
-    demand["embedded_solar_mw"] = esp["embedded_solar_mw"].values
-    demand["national_demand_mw"] = (
-        demand["transmission_demand_mw"].fillna(0)
-        + demand["embedded_wind_mw"].fillna(0)
-        + demand["embedded_solar_mw"].fillna(0)
-    )
+    demand = demand_table(itsdo, esp)
 
     # --- capacity factors ---
     cf = pd.DataFrame({"startTime": idx})
@@ -224,8 +266,7 @@ def main() -> None:
 
     # --- fuel prices + MID target ---
     fuel = build_fuel_prices(idx)
-    target = pd.DataFrame({"startTime": idx, "price_gbp_per_mwh": mid.values,
-                           "mid_source": mid_source.values})
+    target = target.rename_axis("startTime").reset_index()
 
     for name, df in [(f"demand_{YEAR}", demand), (f"capacity_factors_{YEAR}", cf),
                      (f"fuel_prices_{YEAR}", fuel), (f"mid_target_{YEAR}", target)]:
