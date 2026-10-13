@@ -92,6 +92,9 @@ def test_licensed_data_and_n2ex_filled_mid_target_are_refused(src, tmp_path):
     with pytest.raises(ValueError, match="licensed"):
         dp.check_shareable(src / "processed" / "dayahead_price_n2ex_2023.csv",
                            "processed/dayahead_price_n2ex_2023.csv")
+    for name in ("storage_revenue_dayahead_2023.csv", "n2ex_curve_checks_2023.csv"):   # derived from the auctions
+        with pytest.raises(ValueError, match="licensed"):
+            dp.check_shareable(src / "processed" / name, f"processed/{name}")
     _mid(src / "processed" / "mid_target_2023.csv", ["APXMIDP", "N2EX"])
     with pytest.raises(ValueError, match="N2EX"):
         dp.export("processed", tmp_path / "dist")

@@ -32,6 +32,9 @@ MUST_BE_IGNORED = [
     "data/processed/n2ex_curve_features_2023.csv",
     "data/processed/epex_blocks_2023.csv",
     "data/processed/epex_trades_halfhourly_2023.csv",
+    "data/processed/n2ex_curve_checks_2023.csv",
+    "data/processed/epex_hh_curve_checks_2023.csv",
+    "data/processed/storage_revenue_dayahead_2023.csv",   # storage positions priced at the auctions
     "data/processed/mid_target_2023.csv",            # carries N2EX gap-fill values
     "data/reference/n2ex_demand_shape.csv",
     "data/reference/EPEXSPOT_SFTP_file_specifications_2026-3a.pdf",
@@ -47,7 +50,7 @@ MUST_BE_IGNORED = [
     "data/raw/crown_estate/wind_farm_ownership_20241231.html",
     "data/processed/crown_estate_ownership.csv",
 ]
-COMMERCIAL_MARKERS = ("nordpool", "n2ex", "epex", "dayahead_price", "mid_target")
+COMMERCIAL_MARKERS = ("nordpool", "n2ex", "epex", "dayahead", "mid_target")
 SECRET_MARKERS = ("token", "credential", "password", ".pem", ".key")
 
 

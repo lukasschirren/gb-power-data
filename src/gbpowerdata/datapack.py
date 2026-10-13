@@ -67,16 +67,18 @@ MANIFEST = "MANIFEST.json"
 # Per-year processed tables built from open sources: {family}_{year}.csv
 PROCESSED_YEARLY = (
     "agents", "bm_unit_register", "capacity_factors", "capacity_factors_by_zone", "capacity_factors_pecd",
-    "cfd_fleet", "cfd_ppm_matches", "demand", "demand_by_zone", "forecast_state", "fuel_prices", "lolp_drm",
+    "capacity_market", "cfd_fleet", "cfd_ppm_matches", "demand", "demand_by_zone", "forecast_state", "fuel_prices", "lolp_drm",
     "mid_target", "ownership", "ownership_bmu", "powerplants_located", "powerplants_tagged", "regime_summary",
-    "storage_revenue", "system_prices", "wind_farm_fpn", "wind_farm_fpn_gaps", "wind_farms",
+    "storage_revenue", "system_prices", "unit_spells", "wind_farm_fpn", "wind_farm_fpn_gaps", "wind_farms",
 )
 # Built from open sources but not packed for their size; each user rebuilds them (docs/storage_revenues.md):
 # ancillary_by_unit_{y} (0.7 GB for 2020-2026; python -m gbpowerdata.pull.ancillary_pull, then
 # python -m gbpowerdata.build.ancillary_services, about ten minutes)
 PROCESSED_SINGLE = (
     "bm_dynamic_units.csv", "cfd_status.csv", "cap_tariff_by_region.csv", "consumer_levy_annual.csv",
-    "consumer_levy_daily.csv", "domestic_supply_by_year.csv", "duos_domestic_tariffs.csv",
+    "consumer_levy_daily.csv", "domestic_supply_by_year.csv", "duos_domestic_tariffs.csv", "storage_fleet.csv",
+    "capacity_market_auctions.csv", "capacity_market_weights.csv", "capacity_market_derating.csv",
+    "capacity_market_agreements.csv", "capacity_market_links.csv", "investment_inputs.csv", "unit_run_times.csv",
 )
 # Hand-downloaded raw inputs, as glob patterns under data/raw/ ({cfd_register} is the file name
 # set in config.yaml).
@@ -86,7 +88,9 @@ INPUTS = (
     "ofgem/cap_prelevelised_*.xlsx", "ofgem/cap_tariff_model_*.xlsx",
     "manual/dno_duos/**/*", "manual/desnz_subnational/*",
 )
-LICENSED = re.compile(r"nordpool|n2ex|epex|dayahead_price|curve_compare|demand_curves", re.I)
+# Licensed day-ahead data and anything derived from it: the venues' names, and "dayahead" in every table priced at
+# the auctions (dayahead_price_*, storage_revenue_dayahead_*); the same markers as .gitignore.
+LICENSED = re.compile(r"nordpool|n2ex|epex|dayahead|curve_compare|demand_curves", re.I)
 
 # Upstream sources and their terms (checked at the URLs, 5 Oct 2026). `nc`: non-commercial only;
 # `ship=False`: the terms do not allow passing the data on, so files carrying it are never packed
@@ -96,7 +100,8 @@ SOURCES = {
                    attribution="Contains BMRS data © Elexon Limited copyright and database right {year}"),
     "neso": dict(name="NESO Data Portal", licence="NESO Open Licence (set per dataset)", url="https://www.neso.energy/data-portal/neso-open-licence"),
     "lccc": dict(name="Low Carbon Contracts Company", licence="Open Government Licence v3.0", url="https://dp.lowcarboncontracts.uk"),
-    "govuk": dict(name="DESNZ / ONS / gov.uk (REPD, subnational consumption, gas SAP, UK ETS auctions)",
+    "govuk": dict(name="DESNZ / ONS / gov.uk (REPD, subnational consumption, gas SAP, UK ETS auctions, CPI, "
+                       "electricity generation costs)",
                   licence="Open Government Licence v3.0", url="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"),
     "ofgem": dict(name="Ofgem", licence="Open Government Licence v3.0", url="https://www.ofgem.gov.uk"),
     "ppm": dict(name="powerplantmatching", licence="CC BY 4.0", url="https://github.com/PyPSA/powerplantmatching"),
@@ -113,6 +118,12 @@ SOURCES = {
     "pecd": dict(name="Copernicus C3S Pan-European Climate Database v4.2", licence="CC BY 4.0",
                  url="https://cds.climate.copernicus.eu/datasets/sis-energy-pecd",
                  attribution="Generated using Copernicus Climate Change Service information {year}"),
+    "nrel": dict(name="NREL (National Laboratory of the Rockies), Annual Technology Baseline, electricity",
+                 licence="CC BY 4.0", url="https://data.openei.org/submissions/6006",
+                 attribution="NREL Annual Technology Baseline (ATB), electricity"),
+    "dea": dict(name="Danish Energy Agency, Technology Data for Energy Storage", licence="CC BY 4.0",
+                url="https://ens.dk/en/analyses-and-statistics/technology-data-energy-storage",
+                attribution="Danish Energy Agency, Technology Data for Energy Storage"),
     "worldbank": dict(name="World Bank Commodity Price Data (Pink Sheet)", licence="CC BY 4.0",
                       url="https://www.worldbank.org/en/research/commodity-markets"),
     "ecb": dict(name="ECB euro foreign exchange reference rates", licence="ECB statistics reuse policy (free reuse, commercial included)",
@@ -139,6 +150,17 @@ FILE_SOURCES = {
     "capacity_factors": ("espeni", "elexon", "govuk"),
     "capacity_factors_by_zone": ("ninja", "espeni", "elexon", "govuk"),
     "capacity_factors_pecd": ("pecd", "ppm"),
+    # NESO's CM register and auction data; the weighting factors from LCCC's payments; the indexation by ONS's CPI;
+    # the links by Elexon's register
+    "capacity_market": ("neso", "lccc", "govuk"),
+    "capacity_market_auctions": ("neso", "govuk"),
+    "capacity_market_weights": ("lccc", "neso", "govuk"),
+    "capacity_market_derating": ("neso",),
+    "capacity_market_agreements": ("neso",),
+    "capacity_market_links": ("neso", "elexon"),
+    # the generation costs studies (gov.uk), the Danish Energy Agency's storage datasheet and NREL's ATB; the
+    # transcribed values of data/reference/investment_parameters.csv are not in it
+    "investment_inputs": ("govuk", "dea", "nrel"),
     "cfd_fleet": ("lccc",),
     "cfd_ppm_matches": ("ppm", "lccc"),
     "demand": ("espeni", "elexon"),
@@ -158,7 +180,11 @@ FILE_SOURCES = {
     # Elexon's notifications, market index, cash-out and BM cashflows, NESO's ancillary results, and the traders and
     # optimisers of the ownership tables
     "storage_revenue": ("elexon", "neso", "govuk", "ofgem", "lccc", "psd", "companies_house"),
+    # Elexon's register, notifications, BM cashflows and dynamic data (MDV); NESO's ancillary results and CM register
+    "storage_fleet": ("elexon", "neso"),
     "system_prices": ("elexon",),
+    "unit_run_times": ("elexon",),                    # metering, notifications and declared MNZT/MZT/NDZ
+    "unit_spells": ("elexon",),
     "wind_farm_fpn": ("elexon", "govuk", "lccc", "psd"),
     "wind_farm_fpn_gaps": ("elexon", "govuk", "lccc", "psd"),
     "wind_farms": ("elexon", "govuk", "lccc", "psd"),

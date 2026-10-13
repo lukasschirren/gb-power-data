@@ -35,6 +35,9 @@ data/reference/*
 !data/reference/dukes_bmu_map.csv
 !data/reference/thermal_parameters.csv
 !data/reference/thermal_parameter_sources.csv
+!data/reference/official_statistics.csv
+!data/reference/investment_parameters.csv
+!data/reference/investment_parameter_sources.csv
 # small derived tables whose inputs are large or slow to pull (generator named in data/reference/README.md)
 !data/reference/pecd_onshore_zone_to_nuts2.csv
 !data/reference/pecd_offshore_zone_to_nuts2.csv
@@ -54,7 +57,9 @@ data/**/*n2ex*
 data/**/*N2EX*
 data/**/*epex*
 data/**/*EPEX*
-data/**/dayahead_price_*
+# anything priced at or derived from the day-ahead auctions carries "dayahead" in its name
+# (dayahead_price_*, storage_revenue_dayahead_*)
+data/**/*dayahead*
 data/**/curve_compare_*
 data/**/demand_curves_*
 data/**/mid_target_*
