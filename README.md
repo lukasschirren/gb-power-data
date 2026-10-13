@@ -66,13 +66,13 @@ series has one row per half-hour with its UTC start time in the column `startTim
 
 | Topic | Table | What it holds |
 | --- | --- | --- |
-| Demand | `demand_{y}` | national and transmission demand, embedded wind and solar (MW) |
+| Demand | `demand_{y}` | transmission demand (Elexon's ITSDO, which includes interconnector exports, pumped storage pumping and station load), embedded wind and solar, and national demand, their sum (MW) ([data caveats](#data-caveats)) |
 | | `demand_by_zone_{y}` | the same split across the 14 GSP groups (the regional distribution areas) |
 | Wind and solar | `capacity_factors_{y}` | offshore wind, onshore wind and solar capacity factors |
 | | `capacity_factors_by_zone_{y}` | the same per GSP group, shaped by renewables.ninja reanalysis |
 | | `capacity_factors_pecd_{y}` | the same three capacity factors from a second weather source, the Copernicus Pan-European Climate Database (PECD) |
 | Prices | `fuel_prices_{y}` | gas, coal and carbon (EU or UK ETS plus the carbon price support); 2018–2021 built locally |
-| | `mid_target_{y}` | Elexon's Market Index Data price, a day-ahead price indicator |
+| | `mid_target_{y}` | Elexon's Market Index Data price: the volume-weighted price of the half-hour's short-term trades on EPEX SPOT GB (half-hour and 1-4 hour blocks; the day-ahead auction has weight 0), not a day-ahead auction price; its trading window moved closer to delivery on 18 Apr 2019 (BSC modification P377) |
 | | `system_prices_{y}` | the imbalance (cash-out) price and net imbalance volume |
 | Plants and support | `powerplants_tagged_{y}`, `powerplants_located_{y}` | every GB plant with its support scheme (CfD, RO, FiT, none) and grid region |
 | | `cfd_status`, `cfd_fleet_{y}` | each CfD contract, and the actual payments LCCC settled |
@@ -82,8 +82,14 @@ series has one row per half-hour with its UTC start time in the column `startTim
 | | `ownership_{y}`, `ownership_bmu_{y}` | owners (with joint-venture shares), operators and traders in the year, by register (DUKES, RO, CfD, Capacity Market, Balancing Mechanism) and by BM unit, 2018 to the current year ([docs/ownership.md](docs/ownership.md); every curated share with its sources in [docs/ownership_references.md](docs/ownership_references.md)) |
 | | `company_control` | Companies House persons with significant control as a dated table: each pulled company's corporate controllers (names and numbers), ownership and voting bands, notified and ceased dates; individuals only as anonymous rows (not packed) |
 | | `crown_estate_ownership` | The Crown Estate's offshore wind ownership tables by date, against which `build_crown_estate` checks `company_owners.csv` (local only: The Crown Estate's terms) |
-| Storage and ancillary services | `storage_revenue_{y}` | what each battery and pumped storage unit in the Balancing Mechanism earned per month, estimated from public data: its notified position valued at Elexon's market index price, its Balancing Mechanism cashflows and its frequency response and reserve payments, with its trader and optimiser ([docs/storage_revenues.md](docs/storage_revenues.md)) |
-| | `ancillary_by_unit_{y}` | NESO's frequency response and reserve results by unit and delivery period: MW, price, payment and the company that bid the unit, from October 2020 (built locally, 0.7 GB: not in the data pack) |
+| Storage and ancillary services | `storage_revenue_{y}` | what each battery and pumped storage unit in the Balancing Mechanism earned per month, estimated from public data: its notified position valued at Elexon's market index price, its Balancing Mechanism cashflows, its frequency response and reserve payments and, in its own column, its Capacity Market payments, with its trader and optimiser; the T_ and E_ units, and the batteries traded through supplier (2__) and virtual lead party (V__) units (`kind`) ([docs/storage_revenues.md](docs/storage_revenues.md)) |
+| | `ancillary_by_unit_{y}` | NESO's frequency response and reserve results by unit and delivery period: MW, price, payment and the company that bid the unit, from January 2019 (the monthly FFR tenders and the weekly FFR auctions; Dynamic Containment and the later services from October 2020; STOR's daily auctions from April 2021) (built locally, 0.7 GB: not in the data pack) |
+| | `storage_fleet` | every battery and pumped storage unit the open data name (BM units, and the supplier, virtual lead party and non-BM units that sell to NESO): MW, MWh where a source states it (declared MDV; else the Capacity Market duration class of a component named by the unit's id, of its linked agreement, or at its postcode), and the dates it entered and left the market ([docs/storage_revenues.md](docs/storage_revenues.md)) |
+| Capacity Market | `capacity_market_{y}` | every capacity agreement's obligation (de-rated MW) and payment by month: the auction's clearing price, CPI-indexed for T-4 auctions, times the month's weighting factor, as the Capacity Regulations set it; entitlements before suspensions and penalties |
+| | `capacity_market_auctions`, `capacity_market_derating`, `capacity_market_weights` | each auction's price per kW in every delivery year it pays for, the de-rating factors by technology (storage by duration) and the monthly weighting factors |
+| | `capacity_market_agreements`, `capacity_market_links` | every agreement with its technology, duration class, obligation, delivery years (to 2043/44) and termination, and the storage BM units each belongs to |
+| Investment | `investment_inputs` | capital and operating costs, lifetimes, efficiencies, load factors and hurdle rates by technology and commissioning year, one vintage per source edition (DESNZ's Electricity Generation Costs 2020, 2023 and 2025; the Danish Energy Agency's storage datasheet; NREL's Annual Technology Baseline 2021-2025 for US battery costs), each in its own price base; `read_investment_inputs()` adds CEPA's 2025 hurdle rates (lithium batteries 8.90%) and Mott MacDonald's 2018 storage costs, transcribed with locators in `data/reference/investment_parameters.csv` |
+| Thermal plant | `unit_run_times`, `unit_spells_{y}` | how long each thermal BM unit ran once started and stayed off once stopped, per year: the spells' counts and percentiles in its metered output (from February 2019) and in its own notifications (from 2018), the share under 6 h and how often it two-shifts, beside the minimum non-zero and zero times (MNZT, MZT) and the start notice (NDZ) it declared to NESO; every spell with its start and end |
 | Forecasts and tightness | `forecast_state_{y}` | what was forecast the day before (wind, solar, demand, margin) |
 | | `lolp_drm_{y}` | loss-of-load probability and de-rated margin |
 | Household bills | `consumer_levy_daily`, `consumer_levy_annual` | the CfD levy in £/MWh and £ per household |
@@ -144,7 +150,14 @@ Most sources need no account. The others read an environment variable, or else a
    python -m gbpowerdata.build.build_ownership         # after cm_register_pull, dukes_pull and the Ofgem RO reports
    python -m gbpowerdata.build.build_crown_estate --strict   # company_owners.csv against The Crown Estate's tables
    python -m gbpowerdata.build.ancillary_services      # after ancillary_pull
-   python -m gbpowerdata.build.storage_revenues        # after ebocf_pull, bm_units, build_ownership, ancillary_services
+   python -m gbpowerdata.build.capacity_market         # after cm_register_pull, ons_pull, lccc_pull capacity-obligation-by-auction
+   python -m gbpowerdata.build.investment_inputs       # after cost_data_pull
+   python -m gbpowerdata.build.storage_fleet           # after ancillary_services, capacity_market (bm_dynamic_pull, also --submissions, first for MWh)
+   python -m gbpowerdata.pull.ebocf_pull               # then the BM cashflows of the fleet's supplier and VLP batteries,
+   python -m gbpowerdata.pull.fpn_pull --storage-fleet # and their notifications,
+   python -m gbpowerdata.build.storage_fleet           # and the fleet again, for their dates
+   python -m gbpowerdata.build.storage_revenues        # after bm_units, build_ownership, ancillary_services, capacity_market, storage_fleet
+   python -m gbpowerdata.build.unit_runs               # after b1610_pull, fpn_pull and bm_dynamic_pull --submissions MNZT MZT NDZ
    ```
 
 The hourly regional PECD tables are in no pack because of their size, and a free Copernicus key
@@ -189,7 +202,8 @@ and `... export inputs`.
 Nord Pool N2EX and EPEX SPOT data are commercial. The pullers and parsers are in this repository,
 but they need your own (or your institution's) subscription, and neither the raw files nor
 anything derived from them may be committed or shared. That covers `dayahead_price_*`, the curve
-features, and the block and trade panels.
+features and checks, the block and trade panels, and `storage_revenue_dayahead_*` (storage positions
+priced at the auctions): every such file name carries `n2ex`, `epex` or `dayahead`.
 
 Where `data/raw/nordpool/` exists, stage 2 also fills gaps in Elexon's MID with N2EX prices (up
 to 6% of half-hours in 2020). Setting `timeseries.mid_gap_fill_n2ex: false` in `config.yaml`
@@ -203,23 +217,28 @@ them. Every other stage runs without the licensed data.
 The code licence does not cover data. Every file keeps the terms of its sources, and the
 `MANIFEST.json` of each data pack lists, per file, its `sources`, a `non_commercial` flag and a
 `check_terms` flag, with each source's licence and required attribution. The terms below were
-checked on 5 Oct 2026 (The Crown Estate and Companies House on 6 Oct 2026).
+checked on 5 Oct 2026 (The Crown Estate and Companies House on 6 Oct 2026, the official statistics
+on 10 Oct 2026).
 
 | Source | Terms | Attribution | Files in the packs |
 | --- | --- | --- | --- |
-| Elexon BMRS | [BMRS open data licence](https://www.elexon.co.uk/bsc/data/balancing-mechanism-reporting-agent/copyright-licence-bmrs-data/), commercial use allowed | "Contains BMRS data © Elexon Limited copyright and database right [year]" | `demand`, `mid_target`, `system_prices`, `lolp_drm`, `forecast_state`, `wind_farm*`, `capacity_factors`, `capacity_factors_by_zone`, `agents`, `bm_unit_register`, `ownership*`, `bm_dynamic_units`; tracked in `data/reference/`: `bm_dynamic_by_tech.csv` and the GB rows of `thermal_parameters.csv` |
-| NESO Data Portal | [NESO Open Licence](https://www.neso.energy/data-portal/neso-open-licence), OGL-based and set per dataset | source and licence link | `forecast_state`, GSP and DNO boundaries, `powerplants_located`, `agents`, `ownership*` (Capacity Market register) |
-| LCCC | Open Government Licence v3.0 | source and licence link | `cfd_fleet`, `cfd_status`, `consumer_levy_*`, CfD register, `ownership*` |
-| DESNZ, ONS, gov.uk | Open Government Licence v3.0 | source and licence link | REPD, `domestic_supply_by_year`, gas and UK ETS prices in `fuel_prices`, `ownership*` (DUKES 5.11) |
+| Elexon BMRS | [BMRS open data licence](https://www.elexon.co.uk/bsc/data/balancing-mechanism-reporting-agent/copyright-licence-bmrs-data/), commercial use allowed | "Contains BMRS data © Elexon Limited copyright and database right [year]" | `demand`, `mid_target`, `system_prices`, `lolp_drm`, `forecast_state`, `wind_farm*`, `capacity_factors`, `capacity_factors_by_zone`, `agents`, `bm_unit_register`, `ownership*`, `bm_dynamic_units`, `storage_revenue`, `storage_fleet`, `unit_run_times`, `unit_spells`; tracked in `data/reference/`: `bm_dynamic_by_tech.csv` and the GB rows of `thermal_parameters.csv` |
+| NESO Data Portal | [NESO Open Licence](https://www.neso.energy/data-portal/neso-open-licence), OGL-based and set per dataset | source and licence link | `forecast_state`, GSP and DNO boundaries, `powerplants_located`, `agents`, `ownership*` (Capacity Market register), `storage_revenue` (frequency response and reserve payments), `storage_fleet` (the units that sell to NESO, Capacity Market duration classes), `capacity_market*` (the Capacity Market register, auction results and de-rating factors) |
+| LCCC | Open Government Licence v3.0 | source and licence link | `cfd_fleet`, `cfd_status`, `consumer_levy_*`, CfD register, `ownership*`, `storage_revenue` (`wholesale_imrp_gbp`, from the IMRP), `capacity_market_{y}` and `capacity_market_weights` (the weighting factors, from LCCC's capacity payments by auction) |
+| DESNZ, ONS, gov.uk | Open Government Licence v3.0 | source and licence link | REPD, `domestic_supply_by_year`, gas and UK ETS prices in `fuel_prices`, `ownership*` (DUKES 5.11), `capacity_market*` (the CPI indexation of the T-4 prices, ONS series D7BT), `investment_inputs` (Electricity Generation Costs 2020, 2023, 2025), `storage_revenue` (gov.uk's bank holidays, for the FFR tenders' frames) |
 | Ofgem | Open Government Licence v3.0 | source and licence link | `cap_tariff_by_region`, `duos_domestic_tariffs`, `ownership*` (RO register; the raw reports are not packed, see [data/raw/manual/README.md](data/raw/manual/README.md)) |
 | The Crown Estate | [terms of use](https://www.thecrownestate.co.uk/about-us/terms-of-use): what is downloaded from its site is for the user's own use; digital copies are not to be passed to third parties | source | none: the pulled pages, the transcription of its 2018-2020 report tables and `crown_estate_ownership` stay local; `company_owners.csv` cites the shares it takes from them (`ce-2018` ... `ce-2024`) |
 | Companies House | no licence stated: Companies House imposes no rules on how the public register's information is used, and requires credit where its guidance, website, publications or statistical tables are used ([public task statement](https://www.gov.uk/government/publications/companies-house-accreditation-to-information-fair-traders-scheme/public-task-copyright-and-crown-copyright)) | "Source: Companies House" | none so far (`company_control` is not packed); `ownership*` where basis `ch_psc` is used |
 | OSUKED Power Station Dictionary | MIT | source and licence | `wind_farm*`, `ownership*` (the wind-farm map's links to BM units) |
 | powerplantmatching (v0.8.1) | CC BY 4.0 | source | `powerplants_*`, `regime_summary`, `cfd_ppm_matches`, `agents` (the roster itself is pulled, not packed) |
+| NREL (National Laboratory of the Rockies), Annual Technology Baseline | CC BY 4.0 | "NREL Annual Technology Baseline (ATB)" | `investment_inputs` (utility-scale batteries, editions 2021-2025) |
+| Danish Energy Agency, Technology Data for Energy Storage | CC BY 4.0 | "Danish Energy Agency, Technology Data for Energy Storage" | `investment_inputs` (pumped hydro, lithium-ion and vanadium flow batteries) |
+| Investment parameters from reports (CEPA for DESNZ 2025, Mott MacDonald for BEIS 2018) | published by DESNZ and BEIS on gov.uk, under the authors' copyright notices: values cited with a locator, never their documents | the source of each row (`source`, `locator`) in `investment_parameter_sources.csv` | `investment_parameters.csv`, tracked in `data/reference/`, not packed |
 | Copernicus PECD v4.2 | CC BY 4.0 | "Generated using Copernicus Climate Change Service information [year]" | `capacity_factors_pecd` |
 | World Bank Pink Sheet | CC BY 4.0 | source | coal price in `fuel_prices` |
 | ECB | [ECB statistics reuse policy](https://www.ecb.europa.eu/stats/ecb_statistics/governance_and_quality_framework/html/usage_policy.en.html), commercial use allowed | "Source: ECB statistics" | EUR→GBP and USD→GBP conversions in `fuel_prices` |
 | Thermal plant parameters (22 sources, [docs/thermal_parameters.md](docs/thermal_parameters.md)) | per source, in `thermal_parameter_sources.csv`: CC BY 4.0 (ENTSO-E and ENTSOG TYNDP 2026 Scenarios, Danish Energy Agency, JRC, PyPSA-Eur), Open Government Licence v3.0 (DESNZ, BEIS, DUKES), NESO Open Licence, BMRS licence, reproduction with acknowledgement (METIS); the remaining sources (Kumar et al. 2012, DIW, Agora Energiewende, Leigh Fisher and Jacobs, Parsons Brinckerhoff, CEPA and GHD) state no open licence, and their values are cited, with a locator, never their documents | the source of each row (`source`, `locator`); "TYNDP 2026 Scenarios" for the ENTSO-E rows | `thermal_parameters.csv`, tracked in `data/reference/`, not packed |
+| Official statistics (DESNZ, NESO, LCCC) | per row, in the `licence` column of `official_statistics.csv`: Open Government Licence v3.0 for DUKES; NESO's website terms for its balancing services spend reports and LCCC's terms of use for its annual reports, neither an open licence, so only single published totals are cited from them, with a locator, never their documents | the source of each row (`publisher`, `title`, `url`, `locator`) | `official_statistics.csv`, tracked in `data/reference/`, not packed |
 | ESPENI | **CC BY-NC 4.0, non-commercial only** | Wilson et al. (2021), *Energy Strategy Reviews*; [Zenodo](https://doi.org/10.5281/zenodo.4739408) | `demand`, `demand_by_zone`, `capacity_factors`, `capacity_factors_by_zone`; `espeni.csv` |
 | renewables.ninja | **CC BY-NC 4.0, non-commercial only** | Pfenninger & Staffell (2016), *Energy* 114, 1251–65; Staffell & Pfenninger (2016), *Energy* 114, 1224–39 | `capacity_factors_by_zone` |
 | EEX | passing the data on to third parties is a licensed EEX service, so it is **never packed**; `scripts/build_fuel_prices.py` fetches it for each user | — | none; `fuel_prices_2018` to `fuel_prices_2021` are built locally |
@@ -229,7 +248,9 @@ checked on 5 Oct 2026 (The Crown Estate and Companies House on 6 Oct 2026).
 Sharing the packs for academic, non-commercial work is fine with attribution. A commercial user
 needs permission from ESPENI and renewables.ninja for the four tables that carry their values. We
 treat tables that use those values only as a weight (the CF-weighted delivery share in
-`cfd_fleet`) as LCCC data, and a commercial user unsure about that should ask. Every packed file
+`cfd_fleet`) as LCCC data, and a commercial user unsure about that should ask. `storage_revenue`
+carries the ownership tables' trader and optimiser, and so their sources too; each file's full list is
+in the pack's `MANIFEST.json`. Every packed file
 comes from a source that allows passing it on, so the packs may be published on a public release;
 `datapack export` leaves out any file a source does not allow and names the command that
 builds it locally.
@@ -243,11 +264,21 @@ builds it locally.
   half-hours in 2021 and 57.6% in 2022. Filter on `at_price_cap` before using it as a price signal.
 - **DUoS** charging statements are missing for some areas in 2018–2021 (table in
   `data/raw/manual/README.md`).
-- **Day-ahead blend.** `dayahead_price_blend_{y}` weights N2EX and EPEX by traded volume only when
-  `processed/n2ex_bid_panel_{y}.csv` exists, which this package does not build, so otherwise it is
-  a plain mean of the two.
-- **MID gaps.** The shared `mid_target` has no N2EX gap-fill, so about 5% of half-hours in 2020
-  (and fewer in 2018, 2019 and 2021) are missing; none are missing from 2022 on.
+- **Day-ahead blend.** `dayahead_price_blend_{y}` weights N2EX and EPEX by the volume each traded,
+  N2EX's measured from its curves and accepted blocks (`python -m gbpowerdata.build.dayahead_curves
+  n2ex` first); `blend_basis` marks where a volume is missing and the plain mean stands in. Without a
+  subscription, LCCC's IMRP (`python -m gbpowerdata.pull.lccc_pull imrp-actuals`, open data) is the
+  same volume-weighted day-ahead price.
+- **MID gaps.** The shared `mid_target` has no N2EX gap-fill. A half-hour without traded volume is
+  published by Elexon at a price of 0 and is a gap here, not a price of GBP 0/MWh (191 half-hours in
+  2018-2025); a gap of up to 3 hours is interpolated and a longer one left empty (`mid_source`). Missing:
+  164, 294, 1,032 and 709 half-hours in 2018-2021 (5.9% of 2020), 11 in 2022 and 7 in 2025.
+- **Demand.** `transmission_demand_mw` is Elexon's ITSDO, which includes interconnector exports,
+  pumped storage pumping and station load (on 2018-2025, ITSDO - INDO = 0.56 GW + 1.00 x exports +
+  1.00 x pumping), so `national_demand_mw` is not the demand a model with its own interconnectors and
+  storage should serve: it is 11-28 TWh a year above INDO plus embedded generation (28 TWh in 2022, a year
+  of exports). Elexon published neither ITSDO nor INDO for whole days in 2018, 2020 and 2021; those
+  554 half-hours have an empty `national_demand_mw` (`transmission_demand_source` "missing").
 
 ## Repository layout
 
@@ -257,7 +288,9 @@ environment.yml       conda environment; pyproject.toml is the pip equivalent
 src/gbpowerdata/
   pull/               one module per source -> data/raw/
   build/              processing stages     -> data/processed/
-  common/             GSP geolocation, REPD, name matching, PECD regions, company groups
+  common/             GSP geolocation, REPD, name matching, PECD regions, company groups, readers shared by
+                      stages (Elexon's market index, LCCC's IMRP, ONS's CPI)
+  checks/             checks of the built tables against the sources and official totals (tests/realdata)
   config.py           config loader and path helpers
   processed.py        loaders for the processed tables
   venue.py            which day-ahead auction a consumer reads (N2EX / EPEX hourly / EPEX half-hourly)
@@ -270,7 +303,9 @@ data/processed/       stage outputs (not in git; shipped as the processed pack)
 dist/                 packs built locally for a release (not in git)
 docs/pipeline.md      every stage, its inputs and outputs
 docs/ownership.md     the ownership tables: roles, registers, links to BM units, limits
-tests/                pytest
+docs/AUDIT.md         the audit of October 2026: every finding with its evidence, severity and fix, and the plan
+docs/DATA_GAPS.md     the open datasets still to add, with licence, access and the module that will own each
+tests/                pytest; tests/realdata checks the built data where it exists
 ```
 
 Module docstrings carry the method and the source quirks behind each stage. Some also name the
@@ -290,6 +325,13 @@ rules, The Crown Estate's tables and their check, Companies House control, the m
 snapshot), checks that the curated ownership tables are sourced and add up, the data-pack round trip
 and its guards, an import test of every module, and the licensed-data guard. None of it needs data
 beyond `data/reference/`.
+
+`tests/realdata` checks the built tables and the raw pulls wherever the configuration points: the UTC
+spine and the clock changes, demand against metered generation, prices without false zeros, the storage
+fleet against DESNZ's battery capacity, ancillary payments against NESO's published spend and CfD
+payments against LCCC's (`data/reference/official_statistics.csv`, every figure with its source). Each
+test is skipped where its data are absent; `-m "not licensed"` leaves out those reading local N2EX/EPEX
+outputs. A known defect is a strict xfail naming its ID in [docs/AUDIT.md](docs/AUDIT.md).
 
 ## Licence and citation
 
