@@ -132,6 +132,75 @@ def read_storage_revenue(year: int, annual: bool = False) -> pd.DataFrame:
     return by_unit(df)
 
 
+def read_storage_fleet() -> pd.DataFrame:
+    """Every battery and pumped storage unit the open data name, with power and (where stated) energy capacity and
+    the dates it entered and left the market (gbpowerdata.build.storage_fleet; operating(fleet, date) there gives the
+    units trading on a date). Kept out of KIND_FILE, like read_lolp."""
+    df = pd.read_csv(cfg.processed_dir() / "storage_fleet.csv")
+    for c in ("registered_from", "first_notified", "first_bm_action", "first_ancillary", "entry_date",
+              "last_notified", "last_bm_action", "last_ancillary", "last_seen", "exit_date"):
+        if c in df:
+            df[c] = pd.to_datetime(df[c])
+    return df
+
+
+def read_unit_run_times(source: str | None = None) -> pd.DataFrame:
+    """How long each thermal BM unit ran once started and stayed off once stopped, per year (gbpowerdata.build.
+    unit_runs): counts and percentiles of the spells in hours, from the metered output (`source="b1610"`) or the unit's
+    final physical notifications ("fpn"), beside the MNZT, MZT and NDZ it declared. Kept out of KIND_FILE, like
+    read_lolp."""
+    df = pd.read_csv(cfg.processed_dir() / "unit_run_times.csv")
+    return df if source is None else df[df["source"] == source].reset_index(drop=True)
+
+
+def read_unit_spells(year: int) -> pd.DataFrame:
+    """Every run and down spell of the thermal BM units that started in `year` (gbpowerdata.build.unit_runs), with UTC
+    start and end; a censored spell ran into a gap in the data or its end, so its length is a lower bound."""
+    df = pd.read_csv(cfg.processed_dir() / f"unit_spells_{year}.csv")
+    for c in ("start", "end"):
+        df[c] = pd.to_datetime(df[c], utc=True)
+    return df
+
+
+CAPACITY_MARKET_TABLES = ("auctions", "weights", "derating", "agreements", "links")
+
+
+def read_capacity_market(year: int) -> pd.DataFrame:
+    """Every Capacity Market agreement's obligation and payment by month of `year` (gbpowerdata.build.capacity_market):
+    the obligation (MW), the auction's indexed price, the weighting factor and the payment. Kept out of KIND_FILE,
+    like read_lolp."""
+    return pd.read_csv(cfg.processed_dir() / f"capacity_market_{year}.csv", parse_dates=["month"])
+
+
+def read_capacity_market_table(name: str) -> pd.DataFrame:
+    """One of the Capacity Market's tables (gbpowerdata.build.capacity_market): "auctions" (the price per auction and
+    delivery year), "weights" (the monthly weighting factors), "derating" (the de-rating factors), "agreements" (every
+    agreement and auction) or "links" (the storage BM units of the agreements)."""
+    if name not in CAPACITY_MARKET_TABLES:
+        raise ValueError(f"{name}: one of {CAPACITY_MARKET_TABLES}")
+    parse = {"weights": ["month"], "agreements": ["terminated_on"]}.get(name, False)
+    return pd.read_csv(cfg.processed_dir() / f"capacity_market_{name}.csv", parse_dates=parse)
+
+
+def read_investment_inputs(reference: bool = True) -> pd.DataFrame:
+    """Capital and operating costs, lifetimes, efficiencies and hurdle rates by source edition (a vintage),
+    technology and year, each in its source's price base (gbpowerdata.build.investment_inputs: the generation costs
+    studies and the Danish Energy Agency's storage datasheet). `reference=True` adds the values transcribed from PDF
+    reports, cited with locators (data/reference/investment_parameters.csv: CEPA's 2025 hurdle rates, Mott
+    MacDonald's 2018 storage costs), and every row gets its source's licence."""
+    frames = []
+    path = cfg.processed_dir() / "investment_inputs.csv"
+    if path.exists():
+        frames.append(pd.read_csv(path))
+    if reference:
+        frames.append(pd.read_csv(cfg.reference_dir() / "investment_parameters.csv"))
+    if not frames:
+        raise FileNotFoundError(f"{path} missing: run python -m gbpowerdata.build.investment_inputs")
+    t = pd.concat(frames, ignore_index=True)
+    src = pd.read_csv(cfg.reference_dir() / "investment_parameter_sources.csv")
+    return t.merge(src[["source_id", "licence"]].rename(columns={"source_id": "source"}), on="source", how="left")
+
+
 def load_year(year: int) -> dict[str, pd.DataFrame]:
     """All per-year tables for one year, keyed by friendly name."""
     return {k: read_kind(k, year) for k in KIND_FILE}

@@ -45,6 +45,12 @@ DEFAULT_DATASETS = {
     "actual-cfd-generation-and-avoided-ghg-emissions": "cfd_actual_generation",
     "administrative-strike-prices": "cfd_admin_strike_prices",
     "auction-outcomes": "cfd_auction_outcomes",
+    # hourly IMRP from 30 Jun 2016, OGL: the volume-weighted N2EX/EPEX day-ahead price as LCCC publishes it
+    # (gbpowerdata.common.lccc.imrp reads it; the file name is common.lccc.IMRP_FILE)
+    "imrp-actuals": "imrp_actuals",
+    # monthly capacity obligation and capacity payments actually paid, by Capacity Market auction (OGL): the
+    # weighting factors and the reconciliation of gbpowerdata.build.capacity_market
+    "capacity-obligation-by-auction": "cm_capacity_obligation_by_auction",
 }
 
 # Supplier-obligation (levy) side: what CfDs cost consumers per MWh supplied.
@@ -67,8 +73,11 @@ LEVY_DATASETS = {
 }
 
 
+UA = {"User-Agent": "Mozilla/5.0 (research data pull)"}   # the portal answers some requests without one with 403
+
+
 def ckan(action: str, **params) -> dict | list:
-    r = requests.get(f"{CKAN_BASE}/{action}", params=params, timeout=120)
+    r = requests.get(f"{CKAN_BASE}/{action}", params=params, headers=UA, timeout=120)
     r.raise_for_status()
     payload = r.json()
     if not payload.get("success"):
@@ -139,8 +148,9 @@ def main(argv: list[str]) -> None:
         print(list_datasets(args.list).to_string(index=False))
         return
 
-    if args.datasets:
-        targets = {d: d.replace("-", "_") for d in args.datasets}
+    if args.datasets:   # a known dataset keeps the file name the builds read (cfd_actual_generation, ...)
+        known = {**DEFAULT_DATASETS, **LEVY_DATASETS}
+        targets = {d: known.get(d, d.replace("-", "_")) for d in args.datasets}
     elif args.all:
         targets = {**DEFAULT_DATASETS, **LEVY_DATASETS}
     elif args.levy:

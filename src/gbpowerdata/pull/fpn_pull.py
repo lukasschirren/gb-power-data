@@ -17,7 +17,10 @@ cross-checks them where both exist.
 
 Universe: transmission (T_) BM units whose fuelType is a generation fuel, from the current
 BM-unit snapshot (same source + delisting caveat as b1610_pull.py). Interconnectors (I_) are
-opt-in via --interconnectors.
+opt-in via --interconnectors. --storage-fleet pulls instead every unit of
+data/processed/storage_fleet.csv with an Elexon id: the T_ and E_ storage units, and the supplier
+(2__) and virtual lead party (V__) units NESO's results name as batteries, which the register
+gives no fuel type but which notify like any BM unit (all six sampled on 20 Nov 2025 did).
 
 Usage:
   python -m gbpowerdata.pull.fpn_pull                              # all T_ generation units, 2016-2026
@@ -25,6 +28,7 @@ Usage:
   python -m gbpowerdata.pull.fpn_pull --fuel NUCLEAR CCGT          # only these fuel types
   python -m gbpowerdata.pull.fpn_pull --limit 5                    # first 5 units (smoke test)
   python -m gbpowerdata.pull.fpn_pull --interconnectors           # add I_ interconnector units
+  python -m gbpowerdata.pull.fpn_pull --storage-fleet             # storage_fleet's units (after its build)
 """
 
 from __future__ import annotations
@@ -77,6 +81,17 @@ def battery_units() -> pd.DataFrame:
     return b.sort_values("elexonBmUnit").reset_index(drop=True)
 
 
+def storage_fleet_units() -> pd.DataFrame:
+    """Every unit of storage_fleet with an Elexon id (gbpowerdata.build.storage_fleet; its technology as fuelType)."""
+    from gbpowerdata import processed as P
+
+    f = P.read_storage_fleet()
+    f = f[f["kind"].isin(["bm", "supplier", "vlp"])]
+    d = pd.DataFrame({"elexonBmUnit": f["unit_id"].astype(str), "fuelType": f["tech"],
+                      "generationCapacity": f["capacity_mw"]})
+    return d.sort_values("elexonBmUnit").reset_index(drop=True)
+
+
 def pull_unit(u: str, years: range) -> None:
     out = OUT / f"{u.replace('/', '_')}.csv"
     if out.exists():
@@ -116,13 +131,18 @@ def main(argv: list[str]) -> None:
     p.add_argument("--interconnectors", action="store_true", help="also pull I_ interconnector units")
     p.add_argument("--batteries", action="store_true",
                    help="pull the battery/BESS fleet (any prefix incl embedded E_) instead")
+    p.add_argument("--storage-fleet", action="store_true",
+                   help="pull every unit of storage_fleet with an Elexon id (supplier and VLP batteries included) instead")
     p.add_argument("--limit", type=int, help="only the first N units (smoke test)")
     args = p.parse_args(argv[1:])
     years = range(int(args.start[:4]), int(args.end[:4]))
 
     OUT.mkdir(parents=True, exist_ok=True)
     fuels = {f.upper() for f in args.fuel} if args.fuel else None
-    units = battery_units() if args.batteries else gen_units(fuels, interconnectors=args.interconnectors)
+    if args.storage_fleet:
+        units = storage_fleet_units()
+    else:
+        units = battery_units() if args.batteries else gen_units(fuels, interconnectors=args.interconnectors)
     if args.limit:
         units = units.head(args.limit)
     print(f"{len(units)} units x {len(list(years))} years -> {OUT}", flush=True)

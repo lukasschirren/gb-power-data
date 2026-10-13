@@ -47,6 +47,32 @@ def test_the_position_is_valued_at_the_mid_else_the_system_price():
     assert w["price_fallback_share"] == pytest.approx(20 / 35)
 
 
+def test_a_day_missing_from_the_notifications_lowers_the_months_coverage_not_its_position():
+    # Elexon's archive misses whole days for every unit (18 days of November 2020): an unknown position, not zero
+    t = pd.date_range("2020-11-01", "2020-12-01", freq="30min", tz=UTC, inclusive="left")
+    held = t[(t < pd.Timestamp("2020-11-03", tz=UTC)) | (t >= pd.Timestamp("2020-11-04", tz=UTC))]   # 2 Nov missing
+    share = S.notified_share(held, 2020, np.nan, np.nan)
+    assert share["2020-11"] == pytest.approx(29 / 30)
+    assert share["2020-01"] == 0.0                                       # nothing notified in January
+    # inside the unit's activity only: from 15 Nov the month is complete
+    assert S.notified_share(held, 2020, "2020-11-15", np.nan)["2020-11"] == pytest.approx(1.0)
+
+
+def test_annual_coverage_is_weighted_by_days():
+    gbp = {c: 0.0 for c in S.GBP}
+    t = pd.DataFrame([
+        {"year": 2020, "month": "2020-10", "unit_id": "T_X-1", "ngc_id": "X-1", "unit_name": "X", "tech": "battery",
+         "connection": "transmission", "capacity_mw": 10.0, "lead_party": "A", "trader": "A", "optimiser": pd.NA,
+         "days": 31, "has_fpn": True, "fpn_coverage": 1.0, "trading": True, "discharge_mwh": 1.0, "charge_mwh": 1.0,
+         **gbp, "total_gbp": 0.0},
+        {"year": 2020, "month": "2020-11", "unit_id": "T_X-1", "ngc_id": "X-1", "unit_name": "X", "tech": "battery",
+         "connection": "transmission", "capacity_mw": 10.0, "lead_party": "A", "trader": "A", "optimiser": pd.NA,
+         "days": 30, "has_fpn": True, "fpn_coverage": 0.4, "trading": True, "discharge_mwh": 1.0, "charge_mwh": 1.0,
+         **gbp, "total_gbp": 0.0},
+    ])
+    assert S.annual(t)["fpn_coverage"].iloc[0] == pytest.approx((31 * 1.0 + 30 * 0.4) / 61)
+
+
 def test_active_days_and_the_annual_rate():
     d = S.active_days(2025, "2025-03-15", np.nan)
     assert d["2025-02"] == 0 and d["2025-03"] == 17 and d["2025-12"] == 31
@@ -65,6 +91,58 @@ def test_a_month_without_position_cashflow_or_payment_is_not_trading():
         {"discharge_mwh": 10.0, "charge_mwh": 12.0, **gbp},
     ])
     assert S.trading(rows).tolist() == [False, True, True, True]
+
+
+def test_capacity_payments_follow_the_links_share(tmp_path):
+    pd.DataFrame({"month": ["2025-01-01", "2025-01-01"], "agreement_id": ["CAN-1", "CAN-2"],
+                  "auction_id": ["T-4-2024", "T-1-2024"], "obligation_mw": [10.0, 4.0],
+                  "payment_gbp": [1000.0, 300.0]}).to_csv(tmp_path / "capacity_market_2025.csv", index=False)
+    pd.DataFrame({"agreement_id": ["CAN-1", "CAN-1", "CAN-2"], "auction_id": ["T-4-2024", "T-4-2024", "T-1-2024"],
+                  "unit_id": ["E_A-1", "E_A-2", "E_A-1"], "share": [0.6, 0.4, 1.0]}).to_csv(
+        tmp_path / "capacity_market_links.csv", index=False)
+    cm = S.capacity_payments(2025, tmp_path)
+    assert cm.loc[("E_A-1", "2025-01"), "cm_gbp"] == pytest.approx(900.0)
+    assert cm.loc[("E_A-2", "2025-01"), "cm_obligation_mw"] == pytest.approx(4.0)
+    assert S.capacity_payments(2024, tmp_path) is None                     # no table for the year
+
+
+def test_capacity_payments_count_from_entry_outages_included(tmp_path):
+    pd.DataFrame({"unit_id": ["E_NEW-1"], "entry_date": ["2025-03-20"]}).to_csv(tmp_path / "storage_fleet.csv",
+                                                                               index=False)
+    t = pd.DataFrame({"unit_id": ["E_NEW-1"] * 4 + ["E_OLD-1"] * 2,
+                      "month": ["2025-02", "2025-03", "2025-04", "2025-05", "2025-01", "2025-02"],
+                      "trading": [False, True, False, True, False, True]})
+    built = S.built_months(t, tmp_path)
+    assert built.tolist() == [False, True, True, True, False, True]   # an outage month still pays; before entry not
+
+
+def test_supplier_and_vlp_batteries_join_for_the_years_they_trade_with_a_lower_bound_capacity(tmp_path):
+    pd.DataFrame({"unit_id": ["E_A-1", "2__FBPGM001", "V__NHABI005", "GSET-07"],
+                  "ngc_id": ["A-1", "FBPG01", "NHAB05", "GSET-07"], "kind": ["bm", "supplier", "vlp", "non_bm"],
+                  "tech": ["battery"] * 4, "unit_name": ["A", "Wormald Green BESS", None, None],
+                  "lead_party": ["X", "BP Gas Marketing Limited", "Habitat", None],
+                  "capacity_mw": [10.0, 49.0, 30.0, 5.0],
+                  "capacity_source": ["register", "ancillary_max_mw", "ancillary_max_mw", "ancillary_max_mw"],
+                  "entry_date": ["2020-01-01", "2023-05-02", "2026-01-10", "2021-01-01"],
+                  "last_seen": ["2026-10-08"] * 4}).to_csv(tmp_path / "storage_fleet.csv", index=False)
+    u = S.fleet_units(2025, tmp_path)
+    # T_/E_ units come from the register, a non-BM unit has no Elexon id, the V__ unit trades from 2026
+    assert u["unit_id"].tolist() == ["2__FBPGM001"]
+    assert (u["active_from"].iat[0], u["capacity_source"].iat[0]) == ("2023-05-02", "ancillary_max_mw")
+    rate = S.annualise([49_000.0, 49_000.0], [49.0, 49.0], [365, 365], ["register", "ancillary_max_mw"])
+    assert rate[0] == pytest.approx(1.0) and np.isnan(rate[1])          # a lower-bound capacity gets no rate
+
+
+def test_an_unlinked_supplier_unit_has_no_capacity_payment_rather_than_zero(tmp_path):
+    pd.DataFrame({"unit_id": ["E_A-1", "2__B-1"], "entry_date": ["2024-01-01", "2024-01-01"]}).to_csv(
+        tmp_path / "storage_fleet.csv", index=False)
+    t = pd.DataFrame({"unit_id": ["E_A-1", "E_A-1", "2__B-1"], "month": ["2025-01", "2025-02", "2025-01"],
+                      "kind": ["bm", "bm", "supplier"], "trading": [True, True, True]})
+    cm = pd.DataFrame({"cm_obligation_mw": [5.0], "cm_gbp": [800.0]},
+                      index=pd.MultiIndex.from_tuples([("E_A-1", "2025-01")], names=["unit_id", "month"]))
+    c = S.capacity_columns(t, cm, tmp_path)
+    assert c["cm_gbp"].iloc[:2].tolist() == [800.0, 0.0] and np.isnan(c["cm_gbp"].iat[2])
+    assert S.capacity_columns(t, None, tmp_path)["cm_gbp"].isna().all()      # without the tables: unknown
 
 
 def test_dc_tenders_keep_accepted_rows_and_agree_with_their_total_cost():
@@ -140,11 +218,12 @@ def test_cashflow_rows_keep_the_non_zero_ones_with_their_sign():
 
 def test_the_ancillary_puller_matches_whole_resource_names():
     assert AP.stem_for("eac-auction-results", "NESO Response-Reserve Results By Unit FY2026 (Archive)") == \
-        ("eac_by_unit_fy2026", False)
-    assert AP.stem_for("eac-auction-results", "NESO Response-Reserve Results By Unit") == ("eac_by_unit_current", True)
+        ("eac_by_unit_fy2026", False, "dump")
+    assert AP.stem_for("eac-auction-results", "NESO Response-Reserve Results By Unit") == \
+        ("eac_by_unit_current", True, "dump")
     assert AP.stem_for("eac-auction-results", "NESO Response-Reserve Sell Orders 202604 (Archive)") is None
     assert AP.stem_for("dynamic-containment-data", "DC, DR & DM Results By Unit Master Data 2021-2023") == \
-        ("dc_dr_dm_by_unit_2021_2023", False)
+        ("dc_dr_dm_by_unit_2021_2023", False, "dump")
 
 
 def test_the_storage_layer_reads_no_licensed_market_data():

@@ -339,6 +339,9 @@ def _output_span(path: str, kind: str) -> dict | None:
             "output_any": _span(days(any_), MIN_DAY_PERIODS)}
 
 
+output_span = _output_span       # public: gbpowerdata.build.storage_fleet dates storage units by the same rule
+
+
 def activity_files() -> dict[str, dict[str, dict]]:
     """unit -> kind -> {"file", "output", "output_any"} spans (see _output_span) over data/raw/{fpn,b1610,bod}."""
     out: dict[str, dict[str, dict]] = {}
