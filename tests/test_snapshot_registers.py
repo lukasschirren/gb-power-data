@@ -101,8 +101,8 @@ def test_each_register_is_pulled_once_and_reported_on_one_line(raw, capsys):
     assert {status(line) for line in report.values()} == {"written"}
     assert f"bm_units_{snap.utc_day()}.csv (2 rows" in report["bmunits"] and "WARNING" not in report["bmunits"]
     day = snap.local_day()
-    assert sorted(p.name for p in (raw.dir / "neso" / "cm_register").iterdir()) == [f"cmu_{day}.csv",
-                                                                                 f"components_{day}.csv"]
+    assert sorted(p.name for p in (raw.dir / "neso" / "cm_register").iterdir()) == sorted(
+        f"{stem}_{day}.csv" for stem in cm_register_pull.RESOURCES.values())
 
 
 def test_a_snapshot_of_today_is_not_pulled_again_nor_touched(raw, capsys):
@@ -340,7 +340,9 @@ def test_a_new_cm_file_with_contact_columns_is_removed(raw, capsys, monkeypatch)
         out.mkdir(parents=True, exist_ok=True)
         pd.DataFrame([{**CMU[0], "Secondary Trading Contact_Email": "x"}]).to_csv(out / f"cmu_{stamp}.csv",
                                                                                   index=False)
-        pd.DataFrame(CMU).to_csv(out / f"components_{stamp}.csv", index=False)
+        for stem in cm_register_pull.RESOURCES.values():
+            if stem != "cmu":
+                pd.DataFrame(CMU).to_csv(out / f"{stem}_{stamp}.csv", index=False)
 
     monkeypatch.setattr(cm_register_pull, "pull", keeps_the_contacts)
     code, report = run(capsys, "--only", "cm")

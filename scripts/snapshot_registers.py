@@ -21,8 +21,9 @@ Sources and terms (each puller's docstring has the details):
   bmunits       Elexon, BMRS API, reference/bmunits/all; BMRS open data licence (commercial use allowed):
                 https://data.elexon.co.uk/bmrs/api/v1/reference/bmunits/all
                 https://www.elexon.co.uk/bsc/data/balancing-mechanism-reporting-agent/copyright-licence-bmrs-data/
-  cm            NESO data portal, dataset capacity-market-register, resources "Capacity Market Unit (CMU)" and
-                "Components"; NESO Open Licence:
+  cm            NESO data portal, dataset capacity-market-register, resources "Capacity Market Unit (CMU)",
+                "Components" and the three auction resources (static data, capacity and cost, de-rating factors;
+                cm_register_pull.RESOURCES); NESO Open Licence:
                 https://api.neso.energy/api/3/action/package_show?id=capacity-market-register
                 https://www.neso.energy/data-portal/neso-open-licence
   crown_estate  The Crown Estate, offshore wind farm ownership. Its terms of use license the page for one's own use
@@ -38,8 +39,10 @@ What each snapshot dates (the file name carries the date):
                 the build date for the current year; gbpowerdata.build.bm_units.snapshot_for).
   cm            raw/neso/cm_register/cmu_{YYYYMMDD}.csv and components_{YYYYMMDD}.csv: NESO's register on the local
                 day of the pull (gbpowerdata.pull.cm_register_pull), every CM unit of every auction with its
-                applicant, parent company, holder and terminations, and every component. Successive pairs date the
-                changes of parent; gbpowerdata.build.build_ownership reads the newest pair only (so far).
+                applicant, parent company, holder and terminations, and every component, with the auction files
+                (auction_static, auction_capacity_cost, derating_factors) of the same day. Successive pairs date the
+                changes of parent; gbpowerdata.build.build_ownership and gbpowerdata.build.capacity_market read the
+                newest files only (so far).
   crown_estate  raw/crown_estate/wind_farm_ownership_{YYYYMMDD}.html: The Crown Estate's offshore wind farm
                 ownership page byte for byte (gbpowerdata.pull.crown_estate_pull, pull(): the live page), named by
                 the page's own as-at date and written only when that date is new. Its files date the table, not
@@ -55,8 +58,8 @@ snapshot (the author's does since 7 October 2026). Decide the raw folder before 
 own, with a raw folder that no other repository reads, leaves every other repository's inputs as they are.
 
 Sizes (measured 6 October 2026): Elexon's register 0.47 MB (3,115 rows), the CM pair 16.4 MB (8.1 MB for 18,191
-CMU rows, 8.3 MB for 29,838 components), the Crown Estate page 0.1 MB when its as-at date changes: about 17 MB a
-month and 0.2 GB a year, nearly all of it the CM register.
+CMU rows, 8.3 MB for 29,838 components; the auction files 0.1 MB), the Crown Estate page 0.1 MB when its as-at date
+changes: about 17 MB a month and 0.2 GB a year, nearly all of it the CM register.
 
 Gotchas:
   - "Already there" is decided by today's file names: a register whose files of today all exist is not pulled, so

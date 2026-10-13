@@ -8,7 +8,9 @@ unit (CMU) in every auction, the applicant, the registered holder of the capacit
 COMPANY (filled for 95% of the storage CMUs awarded for delivery year 2026, checked 6 Oct 2026), with technology,
 storage duration, de-rated capacity and the delivery years the agreement covers. Its components carry the BM unit
 of most transmission-connected and BM-registered embedded units as their Component ID ("T_DRAXX-5",
-"E_PILLB-1"), which links a CMU to the units Elexon's register lists.
+"E_PILLB-1"), which links a CMU to the units Elexon's register lists. The capacity payments
+(gbpowerdata.build.capacity_market) need each agreement's obligation from the same register, and each auction's
+clearing price, indexation base period and de-rating factors from the auction resources pulled with it.
 
 Source: NESO data portal (CKAN, no key), dataset "capacity-market-register", resolved by name at run time (the
 resource ids change when NESO republishes):
@@ -21,7 +23,15 @@ resource ids change when NESO republishes):
                                  "Storage (Duration 2h)"), Primary Fuel of Component, capacities, Description of
                                  CMU Components, Location and Post Code, OS Grid Reference. Since 22 Jul 2026 NESO
                                  aggregates components under 30 kW per technology class and CMU.
-Licence: NESO Open Data Licence (the portal's licence for this dataset, checked 6 Oct 2026).
+  "Capacity Market Auction Static Data"         one row per auction: clearing price (GBP/kW/year), the base period
+                                 of its CPI indexation ("Winter 2015/2016"; T-4 and T-3 auctions only), target and
+                                 awarded capacity, termination fee rates, penalty caps
+  "Capacity Market Auction Capacity and Cost"   per auction and delivery year: capacity awarded (MW) and its cost
+                                 at the clearing price before indexation (GBP)
+  "Capacity Market De-Rating Factors"           per auction and technology class: the de-rating factor (storage
+                                 by duration class, e.g. T-4 2029/30 1 h 0.1099, 2 h 0.2198, 4 h 0.4396)
+Licence: NESO Open Data Licence (the portal's licence for this dataset, checked 6 Oct 2026; the three auction
+resources on 10 Oct 2026).
 
 Personal data: the CMU file also lists each applicant's secondary trading contact (telephone and e-mail). Those
 columns (every column whose name contains "contact") are dropped before the file is written, so no snapshot here
@@ -36,8 +46,9 @@ resolves companies to groups, not owners in past years. A CMU row sits under its
 multi-year agreement is found by "Delivery Years for which Agreement Valid" (gbpowerdata.build.build_ownership
 .cm_in_force). Applicant names are as declared ("SSE plc" / "SSE Plc").
 
-Output (one snapshot per pull date, never overwritten): data/raw/neso/cm_register/cmu_{YYYYMMDD}.csv and
-components_{YYYYMMDD}.csv.
+Output (one snapshot per pull date, never overwritten): data/raw/neso/cm_register/cmu_{YYYYMMDD}.csv,
+components_{YYYYMMDD}.csv, auction_static_{YYYYMMDD}.csv, auction_capacity_cost_{YYYYMMDD}.csv and
+derating_factors_{YYYYMMDD}.csv (gbpowerdata.build.capacity_market reads the newest of each).
 
 Usage:
   python -m gbpowerdata.pull.cm_register_pull
@@ -59,7 +70,10 @@ from gbpowerdata import config as cfg
 
 CKAN = "https://api.neso.energy/api/3/action"
 DATASET = "capacity-market-register"
-RESOURCES = {"Capacity Market Unit (CMU)": "cmu", "Components": "components"}
+RESOURCES = {"Capacity Market Unit (CMU)": "cmu", "Components": "components",
+             "Capacity Market Auction Static Data": "auction_static",
+             "Capacity Market Auction Capacity and Cost": "auction_capacity_cost",
+             "Capacity Market De-Rating Factors": "derating_factors"}
 PERSONAL = re.compile(r"contact", re.I)
 
 
