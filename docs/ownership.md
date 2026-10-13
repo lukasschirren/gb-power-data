@@ -40,8 +40,12 @@ date where it can be:
   farms they follow The Crown
   Estate's ownership tables at the ends of 2018, 2019, 2020, 2023 and 2024 and its lists of transactions, and
   `build.build_crown_estate` checks them against those tables (see "Checked against The Crown Estate").
-- CfD contracts count once their round has reported and until terminated; CM agreements in their delivery years;
-  RO stations in the years they were issued ROCs for; BM units in the years they produced (dated by their output).
+- CfD contracts count once their round has reported and until terminated or at the end of their term (15 years, 20
+  for AR7 wind and solar, from the earlier of the start date and the target commissioning window's last day;
+  biomass conversions to 31 March 2027; `build_cfd_status.contract_end`); CM agreements won at auction in their
+  delivery years, until the year they are terminated in, secondary trades left out (`build_ownership.cm_in_force`,
+  since 13 Oct 2026); RO stations in the years they were issued ROCs for; BM units in the years they produced
+  (dated by their output).
   A year the activity files do not reach (the current year, before its files are pulled) takes the last year's
   activity (`activity_year` in the register table): a unit in an outage at the end of the pull still counts, one
   first producing after it does not.
@@ -68,8 +72,8 @@ applies.
 | --- | --- | --- | --- |
 | `dukes` | DESNZ, DUKES 5.11 (`pull.dukes_pull`) | the survey returner, mostly the owning group; joint ventures named as such | GB stations listed in the edition of May y+1 (one sheet per edition) |
 | `ro` | Ofgem, RO register and certificates (hand-downloaded) | the accreditation holder, mostly a project company, today's | GB stations of 1 MW or more issued ROCs for output in y |
-| `cfd` | LCCC, CfD register and status (`pull.lccc_pull`) | the counterparty (a project company) with its Companies House number | operating (started by the end of y) or contracted (its round had reported), not terminated |
-| `cm` | NESO, Capacity Market register (`pull.cm_register_pull`) | the applicant and its declared parent (today's); the class from its Primary Fuel Type, else from its CMU Technology | agreements in force in the delivery year from October y |
+| `cfd` | LCCC, CfD register and status (`pull.lccc_pull`) | the counterparty (a project company) with its Companies House number | operating (started by the end of y) or contracted (its round had reported), neither terminated nor at the end of its term |
+| `cm` | NESO, Capacity Market register (`pull.cm_register_pull`) | the applicant and its declared parent (today's); the class from its Primary Fuel Type, else from its CMU Technology | auction agreements in force in the delivery year from October y: not terminated before it began, secondary trades (type ST) left out |
 | `bm` | Elexon, BM unit register (`pull.elexon_pull bmunits`, `build.bm_units`) | the trader, as in the BM-unit table (see "Traders by year") | units that produced in y |
 
 Capacity is each register's own: installed (DUKES), declared net (RO), contracted (CfD), connection and de-rated

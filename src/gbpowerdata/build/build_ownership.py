@@ -41,10 +41,11 @@ Registers (what each one's company is, and which records count in a year):
          counterparty, a project company, with its Companies House number (eight characters as text: the
          register drops leading zeros, "9171944" for 09171944). In a year: "operating" if the
          contract started by the year's end, else "contracted" if its allocation round had reported (LCCC's
-         auction outcomes; the investment contracts of 2014 and Hinkley Point C's of 2016 before them), not
-         terminated by then.
+         auction outcomes; the investment contracts of 2014 and Hinkley Point C's of 2016 before them), neither
+         terminated nor at the end of its term by then (cfd_expiry, from build_cfd_status.contract_end).
   cm     NESO, Capacity Market register (gbpowerdata.pull.cm_register_pull): the applicant and its declared
-         parent; the agreements in force in the delivery year from October of the year (cm_in_force). Capacity
+         parent; the auction agreements in force in the delivery year from October of the year, secondary trades
+         left out and agreements terminated during the year kept (cm_in_force). Capacity
          is the connection capacity, with the de-rated capacity beside it. The parent is today's (see the
          puller's notes). The class is the Primary Fuel Type's, else, where NESO leaves that blank (most
          agreements of the earlier auctions), the CMU Technology's (cm_class).
@@ -139,9 +140,10 @@ RO_END_LATEST = pd.Timestamp("2037-03-31")
 # (signed 29 September 2016); both before the panel, so only "by the year's end" matters
 OUTSIDE_ROUNDS = {"Investment Contract": "2014-04-30", "Bespoke": "2016-09-29"}
 CM_COLUMNS = [
-    "Auction Name", "Delivery Year", "CMU ID", "Name of Applicant", "CM Unit Name", "Parent Company",
+    "Auction Name", "Type", "Delivery Year", "CMU ID", "Name of Applicant", "CM Unit Name", "Parent Company",
     "Primary Fuel Type", "CMU Technology", "Connection or DSR Capacity", "De Rated Capacity",
-    "Capacity Agreement Awarded", "Capacity Agreement has been Terminated", "Delivery Years for which Agreement Valid",
+    "Capacity Agreement Awarded", "Capacity Agreement has been Terminated", "Date of Termination of Capacity Agreement",
+    "Delivery Years for which Agreement Valid",
 ]
 CM_NAMES = {"Auction Name": "auction", "Delivery Year": "delivery_year", "CMU ID": "cmu_id",
             "Name of Applicant": "applicant", "CM Unit Name": "cmu_name", "Parent Company": "parent",
@@ -416,17 +418,41 @@ def cfd_register() -> pd.DataFrame:
         print(f"  WARNING: CfD rounds without a date (their contracts count only once started): {unknown}")
     out["lccc_status"] = out["record_id"].map(status["Status"])
     out["tech_class"] = out["technology"].map(CFD_CLASS).fillna("other")
+    out["expiry"] = cfd_expiry(t)
     return out
+
+
+def cfd_expiry(register: pd.DataFrame) -> pd.Series:
+    """Each contract's first day without it, by the CfD Agreement's term (build_cfd_status.contract_end): NaT for a
+    contract that has not started."""
+    from gbpowerdata.build.build_cfd_status import KEY_TERM, contract_end
+    terms = pd.read_csv(cfg.reference_dir() / "cfd_round_params.csv").set_index("allocation_round")
+    def date(c: str) -> pd.Series:
+        if c not in register:
+            return pd.Series(pd.NaT, index=register.index, dtype="datetime64[ns]")
+        return pd.to_datetime(register[c], errors="coerce")
+    start, tcw, tcd = date("start_date"), date("target_commissioning_window_start_date"), date("target_commissioning_date")
+    out = []
+    for i, (r, tech) in enumerate(zip(register["allocation_round"].astype(str), register["technology_type"].astype(str))):
+        if r not in terms.index:
+            out.append(pd.NaT)
+            continue
+        n = terms.loc[r, "contract_term_years_key_tech" if tech in KEY_TERM else "contract_term_years_other"]
+        out.append(contract_end(start.iloc[i], tcw.iloc[i], tcd.iloc[i], int(n), tech, r))
+    return pd.Series(out, index=register.index, dtype="datetime64[ns]")
 
 
 def cfd_in_year(table: pd.DataFrame, year: int) -> pd.DataFrame:
     """The contracts that count in `year` with their status then: operating (started by the year's end) or
-    contracted (its round had reported), and not terminated by the year's end. A contract LCCC lists as
-    terminated without a date counts in no year."""
+    contracted (its round had reported), and neither terminated nor ended (its term over, `expiry`) by the year's
+    end. A contract LCCC lists as terminated without a date counts in no year. No contract ends before 1 April 2027
+    (the biomass conversions), so the term changes nothing up to the 2026 table."""
     end = as_of(year)
     t = table.copy()
     undated_end = t["lccc_status"].eq("Terminated") & t["terminated"].isna()
     gone = (t["terminated"] <= end) | undated_end
+    if "expiry" in t:
+        gone |= t["expiry"].notna() & (t["expiry"] <= end)
     t["status"] = np.where(t["start"] <= end, "operating", np.where(t["round_date"] <= end, "contracted", ""))
     return t[(t["status"] != "") & ~gone]
 
@@ -469,13 +495,23 @@ def cm_components() -> pd.DataFrame:
 
 
 def cm_in_force(units: pd.DataFrame, year: int) -> pd.DataFrame:
-    """The agreements in force in the delivery year from October of `year`: awarded, not terminated, and valid
-    for "<year>/<year + 1>". A row sits under its auction's first delivery year, so a 15-year agreement from an
-    earlier auction is found by its list of valid years, not by "Delivery Year"."""
+    """The agreements in force in the delivery year from October of `year`: awarded at auction, valid for
+    "<year>/<year + 1>" and not terminated before that year began (1 October). A row sits under its auction's first
+    delivery year, so a 15-year agreement from an earlier auction is found by its list of valid years, not by
+    "Delivery Year". Secondary trades (Type ST) are left out: such a row is a unit that took over part of another
+    unit's obligation for a while and won nothing at auction itself (its "Auction Acquired Capacity Obligation" is
+    0; build.capacity_market moves its traded obligation), so counting it added the whole unit (31 to 201 units a
+    year in 2018-2026, 184 and 1.2 GW de-rated in 2025). Until 13 Oct 2026 an agreement terminated at any date was
+    left out of every year, so the units that delivered and were terminated later (19 to 120 a year, 1-2.3 GW of
+    obligation in 2019-2024) were missing from the years they held."""
     valid = units["Delivery Years for which Agreement Valid"].astype(str).str.contains(f"{year}/{year + 1}", regex=False)
     awarded = units["Capacity Agreement Awarded"].astype(str).str.lower().eq("yes")
     terminated = units["Capacity Agreement has been Terminated"].astype(str).str.lower().eq("yes")
-    return units[valid & awarded & ~terminated]
+    when = units.get("Date of Termination of Capacity Agreement", pd.Series(pd.NA, index=units.index))
+    ended = pd.to_datetime(when, format="%d/%m/%Y", errors="coerce")
+    alive = ~terminated | (ended >= pd.Timestamp(year, 10, 1))
+    traded = units.get("Type", pd.Series("", index=units.index)).astype(str).str.strip().eq("ST")
+    return units[valid & awarded & alive & ~traded]
 
 
 @lru_cache(maxsize=None)

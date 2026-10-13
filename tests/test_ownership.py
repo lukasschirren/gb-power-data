@@ -1,7 +1,8 @@
 """Ownership tables (gbpowerdata.common.companies, gbpowerdata.build.build_ownership) on synthetic data: names
 reduce to groups in the documented order; joint ventures resolve by date, with the shares no source gives left
-blank and the uncovered part unresolved; Capacity Market agreements count in every delivery year they cover;
-CfD contracts count once contracted and until terminated; a wind farm takes the holder of the RO stations its name
+blank and the uncovered part unresolved; Capacity Market agreements count in every delivery year they cover, until
+the year they are terminated in, and secondary trades do not count; CfD contracts count once contracted and until
+terminated or their term is over; a wind farm takes the holder of the RO stations its name
 matches; the curated reference tables are well formed, every
 share cites sources that exist and the reference document is up to date; the CM puller never writes the contact
 columns; Ofgem's certificate counts are read with their thousands separators; a CM unit without a fuel type is
@@ -101,6 +102,35 @@ def test_capacity_market_agreements_count_in_every_delivery_year_they_cover():
     })
     assert list(O.cm_in_force(units, 2025).index) == [0]
     assert list(O.cm_in_force(units, 2023).index) == [3]
+
+
+def test_a_cm_agreement_counts_until_the_year_it_is_terminated_in_and_secondary_trades_do_not_count():
+    units = pd.DataFrame({
+        "Type": ["T-4", "T-4", "T-1", "ST", "T-4"],
+        "Delivery Years for which Agreement Valid": ["2023/2024, 2024/2025, 2025/2026"] * 5,
+        "Capacity Agreement Awarded": ["Yes"] * 5,
+        "Capacity Agreement has been Terminated": ["Yes", "Yes", "No", "No", "Yes"],
+        "Date of Termination of Capacity Agreement": ["15/02/2025", "01/10/2024", "", "", ""],
+    })
+    # terminated in February 2025: in force for 2023/24 and 2024/25, not 2025/26; terminated on 1 October 2024,
+    # the day 2024/25 began: in force that year; a secondary trade never; a termination without a date: never
+    assert list(O.cm_in_force(units, 2023).index) == [0, 1, 2]
+    assert list(O.cm_in_force(units, 2024).index) == [0, 1, 2]
+    assert list(O.cm_in_force(units, 2025).index) == [2]
+
+
+def test_a_cfd_contract_stops_counting_once_its_term_is_over():
+    # past dates only: as_of caps a year at today, so a future expiry cannot be tested on a fixed answer
+    t = pd.DataFrame({
+        "record_id": ["ended", "running"],
+        "start": [T("2009-01-01"), T("2019-06-01")],
+        "round_date": [T("2008-04-30"), T("2015-02-26")],
+        "terminated": [pd.NaT, pd.NaT],
+        "lccc_status": ["Live (Post-FIC)", "Live (Post-FIC)"],
+        "expiry": [T("2024-04-01"), T("2034-06-01")],
+    })
+    assert set(O.cfd_in_year(t, 2023)["record_id"]) == {"ended", "running"}
+    assert set(O.cfd_in_year(t, 2024)["record_id"]) == {"running"}
 
 
 def test_cfd_contracts_count_once_contracted_and_until_terminated():
