@@ -15,6 +15,12 @@ side of the consumer bill:
 charged. The corresponding cap ALLOWANCE is in Ofgem Annex 3 (`ofgem_pull`). The
 two are not the same number - see bill_decomposition_provenance.md.
 
+And, named on the command line, NESO's historic demand data (dataset historic-demand-data, one resource per year,
+NESO Open Data Licence): for every settlement period (local time, 46 or 50 on clock-change days) national and
+transmission system demand (ND, TSD), the embedded wind and solar estimates with their capacities,
+pumping and every interconnector's flow (import positive), and the non-BM STOR; published 21 days in arrears, with
+later corrections to solar and demand, so a year is rewritten when pulled again -> historic_demand_{year}.csv.
+
 ⚠️ Distribution (DUoS) is NOT here. It is set per-DNO, published as annual
 spreadsheets on 14 separate licensee websites, and has no API - see
 data/raw/manual/dno_duos/.
@@ -22,6 +28,7 @@ data/raw/manual/dno_duos/.
 Usage:
   python -m gbpowerdata.pull.neso_pull                      # bsuos + aahedc + tnuos
   python -m gbpowerdata.pull.neso_pull bsuos aahedc         # a subset
+  python -m gbpowerdata.pull.neso_pull demand               # historic demand data, 2016 to the current year
   python -m gbpowerdata.pull.neso_pull --list balancing     # search datasets, exit
 """
 
@@ -38,6 +45,7 @@ from gbpowerdata import config as cfg
 
 CKAN_BASE = "https://api.neso.energy/api/3/action"
 OUT_DIR = cfg.raw_dir() / "neso"
+DEMAND_YEARS = range(2016, pd.Timestamp.today().year + 1)
 
 # group -> {dataset slug: {resource name fragment: output stem}}
 # Resource names are matched case-insensitively on a fragment so a portal rename
@@ -61,7 +69,11 @@ DATASETS = {
             "transmission demand residual": "tnuos_demand_residual",
         },
     },
+    "demand": {
+        "historic-demand-data": {f"historic demand data {y}": f"historic_demand_{y}" for y in DEMAND_YEARS},
+    },
 }
+DEFAULT_GROUPS = ("bsuos", "aahedc", "tnuos")     # the network charges; demand is pulled when named
 
 
 def ckan(action: str, **params) -> dict | list:
@@ -126,14 +138,14 @@ def main(argv: list[str]) -> None:
     # No `default=` here: argparse validates a list default against `choices`
     # element-wise and rejects it. Empty means "all", resolved below.
     p.add_argument("groups", nargs="*", choices=list(DATASETS),
-                   help="which groups to pull (default: all).")
+                   help="which groups to pull (default: the network charges, bsuos aahedc tnuos).")
     p.add_argument("--list", metavar="QUERY", help="search the portal and exit.")
     args = p.parse_args(argv[1:])
 
     if args.list is not None:
         print(list_datasets(args.list).to_string(index=False))
         return
-    for g in (args.groups or list(DATASETS)):
+    for g in (args.groups or DEFAULT_GROUPS):
         pull_group(g)
 
 
