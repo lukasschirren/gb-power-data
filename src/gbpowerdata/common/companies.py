@@ -157,6 +157,9 @@ GROUP_RULES = (
     ("TagEnergy", r"\bTAG ?ENERGY"),         # "TAGEnergy UK Limited", "TAGENERGYUK"
     ("Gridserve", r"\bGRIDSERVE\b"),
     ("SUSI Partners", r"\bSUSI\b"),          # SUSI Storage Development UK
+    # Alcemi Storage Developments and its numbered project companies: Coalburn's lead party (... 4) and the CM
+    # applicant (... 6) that declares Alcemi Storage Developments its parent were two groups before 15 Oct 2026
+    ("Alcemi", r"\bAlcemi\b"),
     # parents that the Companies House chains of BM lead parties end at (7 Oct 2026), under one name each: "BP
     # P.L.C." for BP Gas Marketing, "The Shell Petroleum Company" for Limejump Energy, "Exxon Mobil Corporation"
     # for ESSO Petroleum, INEOS's holdings for Grangemouth CHP and INOVYN Energy, "ERG S.p.A." for Creag Riabhach and

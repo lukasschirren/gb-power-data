@@ -148,10 +148,10 @@ Most sources need no account. The others read an environment variable, or else a
    python -m gbpowerdata.pull.fpn_left_register_pull   # the units that left the register: Mar 2016-Mar 2020 (~30 min)
    python -m gbpowerdata.build.bm_units                # needs the per-unit FPN/B1610 pulls (~2 min)
    python -m gbpowerdata.build.build_company_control   # optional: after companies_house_pull --follow 2 (free key)
-   python -m gbpowerdata.build.build_ownership         # after cm_register_pull, dukes_pull and the Ofgem RO reports
+   python -m gbpowerdata.build.capacity_market         # after cm_register_pull, ons_pull, lccc_pull capacity-obligation-by-auction
+   python -m gbpowerdata.build.build_ownership         # after capacity_market (battery owners), cm_register_pull, dukes_pull, the Ofgem RO reports
    python -m gbpowerdata.build.build_crown_estate --strict   # company_owners.csv against The Crown Estate's tables
    python -m gbpowerdata.build.ancillary_services      # after ancillary_pull
-   python -m gbpowerdata.build.capacity_market         # after cm_register_pull, ons_pull, lccc_pull capacity-obligation-by-auction
    python -m gbpowerdata.build.investment_inputs       # after cost_data_pull
    python -m gbpowerdata.build.storage_fleet           # after ancillary_services, capacity_market (bm_dynamic_pull, also --submissions, first for MWh)
    python -m gbpowerdata.pull.ebocf_pull               # then the BM cashflows of the fleet's supplier and VLP batteries,

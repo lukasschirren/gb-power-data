@@ -103,7 +103,9 @@ mixed case before capitals only, then the most capital letters, then the shortes
 | CfD | LCCC's CfD-to-BM-unit mapping (T_/E_ units mapped in the year) | CfD units of contracts that count in the year |
 | DUKES | `data/reference/dukes_bmu_map.csv`: a DUKES site pattern, a technology class, the station's units | the main gas, coal, nuclear, pumped-storage and biomass stations |
 | RO | `data/reference/wind_farm_map.csv`, matched to the RO register by the farm's name | transmission-connected RO wind farms |
-| CM | the components' Component ID (Elexon's or National Grid's unit id) | 220 of the register's 655 units; few batteries |
+| CM | the components' Component ID (Elexon's or National Grid's unit id), agreements in force in the year | 220 of the register's 655 units; few batteries |
+| CM link (`cm_link`) | the agreement `build.capacity_market` links to a storage unit (`capacity_market_links.csv`: a component named by the unit's id in any auction, else the unit's name in the CMU's name or component descriptions within a capacity bound); the original agreement in force in the year, else the latest that started, else the earliest | storage units; an inference where by name |
+| CM postcode (`cm_postcode`) | the CMUs whose components give the battery's postcode in NESO's Enduring Auction Capability results, only where they have one owner group and it trades the unit or a CMU's name matches the unit's (a postcode can hold another company's site) | batteries nothing else links; an inference |
 
 The first link in that order gives the unit's owners and operator. Where that register names a company without
 dated rows and the unit's lead party is a joint venture's own company with dated rows, the venture's rows give the
@@ -183,9 +185,11 @@ na Gaoithe. The Crown Estate's pages are for own use under its terms, so the sna
 - A CM unit without a Primary Fuel Type (most agreements of the earlier auctions) is classed by its CMU Technology:
   "OCGT and Reciprocating Engines" without a stated fuel as gas, "Coal/biomass" as coal except the energy-from-waste
   plants and Drax's biomass units, which their names identify.
-- Battery owners come from the Capacity Market register, whose components are mostly sites rather than BM units,
-  so most battery units have a trader but no owner; the CM records (`register == "cm"`, `tech_class ==
-  "battery"`) give the battery fleet's owners in aggregate.
+- Battery owners come from the Capacity Market register. Its components are mostly sites rather than BM units, so
+  until 15 Oct 2026 only 255 MW of the 5.2 GW of batteries active in 2025 had an owner; the CM links by name and
+  postcode (`cm_link`, `cm_postcode`, inferences) now give owners to most of the rest, and a battery without a CM
+  agreement (or whose agreement no link finds) still has a trader but no owner. The CM records (`register ==
+  "cm"`, `tech_class == "battery"` in `ownership_{y}.csv`) give the fleet with agreements in aggregate.
 - RO stations under 1 MW are left out; many are held by individuals.
 - A joint venture whose own company appears in no register (Rhyl Flats: RWE 50.1%, Greencoat UK Wind 24.95%, UK
   GIG 24.95% in every Crown Estate table; DESNZ and Ofgem name RWE companies that hold other farms too, and it has

@@ -60,7 +60,15 @@ class, so EDF's Sutton Bridge solar farm stays off Calon's CCGT), the transmissi
 data/reference/wind_farm_map.csv and a match of the farm's name to the RO register's stations (every distinctive
 word of the farm's name in the station's name; the holder with the most matched capacity), and the CM units
 through their components, whose Component ID is the BM unit (Elexon's id, or National Grid's without the prefix:
-"SUTB-1") for 220 of the register's 655 units; most batteries' components are sites, not BM units.
+"SUTB-1") for 220 of the register's 655 units; most batteries' components are sites, not BM units. Two further links
+give storage units their owners (since 15 Oct 2026; before, 255 MW of the 5.2 GW of batteries active in 2025 had an
+owner): "cm_link", the CM agreement gbpowerdata.build.capacity_market links to the unit (capacity_market_links.csv: a
+component named by the unit's id in any auction, else every distinctive word of the unit's name in the CMU's name or
+component descriptions within a capacity bound), the original agreement in force in the year, else the latest that
+started by then, else the earliest (pick_agreement); and, for a battery nothing else links, "cm_postcode", the CMUs
+whose components give the unit's postcode in NESO's Enduring Auction Capability results, accepted only where they have
+one owner group and it is the unit's trader or a CMU's name matches the unit's (postcode_accepts: a postcode can hold
+another company's site). The two are inferences, so their rows carry their own register values.
 
 YEARS. 2018 to the current year. A year describes its last day, the current year the build date (as_of in every
 row); DUKES has no list beyond its latest edition, which stands for the current year too. Dated rows of
@@ -68,7 +76,8 @@ company_owners.csv (joint ventures, sales, and companies that changed group, suc
 read at the as-of date, so owners, operators and the groups of trading companies change over the years.
 
 The BM-unit table takes each active unit's owners and operator from the first register that links to it: CfD,
-then DUKES (curated station rows first), then RO, then CM. Where that register names a company without dated rows
+then DUKES (curated station rows first), then RO, then CM (a component of an agreement in force), then the storage
+units' CM agreement (cm_link), then, for a battery, the CM components at its postcode (cm_postcode). Where that register names a company without dated rows
 and the unit's lead party is a joint venture's own company with dated rows in company_owners.csv, the venture's rows
 give the owners (register "bm", basis "curated"): Gunfleet Sands I and II, whose RO holder Orsted Burbo (UK) Limited
 also holds Burbo Bank, are Orsted's, DBJ's and Marubeni's (JERA's from 2019). A unit none links to takes its lead
@@ -114,7 +123,9 @@ gbpowerdata.build.build_company_control); without one the tables are as before.
 
 Usage: python -m gbpowerdata.build.build_ownership [--years 2018 2026]
        (after python -m gbpowerdata.build.bm_units for the same years and the year of the latest register
-       snapshot, against which earlier years' proxies are checked; without it they stay unchecked, with a warning)
+       snapshot, against which earlier years' proxies are checked; without it they stay unchecked, with a warning;
+       and after python -m gbpowerdata.build.capacity_market, whose links give storage units their CM owners;
+       without them those units keep none, with a warning)
 """
 from __future__ import annotations
 
@@ -158,7 +169,8 @@ RECORD_COLUMNS = ["year", "as_of", "register", "record_id", "record_name", "tech
                   "bmu_ids"]
 BMU_COLUMNS = ["year", "as_of", "unit_id", "unit_name", "tech_class", "connection", "capacity_mw", "role", "group", "share",
                "company", "basis", "register", "record_id"]
-LINK_ORDER = ("cfd", "dukes", "ro", "cm")
+LINK_ORDER = ("cfd", "dukes", "ro", "cm", "cm_link")    # then, for a battery, the CM components at its postcode
+CM_LINKS_FILE, CM_AGREEMENTS_FILE = "capacity_market_links.csv", "capacity_market_agreements.csv"   # processed
 # the farm map's station name -> words of the RO register's station name, where the names differ
 WIND_ALIASES = {
     "Pen y Cymoedd Wind Farm": "PyC",            # registered as PyC Wind Farm
@@ -627,6 +639,115 @@ def cm_bmu_links(year: int) -> pd.DataFrame:
              [["unit_id", "cmu_id", "applicant", "parent"]])
 
 
+def pick_agreement(c: pd.DataFrame, year: int) -> pd.DataFrame:
+    """One agreement per unit (rows with unit_id, first_delivery_year, last_delivery_year): the one in force in the
+    delivery year from October `year` (the latest to start, where several are), else the latest that started by
+    then, else the earliest."""
+    first = pd.to_numeric(c["first_delivery_year"], errors="coerce")
+    last = pd.to_numeric(c["last_delivery_year"], errors="coerce")
+    rank = np.select([(first <= year) & (last >= year), first <= year], [0, 1], 2)
+    c = c.assign(_rank=rank, _key=np.where(rank == 2, first, -first)).sort_values(["unit_id", "_rank", "_key"])
+    return c.drop_duplicates("unit_id").drop(columns=["_rank", "_key"])
+
+
+@lru_cache(maxsize=None)
+def cm_link_units(year: int) -> pd.DataFrame:
+    """unit_id, cmu_id, applicant, parent, basis: each storage BM unit's CM agreement as gbpowerdata.build.
+    capacity_market links them (capacity_market_links.csv: a component named by the unit's id, else every distinctive
+    word of the unit's name in the CMU's name or component descriptions, within a capacity bound), original
+    agreements only (not secondary trades), one per unit (pick_agreement); empty, with a warning, where those tables
+    are not built."""
+    cols = ["unit_id", "cmu_id", "applicant", "parent", "basis"]
+    p = cfg.processed_dir()
+    if not (p / CM_LINKS_FILE).exists() or not (p / CM_AGREEMENTS_FILE).exists():
+        _warn_once(f"{CM_LINKS_FILE} is not built, so storage units take no owner from their CM agreements "
+                   "(python -m gbpowerdata.build.capacity_market)")
+        return pd.DataFrame(columns=cols)
+    links = pd.read_csv(p / CM_LINKS_FILE, dtype=str)
+    agr = pd.read_csv(p / CM_AGREEMENTS_FILE, dtype=str, usecols=["agreement_id", "auction_id", "auction_name",
+                                                                  "row_type", "first_delivery_year",
+                                                                  "last_delivery_year"])
+    c = pick_agreement(links.merge(agr[agr["row_type"] == "own"], on=["agreement_id", "auction_id"]), year)
+    reg = (cm_units().drop_duplicates(["Auction Name", "CMU ID"])
+           .rename(columns={"Auction Name": "auction_name", "CMU ID": "cmu_id", "Name of Applicant": "applicant",
+                            "Parent Company": "parent"}))
+    c = c.merge(reg[["auction_name", "cmu_id", "applicant", "parent"]], on=["auction_name", "cmu_id"], how="left")
+    return c.dropna(subset=["applicant"])[cols].reset_index(drop=True)
+
+
+@lru_cache(maxsize=None)
+def cm_postcodes() -> tuple[dict[str, list[str]], dict[str, list[str]]]:
+    """postcode -> the CMUs whose components are there, and CMU -> its texts (its name and its components'
+    descriptions), from the newest register snapshot (the CMU file's date)."""
+    from gbpowerdata.build.storage_fleet import postcode_of
+
+    path = cfg.raw_dir() / "neso" / "cm_register" / f"components_{_cm_stamp()}.csv"
+    comp = pd.read_csv(path, encoding="utf-8-sig", low_memory=False, dtype=str,
+                       usecols=["CMU ID", "Description of CMU Components", "Location and Post Code"])
+    comp["postcode"] = comp["Location and Post Code"].map(postcode_of)
+    sites = comp.dropna(subset=["postcode"]).groupby("postcode")["CMU ID"].apply(lambda s: sorted(set(s))).to_dict()
+    text = pd.concat([cm_units()[["CMU ID", "CM Unit Name"]].set_axis(["cmu", "text"], axis=1),
+                      comp[["CMU ID", "Description of CMU Components"]].set_axis(["cmu", "text"], axis=1)]).dropna()
+    return sites, text.groupby("cmu")["text"].apply(lambda s: sorted(set(map(str, s)))).to_dict()
+
+
+@lru_cache(maxsize=None)
+def eac_postcodes() -> dict[str, str]:
+    """id_key(NESO unit) -> its postcode in NESO's Enduring Auction Capability results
+    (gbpowerdata.build.storage_fleet.eac_postcodes; from November 2023)."""
+    from gbpowerdata.build.storage_fleet import eac_postcodes as eac
+
+    return eac(cfg.raw_dir()).to_dict()
+
+
+@lru_cache(maxsize=None)
+def cmu_latest() -> pd.DataFrame:
+    """Each CMU's applicant and declared parent in its latest auction row (by delivery year), indexed by CMU ID."""
+    t = cm_units().assign(_dy=pd.to_numeric(cm_units()["Delivery Year"], errors="coerce")).sort_values("_dy")
+    return t.drop_duplicates("CMU ID", keep="last").set_index("CMU ID")[["Name of Applicant", "Parent Company"]]
+
+
+def postcode_accepts(groups: set[str], trader: str, unit_name: str, texts: list[str]) -> str:
+    """The owner group a postcode link gives, else "": the CMUs at the postcode have one owner group (unresolved
+    left aside), and it is the unit's trader or a CMU's text matches the unit's name
+    (gbpowerdata.build.capacity_market.name_match). A postcode alone can hold another company's site (Tye Lane,
+    Ipswich, is at the postcode Thorpe Marsh's components give)."""
+    from gbpowerdata.build.capacity_market import name_match
+
+    groups = {g for g in groups if g and g != co.UNRESOLVED}
+    if len(groups) != 1:
+        return ""
+    group = next(iter(groups))
+    return group if group == trader or any(name_match(unit_name, t) for t in texts) else ""
+
+
+def _postcode_owner(r, when: pd.Timestamp, cm) -> tuple[list[dict], str] | None:
+    """A battery's owner and operator rows from the CM components at its postcode in NESO's auction results
+    (postcode_accepts), register "cm_postcode", record_id the CMUs there; None where no group is accepted."""
+    from gbpowerdata.build.storage_fleet import id_key
+
+    if pd.isna(r.ngc_id):
+        return None
+    sites, texts = cm_postcodes()
+    latest = cmu_latest()
+    cmus = [c for c in sites.get(eac_postcodes().get(id_key(r.ngc_id)), []) if c in latest.index]
+    if not cmus:
+        return None
+    found = {c: (_cm_owner(latest.at[c, "Name of Applicant"], latest.at[c, "Parent Company"], when, cm),
+                 latest.at[c, "Name of Applicant"]) for c in cmus}
+    lead = co.lead_party_at(r.unit_id, when) or (r.party_name if pd.notna(r.party_name) else "")
+    trader = co.trader_group(lead, when, cm)[0] if lead else ""
+    group = postcode_accepts({o["group"] for (owners, _, _), _ in found.values() for o in owners}, trader,
+                             str(r.unit_name), [t for c in cmus for t in texts.get(c, [])])
+    if not group:
+        return None
+    c = next(c for c in cmus if any(o["group"] == group for o in found[c][0][0]))
+    (owners, operator, basis), applicant = found[c]
+    rows = [{**x, "company": applicant, "register": "cm_postcode", "record_id": ";".join(cmus)}
+            for x in _roles(owners, operator, basis)]
+    return rows, operator
+
+
 # ---------------------------------------------------------------------------- tables
 def _roles(owners: list[dict], operator: str, basis: str) -> list[dict]:
     out = [{"role": "owner", "group": o["group"], "share": o["share"], "basis": basis} for o in owners]
@@ -756,6 +877,8 @@ def bmu_links(year: int) -> dict[str, dict[str, dict]]:
                 put(u, "ro", company=f.holder, record_id=";".join(f.ro_ids), address=f.address)
     for r in cm_bmu_links(year).itertuples(index=False):
         put(r.unit_id, "cm", company=r.applicant, record_id=r.cmu_id, parent=r.parent)
+    for r in cm_link_units(year).itertuples(index=False):
+        put(r.unit_id, "cm_link", company=r.applicant, record_id=r.cmu_id, parent=r.parent)
     return out
 
 
@@ -773,7 +896,7 @@ def _unit_owners(year: int) -> dict[str, tuple[list[dict], str]]:
             link = links.get(r.unit_id, {}).get(register)
             if not link:
                 continue
-            if register == "cm":
+            if register in ("cm", "cm_link"):
                 owners, operator, basis = _cm_owner(link["company"], link.get("parent"), when, cm)
             else:
                 owners, operator, basis = co.resolve(link["company"], when, station=link.get("station", ""),
@@ -793,6 +916,8 @@ def _unit_owners(year: int) -> dict[str, tuple[list[dict], str]]:
                 operator = jv_operator
                 rows = [{**x, "company": r.party_name, "register": "bm", "record_id": r.unit_id}
                         for x in _roles(owners, operator, basis)]
+        if not rows and r.tech == "battery":
+            rows, operator = _postcode_owner(r, when, cm) or ([], "")
         if not rows and r.tech != "battery" and pd.notna(r.party_name):
             owners, operator, basis = co.resolve(r.party_name, when, cm_parents=cm)
             rows = [{**x, "company": r.party_name, "register": "bm", "record_id": r.unit_id}

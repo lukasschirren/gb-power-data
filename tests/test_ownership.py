@@ -195,6 +195,26 @@ def test_cm_components_link_by_elexons_or_national_grids_unit_id(monkeypatch):
     assert O.component_units(2025)["unit_id"].tolist() == ["T_SUTB-1", "E_PILLB-1"]
 
 
+def test_a_storage_unit_takes_the_agreement_in_force_else_the_latest_before_else_the_earliest():
+    c = pd.DataFrame({"unit_id": ["A", "A", "A", "B"], "cmu_id": ["a18", "a20", "a27", "b27"],
+                      "first_delivery_year": ["2018", "2020", "2027", "2027"],
+                      "last_delivery_year": ["2018", "2034", "2027", "2041"]})
+    pick = lambda y: dict(zip(*O.pick_agreement(c, y)[["unit_id", "cmu_id"]].T.values))   # noqa: E731
+    assert pick(2025) == {"A": "a20", "B": "b27"}      # in force; B's only agreement starts later
+    assert pick(2019) == {"A": "a18", "B": "b27"}      # none in force: the latest that started
+    assert pick(2017)["A"] == "a18"                    # none started: the earliest
+    assert pick(2027)["A"] == "a27"                    # two in force: the latest to start
+
+
+def test_a_postcode_link_needs_one_owner_who_trades_the_unit_or_a_matching_name():
+    # Zenobe's Blackhillock units carry codes for names, and Zenobe trades them; Tye Lane (traded by EDF) sits at the
+    # postcode Thorpe Marsh's components give, another company's site
+    assert O.postcode_accepts({"Zenobe"}, "Zenobe", "T_BLHLB-1", ["Blackhillock"]) == "Zenobe"
+    assert O.postcode_accepts({"Foresight", co.UNRESOLVED}, "Tesla", "Chapel Farm BESS", ["CHAPELFARM"]) == "Foresight"
+    assert O.postcode_accepts({"Thorpe Co"}, "EDF", "Tye Lane BESS", ["ThorpeMarsh"]) == ""
+    assert O.postcode_accepts({"A", "B"}, "A", "Site", ["Site"]) == ""
+
+
 def test_the_cm_puller_never_writes_the_contact_columns():
     csv = ("﻿CMU ID,Name of Applicant,Secondary Trading Contact_Telephone,Secondary Trading Contact_Email,Parent Company\n"
            "X1,Foo Ltd,0123,a@b.c,Foo plc\n").encode("utf-8")
