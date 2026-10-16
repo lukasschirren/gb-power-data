@@ -78,7 +78,7 @@ series has one row per half-hour with its UTC start time in the column `startTim
 | | `cfd_status`, `cfd_fleet_{y}` | each CfD contract, and the actual payments LCCC settled |
 | | `agents_{y}` | the fleet grouped into units ready for a market model |
 | | `wind_farms_{y}`, `wind_farm_fpn_{y}` | output of each transmission-connected wind farm |
-| Ownership | `bm_unit_register_{y}` | every BM unit of the kept register snapshots with its lead party (the company that trades it; the register snapshot for the year, today's as a proxy before the first kept snapshot), technology, capacity and whether it produced in the year (the current year: the last pulled year's activity); units deregistered before the first snapshot, such as Cottam and Aberthaw B, are not in it |
+| Ownership | `bm_unit_register_{y}` | every BM unit of the kept register snapshots with its lead party (the company that trades it; the register snapshot for the year, today's as a proxy before the first kept snapshot), technology, capacity and whether it produced in the year (the current year: the last pulled year's activity); the units that left the register before the first snapshot (Cottam, Aberthaw B, Eggborough and Deeside) are added from a sourced table and dated by their notifications in Elexon's all-units stream |
 | | `ownership_{y}`, `ownership_bmu_{y}` | owners (with joint-venture shares), operators and traders in the year, by register (DUKES, RO, CfD, Capacity Market, Balancing Mechanism) and by BM unit, 2018 to the current year ([docs/ownership.md](docs/ownership.md); every curated share with its sources in [docs/ownership_references.md](docs/ownership_references.md)) |
 | | `company_control` | Companies House persons with significant control as a dated table: each pulled company's corporate controllers (names and numbers), ownership and voting bands, notified and ceased dates; individuals only as anonymous rows (not packed) |
 | | `crown_estate_ownership` | The Crown Estate's offshore wind ownership tables by date, against which `build_crown_estate` checks `company_owners.csv` (local only: The Crown Estate's terms) |
@@ -145,6 +145,7 @@ Most sources need no account. The others read an environment variable, or else a
    python -m gbpowerdata.build.build_lolp --years 2018 2025
    python -m gbpowerdata.build.build_forecast_state --start 2018 --end 2025
    python -m gbpowerdata.build.build_consumer_levy
+   python -m gbpowerdata.pull.fpn_left_register_pull   # the units that left the register: Mar 2016-Mar 2020 (~30 min)
    python -m gbpowerdata.build.bm_units                # needs the per-unit FPN/B1610 pulls (~2 min)
    python -m gbpowerdata.build.build_company_control   # optional: after companies_house_pull --follow 2 (free key)
    python -m gbpowerdata.build.build_ownership         # after cm_register_pull, dukes_pull and the Ofgem RO reports

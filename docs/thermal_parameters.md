@@ -174,10 +174,12 @@ The BM dynamic parameters are declarations. Ofgem found SELs inflated to raise B
 2020, EDF West Burton B 2020, ESB Carrington 2021). SEL over MEL is higher for units at zero, so the minimum stable
 level counts running units only. A value of 999, the top of the valid range, means a unit will not start at notice
 and is left out of the summaries. A snapshot finds some units hot and some cold, so NDZ and the run-up time mix start
-types, and nuclear units declare SEL and nothing else. The register behind the summaries is built from Elexon's 2026
+types, and nuclear units declare SEL and nothing else. The register behind the summaries was built from Elexon's 2026
 unit list, which no longer carries Aberthaw B, Cottam or Eggborough. The coal rows therefore describe Drax 5-6,
-Fiddler's Ferry, Ratcliffe-on-Soar and West Burton A, and the 2018 and 2019 registers hold about 5.5 GW and 3.5 GW less
-coal than operated.
+Fiddler's Ferry, Ratcliffe-on-Soar and West Burton A, and the 2018 and 2019 registers held about 5.5 GW and 3.5 GW less
+coal than operated. Since 14 Oct 2026 the register adds the three stations, and Deeside's CCGT, from
+`data/reference/bmu_left_register.csv`, so the next build of `bm_dynamic` takes them into the coal and CCGT rows, and
+the GB rows here are to be checked then.
 
 ## Using the values in a model
 

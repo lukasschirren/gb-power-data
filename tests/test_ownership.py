@@ -16,6 +16,7 @@ import pandas as pd
 import pytest
 
 from gbpowerdata import config as cfg
+from gbpowerdata.build import bm_units as B
 from gbpowerdata.build import build_ownership as O
 from gbpowerdata.common import companies as co
 from gbpowerdata.pull import cm_register_pull, dukes_pull
@@ -248,8 +249,26 @@ def test_every_source_is_complete_unique_and_cited():
     assert (s[["publisher", "title", "kind"]].apply(lambda c: c.str.strip() != "")).all().all()
     pd.to_datetime(s["accessed"], format="%Y-%m-%d", errors="raise")
     assert s["published"].str.match(r"^(\d{4}(-\d{2}(-\d{2})?)?)?$").all()     # a year, a month or a day, as the source gives it
-    cited = {i.strip() for f in (co.OWNERS_FILE, co.LEADS_FILE) for ids in _real(f)["sources"] for i in ids.split(";") if i.strip()}
+    cited = {i.strip() for f in (co.OWNERS_FILE, co.LEADS_FILE, B.LEFT_REGISTER) for ids in _real(f)["sources"]
+             for i in ids.split(";") if i.strip()}
     assert set(s["source_id"]) <= cited, set(s["source_id"]) - cited
+
+
+def test_the_units_that_left_the_register_are_sourced_linked_and_traded():
+    t = _real(B.LEFT_REGISTER)
+    assert t.columns.tolist() == B.LEFT_COLUMNS
+    assert not t["unit_id"].duplicated().any() and t["unit_id"].str.match(r"^[TE]_").all()
+    assert not t["ngc_id"].duplicated().any() and (t["ngc_id"].str.strip() != "").all()
+    assert (pd.to_numeric(t["capacity_mw"], errors="raise") > 0).all()
+    pd.to_datetime(t["closed"], format="%Y-%m-%d", errors="raise")
+    pd.to_datetime(t["checked"], format="%Y-%m-%d", errors="raise")
+    known = set(_real(co.SOURCES_FILE)["source_id"])
+    for ids in t["sources"]:
+        assert ids.strip() and {i.strip() for i in ids.split(";")} <= known, ids
+    # owners through DUKES' station rows, traders from the documented lead parties
+    linked = {u for s in _real(co.STATIONS_FILE)["bmu_ids"] for u in s.split(";") if u}
+    assert set(t["unit_id"]) <= linked, set(t["unit_id"]) - linked
+    assert set(t["unit_id"]) <= set(_real(co.LEADS_FILE)["unit_id"])
 
 
 def test_documented_lead_party_changes_are_sourced_and_do_not_overlap():

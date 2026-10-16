@@ -7,8 +7,10 @@ connected thermal units (NUCLEAR, COAL, CCGT, OCGT, BIOMASS, OIL) for per-unit
 availability / ramp / min-stable characterisation (see reports/text/technology_flexibility.md).
 
 Caveat: the unit list comes from the CURRENT BM-unit snapshot, so plants that
-retired AND were delisted before that snapshot (e.g. some 2018-2021 coal:
-Aberthaw, Cottam, Fiddlers Ferry) are not covered.
+retired AND were delisted before that snapshot (the 2018-2019 coal of Aberthaw B,
+Cottam and Eggborough, and Deeside's CCGT) are not covered; Elexon's per-unit query
+returns nothing for them anyway, and their notifications come from its all-units
+stream instead (gbpowerdata.pull.fpn_left_register_pull).
 
 The default list holds the T_ units only. Elexon publishes B1610 for the embedded (E_) units
 too: the CCGTs connected to a distribution network (Shoreham E_SHOS-1, Great Yarmouth E_GYAR-1,

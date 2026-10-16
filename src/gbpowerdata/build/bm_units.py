@@ -15,6 +15,10 @@ Sources:
   data/raw/b1610/{unit}.csv              metered output (gbpowerdata.pull.b1610_pull; thermal units, from Feb 2019)
   data/raw/bod/{unit}.csv                bid-offer data (gbpowerdata.pull.elexon_bod_pull; from January 2022)
   gbpowerdata.pull.elexon_bod_pull.battery_units   the OTHER-fuel batteries (extended here to blank fuel)
+  data/reference/bmu_left_register.csv   the units that left the register before its first kept snapshot:
+                                         ids, fuel type, capacity, documented closure and sources (left_register);
+                                         their notifications are in data/raw/fpn/, cut from Elexon's all-units
+                                         stream by gbpowerdata.pull.fpn_left_register_pull
 
 Rules:
   technology  fuelType -> ccgt | ocgt | coal | nuclear | biomass | hydro | pumped_storage | wind. A blank fuelType
@@ -48,12 +52,13 @@ Rules:
               first and last submission. A unit whose FPN and B1610 files never show output is inactive in every
               year ("no_output"), and so is a unit whose notifications --pull-missing found empty over the whole
               window ("no_notifications", recorded in data/raw/fpn_without_notifications.csv: Dogger Bank B's five
-              units, 1.2 GW, notified nothing before 2026). A documented commercial closure (RETIREMENTS) ends a
-              unit's activity also where its files show output later, outside the market: the winter 2022/23 coal
-              contingency kept Drax units 5 and 6 and West Burton A units 1 and 2 available after their Capacity
-              Market obligations ended in September 2022, and their metered output (B1610) shows them running
-              until March 2023 on the system operator's instruction (activity_source "...+retirement_table"). Units
-              without any file: the documented closures (RETIREMENTS), units the register carries at zero capacity
+              units, 1.2 GW, notified nothing before 2026). A documented commercial closure (RETIREMENTS, or the
+              closure of a unit that left the register) ends a unit's activity also where its files show output
+              later, outside the market: the winter 2022/23 coal contingency kept Drax units 5 and 6 and West
+              Burton A units 1 and 2 available after their Capacity Market obligations ended in September 2022, and
+              their metered output (B1610) shows them running until March 2023 on the system operator's
+              instruction (activity_source "...+retirement_table"). Units without any file: the documented
+              closures (active until then), units the register carries at zero capacity
               (inactive), units with neither a file nor a fuel type and batteries (dated by their files) without
               one ("no_evidence": inactive), and otherwise active throughout ("assumed"). --pull-missing pulls the
               notifications of every unit without a file that submits them (fpn_flag), so these last rules are
@@ -66,6 +71,20 @@ Rules:
               highest level of its physical notifications (capacity_source "register", "table" or "fpn_max").
   connection  T_ = transmission-connected, E_ = embedded but BM-registered. Supplier (2__), virtual lead party
               (V__), interconnector (I_) and other units are not in the table.
+  left the    a unit that left Elexon's register before its first kept snapshot is in no snapshot, so
+  register    data/reference/bmu_left_register.csv adds it to every year (left_register): its Elexon and
+              National Grid ids and EIC (the Power Station Dictionary), its fuel type, its share of the station's
+              capacity in DUKES 5.11 (capacity_source "table"), its documented closure and the sources. Its lead
+              party is in no snapshot either (party_id and party_name blank, party_basis "left_register");
+              gbpowerdata.build.build_ownership takes its trader from data/reference/bmu_lead_parties.csv. Elexon's
+              per-unit queries return nothing for such a unit, so its notifications come from Elexon's all-units
+              stream, where it is listed by its National Grid id (gbpowerdata.pull.fpn_left_register_pull, which
+              writes them to data/raw/fpn/{unit}.csv over the FPN files' window, 1 Mar 2016 to 31 Mar 2020), and it
+              is dated by the rule above. The table holds Eggborough (1,960 MW of coal, output to March 2018),
+              Cottam (2,000 MW, to September 2019), Aberthaw B (1,559 MW, to December 2019, with its 51 MW of gas
+              turbines) and Deeside (a 498 MW CCGT, to March 2018, which the register of 5 Jun 2026 lists by its
+              National Grid id alone): the register's coal was 7.2 GW in 2018 and 6.7 GW in 2019 without them,
+              12.8 and 10.3 GW with them.
 
 Differences from the rules this was first written with (checked 7 Oct 2026 on the 2018-2025 files, after the
 notifications of the units without an activity file were pulled): those read each file's first and last line with
@@ -82,16 +101,19 @@ Years and snapshots: 2018 to the current year, the current year as of the build 
 Elexon publishes only the register of the day, so each pulled snapshot (bm_units_YYYYMMDD.csv) is kept: a year
 takes the latest snapshot on or before its as-of date (party_basis "register"), and where none is that old, the
 earliest snapshot after it (party_basis "proxy": today's lead party standing in for the past;
-gbpowerdata.build.build_ownership checks the proxy against the unit's ownership at the date). Pulling the register
+gbpowerdata.build.build_ownership checks the proxy against the unit's ownership at the date); a unit that left the
+register before the first snapshot has party_basis "left_register" and no register_date. Pulling the register
 every month (scripts/snapshot_registers.py) builds the history from now on.
 
 Known limits: capacities are the register's, not by year (restored for units listed at zero); a unit available
 all year but never run (a peaker held in reserve) counts as inactive in that year; a unit without any activity
 file that submits no physical notifications but has a fuel type counts as active in every year ("assumed": 3
-units, 55 MW in the register of 5 Jun 2026, once the notifications of the others were pulled on 7 Oct 2026). Units
-that left Elexon's register before its first kept snapshot (5 Jun 2026) are in no year: Eggborough (1,960 MW coal,
-closed September 2018), Cottam (2,000 MW coal, September 2019) and Aberthaw B (1,559 MW coal, March 2020) among
-them (DUKES 5.11), so the early years' coal is short by their capacity.
+units, 55 MW in the register of 5 Jun 2026, once the notifications of the others were pulled on 7 Oct 2026). A unit
+that left Elexon's register before its first kept snapshot (5 Jun 2026) is in the tables only if
+bmu_left_register.csv holds it; data/processed/bmu_unregistered_scan.csv lists every unit the snapshots
+lack that notified output from March 2016 to March 2020, against which the table is checked, and the later years were
+checked by sampling (see gbpowerdata.pull.fpn_left_register_pull). Such a unit has no metered output (B1610), and its
+capacity is its share of the station's, not its own.
 
 Output: data/processed/bm_unit_register_{year}.csv, one row per T_/E_ unit of the register: year, unit_id,
 ngc_id, unit_name, party_id, party_name, tech, connection, capacity_mw, demand_capacity_mw, gsp_group, fpn_flag,
@@ -156,6 +178,9 @@ TECH_WHILE_ACTIVE = {"T_FIDL-1": "coal", "T_FIDL-2": "coal", "T_FIDL-3": "coal",
 OTHER_WORDS = re.compile(r"\b(?:CHP|COGEN\w*|POWER|ENERGY|GAS|PEAK\w*|GENERAT\w*|RESERVE)\b")
 NEVER = pd.Timestamp("1900-01-01")
 EMPTY_PULLS = "fpn_without_notifications.csv"   # raw folder: units whose pulled notifications came back empty
+LEFT_REGISTER = "bmu_left_register.csv"    # reference folder: units that left the register before its snapshots
+LEFT_COLUMNS = ["unit_id", "ngc_id", "unit_name", "station", "fuel_type", "capacity_mw", "eic", "closed", "sources",
+                "evidence", "checked"]
 COLUMNS = ["year", "unit_id", "ngc_id", "unit_name", "party_id", "party_name", "tech", "connection",
            "capacity_mw", "demand_capacity_mw", "gsp_group", "fpn_flag", "is_battery", "active", "active_from",
            "active_to", "activity_source", "activity_year", "fuel_type", "eic", "capacity_source", "as_of",
@@ -219,11 +244,13 @@ def pull_windows(activity: dict[str, dict[str, dict]]) -> dict[str, Span]:
 
 
 def activity_window(activity: dict[str, dict], windows: dict[str, Span], unit: str = "",
-                    capacity_mw: float = np.nan, fuel_known: bool = True, tech: str = "") -> dict:
+                    capacity_mw: float = np.nan, fuel_known: bool = True, tech: str = "", closed=None) -> dict:
     """From a unit's files ({kind: {"file": (first, last), "output": (first, last) or None, "output_any": the same
     counting charging}}) and each kind's pull window: the first active date (None if the unit produced from the
     start of the window of the kind that saw it first), the last (None if still producing at the end of a
-    window) and the source (see the module docstring, also for the rules without output files)."""
+    window) and the source (see the module docstring, also for the rules without output files). `closed` is a
+    documented closure the caller knows (a unit that left the register), else RETIREMENTS' for the unit."""
+    closed = RETIREMENTS.get(unit) if closed is None or pd.isna(closed) else closed
     key = "output_any" if tech in STORAGE else "output"
     output = {k: a[key] for k, a in activity.items() if k in OUTPUT_KINDS and a.get(key)}
     files = {k: a["file"] for k, a in activity.items() if not a.get("empty")}
@@ -239,9 +266,8 @@ def activity_window(activity: dict[str, dict], windows: dict[str, Span], unit: s
         if kinds:                               # files without output, or a pull that found no notifications
             source = "no_notifications" if all(a.get("empty") for a in kinds) else "no_output"
             return {"active_from": None, "active_to": NEVER, "activity_source": source}
-        if unit in RETIREMENTS:
-            return {"active_from": None, "active_to": pd.Timestamp(RETIREMENTS[unit]),
-                    "activity_source": "retirement_table"}
+        if closed is not None:
+            return {"active_from": None, "active_to": pd.Timestamp(closed), "activity_source": "retirement_table"}
         if pd.notna(capacity_mw) and capacity_mw <= 0:
             return {"active_from": None, "active_to": NEVER, "activity_source": "zero_capacity"}
         if not fuel_known or tech == "battery":     # a battery is dated by its files: without one, no evidence
@@ -257,9 +283,9 @@ def activity_window(activity: dict[str, dict], windows: dict[str, Span], unit: s
     at_end = any(v[1] >= windows[k][1] - END_SLACK for k, v in ends.items())
     source = "+".join(sorted(starts)) + ("" if starts is output else "_file")
     to = None if at_end else last
-    if unit in RETIREMENTS and (to is None or to > pd.Timestamp(RETIREMENTS[unit])):
+    if closed is not None and (to is None or to > pd.Timestamp(closed)):
         # a documented commercial closure ends market activity; output after it was outside the market
-        to, source = pd.Timestamp(RETIREMENTS[unit]), source + "+retirement_table"
+        to, source = pd.Timestamp(closed), source + "+retirement_table"
     return {"active_from": None if at_start else first, "active_to": to, "activity_source": source}
 
 
@@ -443,25 +469,51 @@ def register(path: Path | None = None) -> pd.DataFrame:
     return bm.rename(columns=keep)[list(keep.values()) + ["tech", "connection", "is_battery"]]
 
 
+def left_register() -> pd.DataFrame:
+    """The units that left Elexon's register before its first kept snapshot (data/reference/bmu_left_register.csv)
+    as rows of register(), the lead party blank (no kept snapshot names it), with the documented closure (closed) and
+    the station beside them; empty without the file."""
+    cols = ["unit_id", "ngc_id", "unit_name", "party_id", "party_name", "fuel_type", "capacity_mw",
+            "demand_capacity_mw", "gsp_group", "fpn_flag", "eic", "tech", "connection", "is_battery", "closed",
+            "station"]
+    path = cfg.reference_dir() / LEFT_REGISTER
+    if not path.exists():
+        return pd.DataFrame(columns=cols)
+    t = pd.read_csv(path, dtype=str, keep_default_na=False)
+    if t.columns.tolist() != LEFT_COLUMNS:
+        raise ValueError(f"{path.name}: columns {t.columns.tolist()}, expected {LEFT_COLUMNS}")
+    out = t[["unit_id", "ngc_id", "unit_name", "fuel_type", "eic", "station"]].assign(
+        party_id=np.nan, party_name=np.nan, capacity_mw=pd.to_numeric(t["capacity_mw"], errors="raise"),
+        demand_capacity_mw=np.nan, gsp_group=np.nan, fpn_flag=True, closed=pd.to_datetime(t["closed"], errors="raise"))
+    out["tech"] = [classify_tech(f, u, n) for f, u, n in zip(out["fuel_type"], out["unit_id"], out["unit_name"])]
+    out["connection"] = np.where(out["unit_id"].str.startswith("T_"), "transmission", "embedded")
+    out["is_battery"] = out["tech"] == "battery"
+    return out[cols]
+
+
 # ---------------------------------------------------------------------------- builders
 def build_year(year: int, activity: dict | None = None, reg: pd.DataFrame | None = None) -> pd.DataFrame:
     """The register for `year`: every T_/E_ unit with its lead party (from the snapshot for the year's as-of date),
     technology, capacity (restored where the register lists zero for a unit that ran) and whether it produced in
-    the year."""
+    the year; the units that left the register before its first snapshot (left_register) with them."""
     stamp, basis = snapshot_for(as_of(year))
     reg = register(register_files()[stamp]) if reg is None else reg.copy()
+    left = left_register()
+    left = left[~left["unit_id"].isin(reg["unit_id"])]          # a unit a snapshot lists comes from the snapshot
+    closed = dict(zip(left["unit_id"], left["closed"]))
+    reg = pd.concat([reg, left.drop(columns=["closed", "station"])], ignore_index=True) if len(left) else reg
     activity = activity_files() if activity is None else activity
     windows = pull_windows(activity)
     reg["capacity_source"] = "register"
     fix = reg["unit_id"].map(CAPACITY_WHILE_ACTIVE)
-    reg.loc[fix.notna(), "capacity_source"] = "table"
+    reg.loc[fix.notna() | reg["unit_id"].isin(closed), "capacity_source"] = "table"
     reg["capacity_mw"] = reg["capacity_mw"].where(fix.isna(), fix)
     ran = (reg["capacity_mw"].fillna(0) <= 0) & reg["unit_id"].map(
         lambda u: bool((activity.get(u, {}).get("fpn") or {}).get("output_any")))
     if ran.any():
         reg.loc[ran, "capacity_mw"] = reg.loc[ran, "unit_id"].map(fpn_max_level)
         reg.loc[ran, "capacity_source"] = "fpn_max"
-    act = pd.DataFrame([activity_window(activity.get(u, {}), windows, u, c, pd.notna(f), t)
+    act = pd.DataFrame([activity_window(activity.get(u, {}), windows, u, c, pd.notna(f), t, closed.get(u))
                         for u, c, f, t in zip(reg["unit_id"], reg["capacity_mw"], reg["fuel_type"], reg["tech"])],
                        index=reg.index)
     df = pd.concat([reg, act], axis=1)
@@ -470,6 +522,8 @@ def build_year(year: int, activity: dict | None = None, reg: pd.DataFrame | None
     df.insert(0, "year", year)
     df["activity_year"] = obs
     df["as_of"], df["register_date"], df["party_basis"] = as_of(year).date(), stamp.date(), basis
+    gone = df["unit_id"].isin(closed)
+    df.loc[gone, "register_date"], df.loc[gone, "party_basis"] = None, "left_register"
     return df[COLUMNS].sort_values(["party_name", "unit_id"]).reset_index(drop=True)
 
 

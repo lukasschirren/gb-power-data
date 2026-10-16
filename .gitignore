@@ -28,6 +28,7 @@ data/reference/*
 !data/reference/company_owners.csv
 !data/reference/ownership_sources.csv
 !data/reference/bmu_lead_parties.csv
+!data/reference/bmu_left_register.csv
 !data/reference/companies_house_numbers.csv
 !data/reference/crown_estate_farms.csv
 # never re-include crown_estate_ownership_reports.csv (a transcription of The Crown Estate's report tables):

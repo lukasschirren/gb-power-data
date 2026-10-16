@@ -81,7 +81,11 @@ date (register "curated"), else from the year's register snapshot ("bm"). Where 
 ("bm_proxy": today's lead party standing in for a past year), the proxy is checked against the unit's ownership:
 if the unit's operator at the date differs from its operator at the snapshot's date, the unit changed hands since,
 and its trader at the date is taken to be its operator then (register "operator_at_date", a judgement: Damhead
-Creek and Rye House were Drax's until January 2021, VPI trades them today).
+Creek and Rye House were Drax's until January 2021, VPI trades them today). A unit that left Elexon's register
+before its first kept snapshot (data/reference/bmu_left_register.csv, read by gbpowerdata.build.bm_units: Cottam,
+Aberthaw B, Eggborough and Deeside) is in no snapshot, so bmu_lead_parties.csv names its lead party, a judgement
+with its evidence (the company that trades the group's other thermal units, or the station's own company), and its
+owners come through its station's row in dukes_bmu_map.csv.
 
 Technology classes (tech_class, one vocabulary across the registers): offshore_wind, onshore_wind, wind (a BM
 wind unit not in the farm map and transmission-connected), solar, hydro, pumped_storage, battery, gas, coal, oil,

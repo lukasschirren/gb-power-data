@@ -51,9 +51,13 @@ THE CAVEAT, WHICH TRAVELS WITH THE NUMBERS
     about 60 min, is its hot-start notice. Nuclear units publish only SEL.
 
 COVERAGE
-    Only units the register holds are summarised. The register is built from Elexon's 2026 unit list,
+    Only units the register holds are summarised. The register was built from Elexon's 2026 unit list,
     which no longer carries Aberthaw B, Cottam or Eggborough (coal, closed 2018-2020), so the coal rows
-    describe Drax 5-6, Fiddler's Ferry, Ratcliffe-on-Soar and West Burton A. No oil-fired BM unit is
+    of data/reference/bm_dynamic_by_tech.csv describe Drax 5-6, Fiddler's Ferry, Ratcliffe-on-Soar and
+    West Burton A. Since 14 Oct 2026 the register adds the three, and Deeside's CCGT, from
+    data/reference/bmu_left_register.csv (gbpowerdata.build.bm_units), so the next build of this module takes
+    their declared values into the coal and CCGT rows, and the GB rows of thermal_parameters.csv are to be
+    checked against it then. No oil-fired BM unit is
     active in the register in 2018-2025. The register's "ocgt" class is mostly small open-cycle units of
     15-140 MW (the auxiliary gas turbines at coal and CCGT sites, Cowes, Indian Queens, Taylor's Lane)
     that run at or near full output, plus Spalding's 300 MW open-cycle unit.

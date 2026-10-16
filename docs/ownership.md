@@ -169,9 +169,12 @@ na Gaoithe. The Crown Estate's pages are for own use under its terms, so the sna
   Drax through its parent in the CM register), unless a dated row says otherwise.
 - DUKES lists 382-390 GB stations a year in the editions to 2021 and 1,263-1,317 from 2022 (more renewables): a
   break in coverage.
-- BM units that left Elexon's register before its first kept snapshot (5 Jun 2026) are in no year's BM tables:
-  Eggborough (closed September 2018), Cottam (September 2019) and Aberthaw B (March 2020) among the coal stations.
-  Their DUKES records are there, without BM units and without a trader.
+- BM units that left Elexon's register before its first kept snapshot (5 Jun 2026) are in the BM tables only where
+  `data/reference/bmu_left_register.csv` holds them: since 14 Oct 2026 Eggborough (EPH's, closed September 2018),
+  Cottam (EDF's, September 2019), Aberthaw B (RWE's, March 2020) and Deeside's CCGT (Energy Capital Partners', 2018),
+  dated by their notifications in Elexon's all-units stream. Their owners come through DUKES and the curated rows;
+  their traders, which no kept snapshot names, are a judgement (`data/reference/bmu_lead_parties.csv`): the company
+  that trades the group's other thermal units, or the station's own company.
 - A BM unit with no activity file that submits no notifications but has a fuel type counts as active in every year
   (3 units, 55 MW). The other units without files had their notifications pulled on 7 Oct 2026; the 25 that
   notified nothing before 2026, Dogger Bank B's 1.2 GW among them, count in no year.

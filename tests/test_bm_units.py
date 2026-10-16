@@ -133,6 +133,7 @@ def raw(tmp_path, monkeypatch):
     fpn("T_NEW-1", ["2016-03-01", "2022-03-01", "2025-12-31"], [0, 790, 790])       # zeros until 2022
     fpn("E_BATB-1", ["2023-05-01", "2025-12-31"], [0, 0])                           # a battery notifying zero
     monkeypatch.setattr(cfg, "raw_dir", lambda: tmp_path)
+    monkeypatch.setattr(cfg, "reference_dir", lambda: tmp_path)                    # no table of units that left
     return tmp_path
 
 
@@ -237,3 +238,47 @@ def test_the_record_of_empty_pulls_is_read_unless_a_file_says_more(tmp_path, mon
     a = B.activity_files()
     assert a["T_DBBWO-1"]["fpn"]["empty"] and a["T_DBBWO-1"]["fpn"]["file"] == window
     assert not a["T_LATER-1"]["fpn"].get("empty")                          # its file wins over the record
+
+
+def left(unit, ngc, fuel, mw, closed):
+    return {"unit_id": unit, "ngc_id": ngc, "unit_name": f"{unit} name", "station": "Gone", "fuel_type": fuel,
+            "capacity_mw": mw, "eic": "", "closed": closed, "sources": "s", "evidence": "e", "checked": "2026-10-14"}
+
+
+def test_a_unit_that_left_the_register_joins_every_year_dated_by_its_notifications(raw):
+    # Cottam: in no kept snapshot; the table gives its ids, its share of DUKES' capacity and its closure, and the
+    # notifications cut from Elexon's all-units stream date it; a gas turbine whose pull found nothing stays inactive
+    pd.DataFrame([left("T_GONE-1", "GONE-1", "COAL", "500.0", "2019-09-30"),
+                  left("T_GONEG-1", "GONEG-1", "OCGT", "17.0", "2019-09-30")]).to_csv(raw / B.LEFT_REGISTER,
+                                                                                     index=False)
+    pd.DataFrame([{"settlementDate": d, "settlementPeriod": p, "timeFrom": "", "timeTo": "", "levelFrom": lvl,
+                   "levelTo": lvl} for d, lvl in (("2016-03-01", 480), ("2019-08-15", 500), ("2020-03-31", 0))
+                  for p in range(1, 49)]).to_csv(raw / "fpn" / "T_GONE-1.csv", index=False)
+    B.record_empty_pulls(["T_GONEG-1"], (T("2016-03-01"), T("2020-04-01")))
+    y = {yr: B.build_year(yr).set_index("unit_id") for yr in (2018, 2019, 2020)}
+    g = y[2019].loc["T_GONE-1"]
+    assert y[2018].loc["T_GONE-1", "active"] and g["active"] and not y[2020].loc["T_GONE-1", "active"]
+    assert pd.isna(g["active_from"]) and g["active_to"] == T("2019-08-15") and g["activity_source"] == "fpn"
+    assert (g["capacity_mw"], g["capacity_source"], g["tech"], g["connection"]) == (500.0, "table", "coal",
+                                                                                    "transmission")
+    assert g["party_basis"] == "left_register" and pd.isna(g["register_date"]) and pd.isna(g["party_name"])
+    assert not any(y[yr].loc["T_GONEG-1", "active"] for yr in y)
+    assert y[2019].loc["T_GONEG-1", "activity_source"] == "no_notifications"
+    assert (y[2019].drop(index=["T_GONE-1", "T_GONEG-1"])["party_basis"] == "proxy").all()   # the rest as before
+
+
+def test_a_closure_the_caller_gives_ends_activity_as_a_documented_one_does():
+    out = files(fpn=(T("2016-03-01"), T("2020-04-01")), out=(T("2016-03-02"), T("2020-02-10")))
+    w = B.activity_window(out, WINDOWS, "T_GONE-1", closed=T("2019-12-31"))
+    assert w["active_to"] == T("2019-12-31") and w["activity_source"] == "fpn+retirement_table"
+    assert B.activity_window({}, WINDOWS, "T_GONE-1", closed="2019-09-30")["active_to"] == T("2019-09-30")
+    # without one RETIREMENTS' closure stands, and a blank one changes nothing
+    assert B.activity_window({}, WINDOWS, "T_RATS-1", closed=float("nan"))["active_to"] == T("2024-09-30")
+
+
+def test_the_table_of_units_that_left_the_register_is_optional_but_must_have_its_columns(tmp_path, monkeypatch):
+    monkeypatch.setattr(cfg, "reference_dir", lambda: tmp_path)
+    assert B.left_register().empty
+    pd.DataFrame({"unit_id": ["T_X-1"], "fuel_type": ["COAL"]}).to_csv(tmp_path / B.LEFT_REGISTER, index=False)
+    with pytest.raises(ValueError):
+        B.left_register()

@@ -1,16 +1,17 @@
 station,tech_class,dukes_pattern,bmu_ids,note
-Aberthaw B,coal,^Aberthaw,,closed 31 March 2020; no BM unit in the 2026 register
+Aberthaw B,coal,^Aberthaw,T_ABTH7;T_ABTH8;T_ABTH9,closed 31 March 2020; its units left Elexon's register before the 2026 snapshot (bmu_left_register.csv)
+Aberthaw GT,oil,^Aberthaw GT,T_ABTH7G;T_ABTH8G;T_ABTH9G,the station's diesel/gas oil gas turbines; left the register with it
 Baglan Bay,gas,^Baglan,T_BAGE-1;T_BAGE-2,
 Carrington,gas,^Carrington,T_CARR-1;T_CARR-2,
 Connah's Quay,gas,^Connah,T_CNQPS-1;T_CNQPS-2;T_CNQPS-3;T_CNQPS-4,
 Coryton,gas,^Coryton,T_COSO-1,
-Cottam,coal,^Cottam$|^Cottam \(|^Cottam power,,closed September 2019; not Cottam Development Centre (the CCGT)
+Cottam,coal,^Cottam$|^Cottam \(|^Cottam power,T_COTPS-1;T_COTPS-2;T_COTPS-3;T_COTPS-4,closed 30 September 2019; its units left Elexon's register before the 2026 snapshot (bmu_left_register.csv); not Cottam Development Centre (the CCGT)
 Damhead Creek,gas,^Damhead Creek,T_DAMC-1,
-Deeside,gas,^Deeside,,mothballed CCGT (synchronous compensation); no BM unit in the 2026 register
+Deeside,gas,^Deeside,T_DEEP-1,closed 2018 (DESNZ) and later used for synchronous compensation; its unit left Elexon's register before the 2026 snapshot (bmu_left_register.csv)
 Didcot B,gas,^Didcot,E_DIDC1G;E_DIDC2G;E_DIDC3G;E_DIDC4G;T_DIDCB5;T_DIDCB6,Didcot B and its gas turbines
 Drax coal units,coal,^Drax,T_DRAXX-5;T_DRAXX-6,commercial coal generation ended March 2021
 Drax biomass units,bioenergy,^Drax,T_DRAXX-1;T_DRAXX-2;T_DRAXX-3;T_DRAXX-4,units 1-4 converted to biomass
-Eggborough,coal,^Eggborough,,closed September 2018
+Eggborough,coal,^Eggborough,T_EGGPS-1;T_EGGPS-2;T_EGGPS-3;T_EGGPS-4,closed September 2018; its units left Elexon's register before the 2026 snapshot (bmu_left_register.csv)
 Fiddler's Ferry,coal,^Fiddler,T_FIDL-1;T_FIDL-2;T_FIDL-3;T_FIDL-4;T_FIDLST1,closed 31 March 2020; units still registered to Keadby Generation (SSE)
 Grain,gas,^Grain$|^Grain \(CCGT|^Grain CCGT|^Grain CHP,T_GRAI-6;T_GRAI-7;T_GRAI-8,the CCGT units (Grain OCGT and the synchronous compensators are not in it)
 Immingham CHP,gas,^VPI$|^Immingham|^VPI Immingham,T_HUMR-1,DESNZ's site name is VPI
