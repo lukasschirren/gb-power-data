@@ -1,8 +1,8 @@
 """The Capacity Market stage's rules (gbpowerdata.build.capacity_market) on synthetic values: auction ids, the CPI
-indexation of T-4 and T-3 auctions only, weighting factors from LCCC's payments (the largest implied ratio, the
-residual month, the estimate), obligations from acquired and traded obligations cut at termination, the payment
-formula, the storage kind, the links to storage BM units and the reconciliation over the months LCCC reports. No data/
-and no network needed."""
+indexation of T-4 and T-3 auctions only, the price in constant money and the auction's target, weighting factors from
+LCCC's payments (the largest implied ratio, the residual month, the estimate), obligations from acquired and traded
+obligations cut at termination, the payment formula, the storage kind, every agreement's class and term, the links to
+storage BM units and the reconciliation over the months LCCC reports. No data/ and no network needed."""
 import numpy as np
 import pandas as pd
 import pytest
@@ -39,6 +39,26 @@ def test_only_t4_and_t3_auctions_are_indexed_by_winter_cpi_means():
     assert np.isnan(C.cpi_ratio(cpi, "T-4", 2015, 2027)[2])  # the winter 2026/27 is not published yet
 
 
+def test_prices_keep_the_target_and_hold_a_four_years_ahead_price_constant_in_real_money():
+    static = pd.DataFrame({"Auction Name": [T4_2024, T1_2024], "Clearing Price_GBP per kW per year": ["20", "35"],
+                           "Base Period for the Agreement": ["2020/2021", ""],
+                           "Auction Target Capacity_MW": ["40100", "7700"]})
+    capcost = pd.DataFrame({"Auction Name": [T4_2024] * 4 + [T1_2024],
+                            "Delivery Year": ["2024/2025", "2025/2026", "2026/2027", "2027/2028", "2024/2025"],
+                            "Capacity Awarded": "1000", "Forecast Cost_GBP": "1"})
+    cpi = cpi_series({f"2024-{m:02d}-01": 120.0 for m in range(1, 13)})   # REAL_YEAR at 120, the base winter at 100
+    assert C.REAL_YEAR == 2024
+    p = C.prices(C.auctions(static), capcost, cpi).set_index(["auction_id", "delivery_year"])
+    t4 = p.loc["T-4-2024"]
+    assert np.allclose(t4["real_price_gbp_per_kw_year"], 20.0 * 120 / 100)       # the same in every delivery year
+    assert np.isnan(t4.loc[2027, "price_gbp_per_kw_year"])                       # winter 2026/27 not published
+    assert t4["target_mw"].eq(40100.0).all() and t4["real_money_year"].eq(2024).all()
+    winter = (3 * 100.0 + 4 * 120.0) / 7                                         # October 2023 to April 2024
+    t1 = p.loc[("T-1-2024", 2024)]
+    assert t1["price_gbp_per_kw_year"] == 35.0 and t1["target_mw"] == 7700.0
+    assert t1["real_price_gbp_per_kw_year"] == pytest.approx(35.0 * 120 / winter)
+
+
 def paid_rows(dy: int, auction: str, months, mw: float, gbp) -> list[dict]:
     return [{"auction_id": auction, "delivery_year": dy, "month": m, "obligation_mw": mw, "payment_gbp": g,
              "suspended": "Not Suspended"} for m, g in zip(months, gbp)]
@@ -72,7 +92,8 @@ def test_weighting_factors_are_the_largest_implied_ratio_with_a_residual_and_an_
 
 def cmu_row(**kw) -> dict:
     row = {"Capacity Agreement Awarded": "Yes", "Auction Name": T4_2024, "Unique Agreement Identifier": "CAN-1",
-           "Type": "T-4", "CMU ID": "CMU1", "CM Unit Name": "Holes Bay Battery", "Parent Company": "P Ltd",
+           "Type": "T-4", "CMU ID": "CMU1", "CM Unit Name": "Holes Bay Battery", "Name of Applicant": "A Ltd",
+           "Parent Company": "P Ltd", "Term of the Capacity Agreement": "1",
            "Transmission or Distribution": "Distribution", "CM Unit Type": "CMRS",
            "CM Unit Category": "Existing Generating CMU", "Primary Fuel Type": "Storage - Battery",
            "CMU Technology": "Storage (Duration 2h)", "Connection or DSR Capacity": "20", "De Rated Capacity": "10",
@@ -116,6 +137,25 @@ def test_obligations_add_acquired_and_traded_obligations_and_stop_at_termination
     broken = agr.copy()
     broken.loc[1, "traded"] = "T1: 5.000 MW"
     assert not C.summary_mismatches(broken, C.segments(broken)).empty
+
+
+def test_every_agreement_has_a_class_from_its_fuel_its_cmus_other_rows_or_its_technology_and_a_term():
+    cmu = pd.DataFrame([
+        cmu_row(**{"CMU ID": "STOR1", "CM Unit Name": "Unit 5", "Primary Fuel Type": "", "CMU Technology": "Storage",
+                   "Type": "TR", "Auction Name": "2016-17 (TR) Transitional Capacity Auction"}),
+        cmu_row(**{"CMU ID": "STOR1", "CM Unit Name": "Unit 5", "Primary Fuel Type": "Storage - Pumped",
+                   "Capacity Agreement Awarded": "No", "Unique Agreement Identifier": "CAN-9"}),
+        cmu_row(**{"CMU ID": "FFES1", "CM Unit Name": "Ffestiniog Unit 1", "Unique Agreement Identifier": "CAN-2",
+                   "Term of the Capacity Agreement": "15"}),
+        cmu_row(**{"CMU ID": "GAS1", "CM Unit Name": "Peaker", "Primary Fuel Type": "",
+                   "CMU Technology": "Reciprocating Engines", "Unique Agreement Identifier": "CAN-3"}),
+    ])
+    agr = C.agreements(cmu).set_index("agreement_id")
+    assert agr.loc["CAN-1", "cm_class"] == "pumped_storage"      # the fuel its CMU declares in another row
+    assert agr.loc["CAN-1", "storage"] == "battery"              # the storage kind reads its own row only
+    assert agr.loc["CAN-2", "cm_class"] == "pumped_storage"      # a station's row with a battery fuel
+    assert agr.loc["CAN-3", "cm_class"] == "gas"                 # its technology
+    assert agr.loc["CAN-2", "term_years"] == 15 and agr.loc["CAN-1", "term_years"] == 1
 
 
 def test_a_payment_is_weight_times_price_times_obligation():

@@ -27,7 +27,19 @@ delivery year runs from 1 October to 30 September (regulation 2).
                     T-4 auction (and the T-3 auction of 2019, regulation 87C(2)(a)) times CPI_x / CPI_base, where
                     CPI_base is the mean monthly CPI over the auction's base period (1 October to 30 April, NESO's
                     "Base Period for the Agreement") and CPI_x the mean over the winter (1 October to 30 April) before
-                    the delivery year; for a T-1 or transitional auction the clearing price itself.
+                    the delivery year; for a T-1 or transitional auction the clearing price itself. The auction pays
+                    as clear: every agreement it awards earns this price, whatever its technology, for each delivery
+                    year it runs (up to 15), so what a technology earns in a year depends on which auctions its
+                    agreements came from.
+  real_price_gbp_per_kw_year  the same price in REAL_YEAR's money (2024, the year's mean CPI): price_gbp_per_kw_year /
+                    CPI_x x CPI_REAL_YEAR. For a T-4 or T-3 auction that is clearing price x CPI_REAL_YEAR / CPI_base, the
+                    same in every delivery year, so it is known for the years whose winter CPI is not published yet
+                    (price_gbp_per_kw_year is blank there): a 15-year agreement keeps its auction's price, in constant
+                    money, for all its years. For a T-1 or transitional auction it is the clearing price deflated from
+                    the winter before its delivery year. Added 21 Oct 2026, with target_mw (NESO's "Auction Target
+                    Capacity", the volume the government set for the auction from NESO's modelling against the
+                    reliability standard of 3 hours' expected loss of load a year), which the table had read and
+                    dropped.
   weighting_factor  month m's share of the year's payment (para. 2): GB demand in that calendar month over the 3 years
                     before, fixed by EMR Settlement before the delivery year. EMR Settlement publishes the factors
                     under terms that reserve all rights, so they are derived here from LCCC's open payments: in a
@@ -65,6 +77,17 @@ delivery year runs from 1 October to 30 September (regulation 2).
   storage           battery, pumped_storage or compressed_air from the CMU's primary fuel; the auctions to 2020/21
                     state no fuel and call every storage CMU "Storage": a pumped storage station by its name
                     (Dinorwig, Ffestiniog, Foyers, Cruachan), any other a battery (an inference).
+  cm_class          every agreement's class, ownership's (build_ownership.cm_class: gas, coal, nuclear, interconnector,
+                    pumped_storage, battery, dsr, bioenergy, hydro, oil, onshore_wind, offshore_wind, solar, other):
+                    its primary fuel, else
+                    the fuel the same CMU declares most often in another row of the register (the auctions up to 2016
+                    leave every fuel blank, and some of their agreements still run), else its CMU Technology; a
+                    pumped storage station stays pumped storage where a row names a battery fuel. Added 21 Oct 2026.
+  term_years        the register's "Term of the Capacity Agreement" (delivery years). The rules give existing plant one
+                    year, refurbishing plant up to 3 and new build up to 15, by capital spending per kW; the register
+                    also gives 15 years to refurbishing plant (Langage, South Humber Bank, Cruachan and Ffestiniog
+                    among them) and to a few unproven DSR CMUs, and terms of 3 to 14 years. One-year-ahead and
+                    transitional agreements all run one year. Added 21 Oct 2026.
   links             the storage BM units (T_/E_ batteries and pumped storage) each agreement belongs to: a component
                     whose Component ID is the unit's Elexon or National Grid id (basis "component_id"), else, for a
                     storage CMU metered as a BM unit (CM Unit Type CMRS), every distinctive word of the unit's
@@ -75,20 +98,25 @@ delivery year runs from 1 October to 30 September (regulation 2).
 Known limits: the register is today's, so an obligation traded and later reversed is as the register now states it;
 penalties and suspensions are not in the payments; batteries outside the BM (most CM storage, Non CMRS) are linked to
 no unit here (docs/DATA_GAPS.md B1: postcodes against the DNO registers); some sites register one CMU per phase and
-the name rule splits it over every unit of the site.
+the name rule splits it over every unit of the site. NESO's de-rating factors for the T-4 auction of 2021/22 hold three
+storage rows: "Storage" and "Storage (Duration 2h)" both at 0.9611, the single factor all storage held before the
+duration classes, and "Storage (Duration 1h)" at 0.4041. The 2-hour row is probably mislabelled: in every other
+auction the 2-hour factor is 1.8-2.0 times the 1-hour one (checked 21 Oct 2026), here 2.4. It is kept as published.
 
 Outputs (data/processed/):
   capacity_market_auctions.csv    one row per auction and delivery year it pays for: auction_id (LCCC's form,
                                   "T-4-2020"), auction_name, auction_type, first_delivery_year, delivery_year,
                                   clearing_price_gbp_per_kw_year, base_period, cpi_base, cpi_x, cpi_ratio,
-                                  price_gbp_per_kw_year, awarded_mw, cost_at_clearing_price_gbp
+                                  price_gbp_per_kw_year, real_price_gbp_per_kw_year, real_money_year, target_mw,
+                                  awarded_mw, cost_at_clearing_price_gbp
   capacity_market_weights.csv     delivery_year, month, weighting_factor, basis
   capacity_market_derating.csv    auction_id, auction_name, primary_fuel, technology_class, duration_h, derating_factor
   capacity_market_agreements.csv  one row per agreement and auction: agreement_id, auction_id, auction_name,
                                   auction_type, row_type (own, traded), cmu_id, cm_unit_name, parent_company,
                                   transmission_or_distribution, cm_unit_type, cm_unit_category, primary_fuel,
                                   technology, storage (battery, pumped_storage, compressed_air; storage_kind),
-                                  duration_h, connection_mw, derated_mw, acquired_mw, delivery_years,
+                                  duration_h, cm_class, connection_mw, derated_mw, acquired_mw, term_years,
+                                  delivery_years,
                                   first_delivery_year, last_delivery_year, terminated_on, suspended, component_ids
                                   (the components named by a BM unit id)
   capacity_market_links.csv       agreement_id, auction_id, cmu_id, unit_id, unit_name, basis, share
@@ -116,6 +144,7 @@ from gbpowerdata.common import ons
 
 AUCTION = re.compile(r"^(\d{4})-\d{2} \((T-4|T-3|T-1|TR)\)")
 INDEXED = ("T-4", "T-3")                 # para. 3(5) and regulation 87C(2)(a)
+REAL_YEAR = 2024                         # the money of real_price_gbp_per_kw_year: the calendar year's mean CPI
 WF_MIN_MW = 100.0                        # the auctions whose payments give the weighting factors
 LINK_CAPACITY_SLACK = 1.1
 SEGMENT = re.compile(r"(\d{2}/\d{2}/\d{4})\s*-\s*(\d{2}/\d{2}/\d{4})\s*:\s*(-?[\d.]+)\s*MW")
@@ -199,10 +228,24 @@ def prices(auct: pd.DataFrame, capcost: pd.DataFrame, cpi: pd.Series) -> pd.Data
     r = [cpi_ratio(cpi, t, b, y) for t, b, y in zip(p["auction_type"], p["base_period"], p["delivery_year"])]
     p["cpi_base"], p["cpi_x"], p["cpi_ratio"] = zip(*r) if r else ([], [], [])
     p["price_gbp_per_kw_year"] = p["clearing_price_gbp_per_kw_year"] * p["cpi_ratio"]
+    p["real_price_gbp_per_kw_year"] = real_prices(p, cpi)
+    p["real_money_year"] = REAL_YEAR
     cols = ["auction_id", "auction_name", "auction_type", "first_delivery_year", "delivery_year",
             "clearing_price_gbp_per_kw_year", "base_period", "cpi_base", "cpi_x", "cpi_ratio", "price_gbp_per_kw_year",
-            "awarded_mw", "cost_at_clearing_price_gbp"]
+            "real_price_gbp_per_kw_year", "real_money_year", "target_mw", "awarded_mw", "cost_at_clearing_price_gbp"]
     return p[cols].sort_values(["first_delivery_year", "auction_type", "delivery_year"]).reset_index(drop=True)
+
+
+def real_prices(p: pd.DataFrame, cpi: pd.Series) -> pd.Series:
+    """The price in REAL_YEAR's money (see real_price_gbp_per_kw_year in the module docstring): the paid price over
+    CPI_x times REAL_YEAR's CPI, which for a T-4 or T-3 auction is the clearing price over CPI_base, the same in every
+    delivery year, so it is known for the years whose winter CPI is not published yet."""
+    year = cpi[str(REAL_YEAR)]
+    if len(year) != 12:
+        raise ValueError(f"capacity_market: the CPI of {REAL_YEAR} is not complete")
+    winter = np.array([ons.winter_mean(cpi, int(y) - 1) for y in p["delivery_year"]], dtype=float)
+    deflator = np.where(p["auction_type"].isin(INDEXED), p["cpi_base"].astype(float), winter)
+    return p["clearing_price_gbp_per_kw_year"] * float(year.mean()) / deflator
 
 
 def derating(table: pd.DataFrame) -> pd.DataFrame:
@@ -300,6 +343,22 @@ def storage_kind(primary_fuel: str, technology: str, name: str) -> str:
     return ""
 
 
+def cm_classes(cmu: pd.DataFrame, rows: pd.DataFrame) -> list[str]:
+    """Each row's class (cm_class in the module docstring): build_ownership.cm_class of its Primary Fuel Type, else of
+    the fuel its CMU declares most often in the register's other rows, else of its CMU Technology; a pumped storage
+    station's row that names a battery fuel stays pumped storage."""
+    from gbpowerdata.build.build_ownership import PUMPED_NAMES, cm_class   # local: build_ownership reads this stage
+    blank = cmu["Primary Fuel Type"].str.strip().eq("")
+    declared = cmu[~blank].groupby("CMU ID")["Primary Fuel Type"].agg(lambda s: s.value_counts().sort_index().idxmax())
+    own = rows["Primary Fuel Type"]
+    fuel = own.where(own.str.strip().ne(""), rows["CMU ID"].map(declared)).fillna("")
+    out = []
+    for f, t, n, ap in zip(fuel, rows["CMU Technology"], rows["CM Unit Name"], rows["Name of Applicant"]):
+        c = cm_class(f, t, n, ap)
+        out.append("pumped_storage" if c == "battery" and PUMPED_NAMES.search(f"{n} {ap}") else c)
+    return out
+
+
 def agreements(cmu: pd.DataFrame, components: pd.DataFrame | None = None) -> pd.DataFrame:
     """One row per awarded agreement and auction of NESO's register (an agreement holding obligations traded from
     several auctions has a row for each)."""
@@ -319,9 +378,11 @@ def agreements(cmu: pd.DataFrame, components: pd.DataFrame | None = None) -> pd.
         "cm_unit_category": a["CM Unit Category"], "primary_fuel": a["Primary Fuel Type"], "technology": a["CMU Technology"],
         "storage": [storage_kind(f, t, n) for f, t, n in zip(a["Primary Fuel Type"], a["CMU Technology"], a["CM Unit Name"])],
         "duration_h": pd.to_numeric(a["CMU Technology"].str.extract(DURATION)[0], errors="coerce"),
+        "cm_class": cm_classes(cmu, a),
         "connection_mw": pd.to_numeric(a["Connection or DSR Capacity"], errors="coerce"),
         "derated_mw": pd.to_numeric(a["De Rated Capacity"], errors="coerce"),
         "acquired_mw": pd.to_numeric(a["Auction Acquired Capacity Obligation"], errors="coerce").fillna(0.0),
+        "term_years": pd.to_numeric(a["Term of the Capacity Agreement"], errors="coerce"),
         "delivery_years": a["Delivery Years for which Agreement Valid"],
         "first_delivery_year": dys.map(lambda d: d[0] if d else np.nan),
         "last_delivery_year": dys.map(lambda d: d[-1] if d else np.nan),
