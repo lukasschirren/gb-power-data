@@ -80,7 +80,7 @@ PROCESSED_SINGLE = (
     "consumer_levy_daily.csv", "domestic_supply_by_year.csv", "duos_domestic_tariffs.csv", "storage_fleet.csv",
     "capacity_market_auctions.csv", "capacity_market_weights.csv", "capacity_market_derating.csv",
     "capacity_market_agreements.csv", "capacity_market_links.csv", "investment_inputs.csv", "unit_run_times.csv",
-    "generation_mix_summary.csv",
+    "generation_mix_summary.csv", "generation_by_fuel_annual.csv", "generation_reconciliation_annual.csv",
 )
 # Hand-downloaded raw inputs, as glob patterns under data/raw/ ({cfd_register} is the file name
 # set in config.yaml).
@@ -173,6 +173,8 @@ FILE_SOURCES = {
     "fuel_prices": ("govuk", "worldbank", "hmrc", "ecb"),  # + "eex" for EEX_YEARS, see sources_for
     "generation_mix": ("elexon", "neso"),             # FUELHH; NESO's embedded wind and solar estimates
     "generation_mix_summary": ("elexon", "neso"),
+    "generation_by_fuel_annual": ("govuk",),            # DUKES 5.6 and the regional generation tables
+    "generation_reconciliation_annual": ("govuk", "elexon", "neso"),
     "lolp_drm": ("elexon",),
     "mid_target": ("elexon",),
     # DUKES 5.11 (govuk), Ofgem's RO register, LCCC's CfD register, NESO's CM register, Elexon's BM register, the

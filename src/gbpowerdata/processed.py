@@ -241,6 +241,14 @@ def read_generation_mix(year: int | None = None, summary: bool = False) -> pd.Da
     return df.set_index("startTime")
 
 
+def read_generation_by_fuel(reconciliation: bool = False) -> pd.DataFrame:
+    """DESNZ's annual generation by fuel for the UK, GB and each country (gbpowerdata.build.generation_by_fuel; long:
+    year, area, generator_type, fuel, measure, gwh, share, source), or with `reconciliation=True` GB's official output
+    by fuel against the half-hourly generation mix's year (the gas the half-hourly table misses, by year)."""
+    name = "generation_reconciliation_annual.csv" if reconciliation else "generation_by_fuel_annual.csv"
+    return pd.read_csv(cfg.processed_dir() / name)
+
+
 def load_year(year: int) -> dict[str, pd.DataFrame]:
     """All per-year tables for one year, keyed by friendly name."""
     return {k: read_kind(k, year) for k in KIND_FILE}
