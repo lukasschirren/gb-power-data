@@ -68,7 +68,7 @@ MANIFEST = "MANIFEST.json"
 PROCESSED_YEARLY = (
     "agents", "bm_unit_register", "capacity_factors", "capacity_factors_by_zone", "capacity_factors_pecd",
     "capacity_market", "cfd_fleet", "cfd_ppm_matches", "demand", "demand_by_zone", "forecast_state", "fuel_prices",
-    "generation_mix", "lolp_drm",
+    "generation_battery", "generation_mix", "lolp_drm",
     "mid_target", "ownership", "ownership_bmu", "powerplants_located", "powerplants_tagged", "regime_summary",
     "storage_revenue", "system_prices", "unit_spells", "wind_farm_fpn", "wind_farm_fpn_gaps", "wind_farms",
 )
@@ -80,7 +80,8 @@ PROCESSED_SINGLE = (
     "consumer_levy_daily.csv", "domestic_supply_by_year.csv", "duos_domestic_tariffs.csv", "storage_fleet.csv",
     "capacity_market_auctions.csv", "capacity_market_weights.csv", "capacity_market_derating.csv",
     "capacity_market_agreements.csv", "capacity_market_links.csv", "investment_inputs.csv", "unit_run_times.csv",
-    "generation_mix_summary.csv", "generation_by_fuel_annual.csv", "generation_reconciliation_annual.csv",
+    "generation_mix_summary.csv", "generation_battery_summary.csv", "generation_battery_units.csv",
+    "generation_by_fuel_annual.csv", "generation_reconciliation_annual.csv",
 )
 # Hand-downloaded raw inputs, as glob patterns under data/raw/ ({cfd_register} is the file name
 # set in config.yaml).
@@ -173,6 +174,11 @@ FILE_SOURCES = {
     "fuel_prices": ("govuk", "worldbank", "hmrc", "ecb"),  # + "eex" for EEX_YEARS, see sources_for
     "generation_mix": ("elexon", "neso"),             # FUELHH; NESO's embedded wind and solar estimates
     "generation_mix_summary": ("elexon", "neso"),
+    # B1610 and the notifications; the units from Elexon's register and storage_fleet, NESO's response results, the
+    # share from generation_mix
+    "generation_battery": ("elexon", "neso"),
+    "generation_battery_summary": ("elexon", "neso"),
+    "generation_battery_units": ("elexon", "neso"),
     "generation_by_fuel_annual": ("govuk",),            # DUKES 5.6 and the regional generation tables
     "generation_reconciliation_annual": ("govuk", "elexon", "neso"),
     "lolp_drm": ("elexon",),

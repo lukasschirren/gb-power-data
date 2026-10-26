@@ -47,7 +47,8 @@ Gaps (what the total leaves out or gets wrong; docs/storage_revenues.md):
     bought low and sold high within the day is credited only with the index; tolls, floors and fees between an
     owner and its optimiser are not seen;
   - imbalance: metered output that differs from the notified and accepted position is settled at the system price;
-    batteries' metered output per unit is not published;
+    Elexon publishes each battery unit's metered output (B1610, in gbpowerdata.build.generation_battery), not yet
+    read here;
   - Capacity Market payments in total (they are in cm_gbp, for the agreements linked to the unit: 88 of the BM
     storage units by Oct 2026; a T_/E_ unit whose CMU names it otherwise has cm_gbp zero, a supplier or virtual lead
     party unit has it empty);

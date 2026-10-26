@@ -241,6 +241,23 @@ def read_generation_mix(year: int | None = None, summary: bool = False) -> pd.Da
     return df.set_index("startTime")
 
 
+def read_generation_battery(year: int | None = None, summary: bool = False, units: bool = False) -> pd.DataFrame:
+    """GB batteries' discharge and charge, metered (B1610) and notified, and the frequency response NESO held from
+    them, by group of unit (gbpowerdata.build.generation_battery): the half-hours of `year` in MW, indexed by UTC
+    `startTime`; with `summary=True` the energy (GWh), mean MW, share of generation, units, capacity and coverage of
+    every year and month built (long: resolution, period, basis, group, gsp_group, flow); with `units=True` one row
+    per unit and year with its GSP group, energy and response MW."""
+    if summary:
+        return pd.read_csv(cfg.processed_dir() / "generation_battery_summary.csv", dtype={"period": str})
+    if units:
+        return pd.read_csv(cfg.processed_dir() / "generation_battery_units.csv")
+    if year is None:
+        raise ValueError("read_generation_battery: a year, summary=True or units=True")
+    df = pd.read_csv(cfg.processed_dir() / f"generation_battery_{year}.csv")
+    df["startTime"] = pd.to_datetime(df["startTime"], utc=True)
+    return df.set_index("startTime")
+
+
 def read_generation_by_fuel(reconciliation: bool = False) -> pd.DataFrame:
     """DESNZ's annual generation by fuel for the UK, GB and each country (gbpowerdata.build.generation_by_fuel; long:
     year, area, generator_type, fuel, measure, gwh, share, source), or with `reconciliation=True` GB's official output
