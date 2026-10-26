@@ -201,6 +201,33 @@ def read_investment_inputs(reference: bool = True) -> pd.DataFrame:
     return t.merge(src[["source_id", "licence"]].rename(columns={"source_id": "source"}), on="source", how="left")
 
 
+REGO_TABLES = ("vintages", "monthly", "observations", "statistics")
+
+
+def read_rego(table: str = "vintages") -> pd.DataFrame:
+    """Renewable Energy Guarantees of Origin (gbpowerdata.build.rego): "vintages" (one row per certificate vintage,
+    April to March: the price the sources report and the fuel mix disclosure figures of the period), "monthly" (the
+    price observations by month and vintage), "observations" (every cited price, data/reference/rego_prices.csv,
+    with its source's publisher, URL and terms) or "statistics" (DESNZ's and Ofgem's figures,
+    data/reference/rego_statistics.csv). The prices are cited from market commentary: no official price exists."""
+    if table not in REGO_TABLES:
+        raise ValueError(f"{table}: one of {REGO_TABLES}")
+    ref = cfg.reference_dir()
+    if table == "observations":
+        src = pd.read_csv(ref / "rego_price_sources.csv")
+        cols = ["source_id", "publisher", "title", "url", "licence"]
+        return (pd.read_csv(ref / "rego_prices.csv", dtype=str)
+                .astype({c: float for c in ("value", "low", "high")})
+                .merge(src[cols].rename(columns={"source_id": "source"}), on="source", how="left"))
+    if table == "statistics":
+        return pd.read_csv(ref / "rego_statistics.csv")
+    name = {"vintages": "rego_vintages.csv", "monthly": "rego_price_monthly.csv"}[table]
+    path = cfg.processed_dir() / name
+    if not path.exists():
+        raise FileNotFoundError(f"{path} missing: run python -m gbpowerdata.build.rego")
+    return pd.read_csv(path)
+
+
 def load_year(year: int) -> dict[str, pd.DataFrame]:
     """All per-year tables for one year, keyed by friendly name."""
     return {k: read_kind(k, year) for k in KIND_FILE}

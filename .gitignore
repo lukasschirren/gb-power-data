@@ -39,6 +39,9 @@ data/reference/*
 !data/reference/official_statistics.csv
 !data/reference/investment_parameters.csv
 !data/reference/investment_parameter_sources.csv
+!data/reference/rego_prices.csv
+!data/reference/rego_price_sources.csv
+!data/reference/rego_statistics.csv
 # small derived tables whose inputs are large or slow to pull (generator named in data/reference/README.md)
 !data/reference/pecd_onshore_zone_to_nuts2.csv
 !data/reference/pecd_offshore_zone_to_nuts2.csv
