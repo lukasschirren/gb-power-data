@@ -69,6 +69,8 @@ series has one row per half-hour with its UTC start time in the column `startTim
 | --- | --- | --- |
 | Demand | `demand_{y}` | transmission demand (Elexon's ITSDO, which includes interconnector exports, pumped storage pumping and station load), embedded wind and solar, and national demand, their sum (MW) ([data caveats](#data-caveats)) |
 | | `demand_by_zone_{y}` | the same split across the 14 GSP groups (the regional distribution areas) |
+| Generation | `generation_mix_{y}` | what generated each half-hour, MW: gas (CCGT, OCGT), coal, oil, nuclear, biomass, hydro, other, wind and pumped storage as metered (Elexon FUELHH; the metered wind split offshore and onshore by the wind units' own metering from February 2019), embedded wind and solar (NESO's estimates), pumping, and every interconnector's flow (imports positive), with total generation, imports, exports and net imports |
+| | `generation_mix_summary` | energy (GWh), share of generation and of supply, and coverage by technology, year and month |
 | Wind and solar | `capacity_factors_{y}` | offshore wind, onshore wind and solar capacity factors |
 | | `capacity_factors_by_zone_{y}` | the same per GSP group, shaped by renewables.ninja reanalysis |
 | | `capacity_factors_pecd_{y}` | the same three capacity factors from a second weather source, the Copernicus Pan-European Climate Database (PECD) |
@@ -144,6 +146,7 @@ Most sources need no account. The others read an environment variable, or else a
    ```bash
    python scripts/run_pipeline.py              # the per-year tables, 2018-2025 (or name years: 2023)
    python -m gbpowerdata.build.build_system_prices --years 2018 2025
+   python -m gbpowerdata.build.generation_mix --years 2018 2025   # after elexon_pull (FUELHH), neso_pull demand, b1610_pull --fuel WIND
    python -m gbpowerdata.build.build_lolp --years 2018 2025
    python -m gbpowerdata.build.build_forecast_state --start 2018 --end 2025
    python -m gbpowerdata.build.build_consumer_levy
@@ -226,8 +229,8 @@ on 10 Oct 2026).
 
 | Source | Terms | Attribution | Files in the packs |
 | --- | --- | --- | --- |
-| Elexon BMRS | [BMRS open data licence](https://www.elexon.co.uk/bsc/data/balancing-mechanism-reporting-agent/copyright-licence-bmrs-data/), commercial use allowed | "Contains BMRS data © Elexon Limited copyright and database right [year]" | `demand`, `mid_target`, `system_prices`, `lolp_drm`, `forecast_state`, `wind_farm*`, `capacity_factors`, `capacity_factors_by_zone`, `agents`, `bm_unit_register`, `ownership*`, `bm_dynamic_units`, `storage_revenue`, `storage_fleet`, `unit_run_times`, `unit_spells`; tracked in `data/reference/`: `bm_dynamic_by_tech.csv` and the GB rows of `thermal_parameters.csv` |
-| NESO Data Portal | [NESO Open Licence](https://www.neso.energy/data-portal/neso-open-licence), OGL-based and set per dataset | source and licence link | `forecast_state`, GSP and DNO boundaries, `powerplants_located`, `agents`, `ownership*` (Capacity Market register), `storage_revenue` (frequency response and reserve payments), `storage_fleet` (the units that sell to NESO, Capacity Market duration classes), `capacity_market*` (the Capacity Market register, auction results and de-rating factors) |
+| Elexon BMRS | [BMRS open data licence](https://www.elexon.co.uk/bsc/data/balancing-mechanism-reporting-agent/copyright-licence-bmrs-data/), commercial use allowed | "Contains BMRS data © Elexon Limited copyright and database right [year]" | `demand`, `mid_target`, `system_prices`, `lolp_drm`, `forecast_state`, `wind_farm*`, `capacity_factors`, `capacity_factors_by_zone`, `agents`, `bm_unit_register`, `ownership*`, `bm_dynamic_units`, `storage_revenue`, `storage_fleet`, `unit_run_times`, `unit_spells`, `generation_mix*`; tracked in `data/reference/`: `bm_dynamic_by_tech.csv` and the GB rows of `thermal_parameters.csv` |
+| NESO Data Portal | [NESO Open Licence](https://www.neso.energy/data-portal/neso-open-licence), OGL-based and set per dataset | source and licence link | `forecast_state`, GSP and DNO boundaries, `powerplants_located`, `agents`, `ownership*` (Capacity Market register), `storage_revenue` (frequency response and reserve payments), `storage_fleet` (the units that sell to NESO, Capacity Market duration classes), `capacity_market*` (the Capacity Market register, auction results and de-rating factors), `generation_mix*` (embedded wind and solar estimates, historic demand data) |
 | LCCC | Open Government Licence v3.0 | source and licence link | `cfd_fleet`, `cfd_status`, `consumer_levy_*`, CfD register, `ownership*`, `storage_revenue` (`wholesale_imrp_gbp`, from the IMRP), `capacity_market_{y}` and `capacity_market_weights` (the weighting factors, from LCCC's capacity payments by auction) |
 | DESNZ, ONS, gov.uk | Open Government Licence v3.0 | source and licence link | REPD, `domestic_supply_by_year`, gas and UK ETS prices in `fuel_prices`, `ownership*` (DUKES 5.11), `capacity_market*` (the CPI indexation of the T-4 prices, ONS series D7BT), `investment_inputs` (Electricity Generation Costs 2020, 2023, 2025), `storage_revenue` (gov.uk's bank holidays, for the FFR tenders' frames) |
 | Ofgem | Open Government Licence v3.0 | source and licence link | `cap_tariff_by_region`, `duos_domestic_tariffs`, `ownership*` (RO register; the raw reports are not packed, see [data/raw/manual/README.md](data/raw/manual/README.md)) |

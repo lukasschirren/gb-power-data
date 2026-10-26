@@ -156,7 +156,7 @@ transcribed with page locators) and NREL's ATB 2021-2025 (utility-scale batterie
 | Table | Blocker | Owner | Change |
 | --- | --- | --- | --- |
 | demand, capacity factors (stage 2) | ESPENI ends on 3 Feb 2026 (v8.0.8) | `build.stage2_build_timeseries` | embedded wind and solar from NESO's historic demand data (embedded estimates) for months ESPENI does not reach |
-| MID, FUELHH, ITSDO, INDO | `elexon_pull` defaults end on 1 Jan 2026 | `pull.elexon_pull` | default end = today, as `system_price_pull` and `ebocf_pull` already do |
+| MID, FUELHH, ITSDO, INDO | done 26 Oct 2026: `elexon_pull` defaults end today; FUELHH pulled to 25 Oct 2026 (`fuelhh_20260101_20261026.csv`, read beside the earlier file) and `generation_mix_2026` built to it; MID, ITSDO and INDO for 2026 still to pull (`--start 2026-01-01`) | `pull.elexon_pull` | pull the three, then stage 2 for 2026 once ESPENI or NESO's embedded estimates cover it |
 | per-year panel | `scripts/run_pipeline.py` and several builds default to 2018-2025 | `scripts/run_pipeline.py`, builds | a `years.last` in `config.yaml` (default: the current year), the current year built to its last complete day |
 | fuel prices | carbon to Aug 2026, gas to 20 Sep 2026 | `pull.carbon_pull`, `pull.gas_pull` | rerun; the ONS workbook URL is dated and must be updated by hand |
 | BM register, CM register | the monthly snapshot (AUDIT A8-2) | `scripts/snapshot_registers.py` | check the scheduled task |

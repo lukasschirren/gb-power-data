@@ -67,7 +67,8 @@ MANIFEST = "MANIFEST.json"
 # Per-year processed tables built from open sources: {family}_{year}.csv
 PROCESSED_YEARLY = (
     "agents", "bm_unit_register", "capacity_factors", "capacity_factors_by_zone", "capacity_factors_pecd",
-    "capacity_market", "cfd_fleet", "cfd_ppm_matches", "demand", "demand_by_zone", "forecast_state", "fuel_prices", "lolp_drm",
+    "capacity_market", "cfd_fleet", "cfd_ppm_matches", "demand", "demand_by_zone", "forecast_state", "fuel_prices",
+    "generation_mix", "lolp_drm",
     "mid_target", "ownership", "ownership_bmu", "powerplants_located", "powerplants_tagged", "regime_summary",
     "storage_revenue", "system_prices", "unit_spells", "wind_farm_fpn", "wind_farm_fpn_gaps", "wind_farms",
 )
@@ -79,6 +80,7 @@ PROCESSED_SINGLE = (
     "consumer_levy_daily.csv", "domestic_supply_by_year.csv", "duos_domestic_tariffs.csv", "storage_fleet.csv",
     "capacity_market_auctions.csv", "capacity_market_weights.csv", "capacity_market_derating.csv",
     "capacity_market_agreements.csv", "capacity_market_links.csv", "investment_inputs.csv", "unit_run_times.csv",
+    "generation_mix_summary.csv",
 )
 # Hand-downloaded raw inputs, as glob patterns under data/raw/ ({cfd_register} is the file name
 # set in config.yaml).
@@ -169,6 +171,8 @@ FILE_SOURCES = {
     "demand_by_zone": ("espeni", "elexon", "govuk"),
     "forecast_state": ("elexon", "neso"),
     "fuel_prices": ("govuk", "worldbank", "hmrc", "ecb"),  # + "eex" for EEX_YEARS, see sources_for
+    "generation_mix": ("elexon", "neso"),             # FUELHH; NESO's embedded wind and solar estimates
+    "generation_mix_summary": ("elexon", "neso"),
     "lolp_drm": ("elexon",),
     "mid_target": ("elexon",),
     # DUKES 5.11 (govuk), Ofgem's RO register, LCCC's CfD register, NESO's CM register, Elexon's BM register, the

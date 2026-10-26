@@ -28,6 +28,7 @@ Usage:
   python -m gbpowerdata.pull.elexon_pull                                   # all datasets, default window
   python -m gbpowerdata.pull.elexon_pull mid fuelhh                        # selected datasets
   python -m gbpowerdata.pull.elexon_pull --start 2016-01-01 --end 2026-01-01   # explicit window (end exclusive)
+  python -m gbpowerdata.pull.elexon_pull fuelhh --start 2026-01-01           # the current year to date
 """
 
 from __future__ import annotations
@@ -49,9 +50,11 @@ BASE_URL = "https://data.elexon.co.uk/bmrs/api/v1"
 RAW_DIR = cfg.raw_dir()
 RAW_DIR.mkdir(parents=True, exist_ok=True)
 
-# Default window: 2016-01-01 .. 2026-01-01 (i.e. 2016 through end of 2025; end exclusive).
+# Default window: 2016-01-01 to the start of today (UTC, end exclusive), so the current year is pulled to date
+# (docs/DATA_GAPS.md B12); a pull writes {dataset}_{start}_{end}.csv, and the readers take every file of a dataset,
+# so a later window is added beside the earlier ones (pull it as --start <the last end>).
 DEFAULT_START = datetime(2016, 1, 1, tzinfo=timezone.utc)
-DEFAULT_END = datetime(2026, 1, 1, tzinfo=timezone.utc)
+DEFAULT_END = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
 CHUNK_DAYS = 7
 SLEEP_S = 0.5
 
@@ -221,7 +224,7 @@ def main(argv: list[str]) -> None:
     parser.add_argument("--start", type=_parse_date, default=DEFAULT_START,
                         help="UTC start date YYYY-MM-DD, inclusive (default: 2016-01-01).")
     parser.add_argument("--end", type=_parse_date, default=DEFAULT_END,
-                        help="UTC end date YYYY-MM-DD, exclusive (default: 2026-01-01).")
+                        help="UTC end date YYYY-MM-DD, exclusive (default: the start of today).")
     args = parser.parse_args(argv[1:])
 
     targets = [t.lower() for t in args.datasets] or list(PULLERS)

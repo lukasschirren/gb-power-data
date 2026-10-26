@@ -228,6 +228,19 @@ def read_rego(table: str = "vintages") -> pd.DataFrame:
     return pd.read_csv(path)
 
 
+def read_generation_mix(year: int | None = None, summary: bool = False) -> pd.DataFrame:
+    """GB generation by fuel and technology and every interconnector's flow (gbpowerdata.build.generation_mix): the
+    half-hours of `year` in MW, indexed by UTC `startTime`, or with `summary=True` the energy (GWh), shares and coverage
+    of every year and month built (long: resolution, period, technology)."""
+    if summary:
+        return pd.read_csv(cfg.processed_dir() / "generation_mix_summary.csv", dtype={"period": str})
+    if year is None:
+        raise ValueError("read_generation_mix: a year, or summary=True")
+    df = pd.read_csv(cfg.processed_dir() / f"generation_mix_{year}.csv")
+    df["startTime"] = pd.to_datetime(df["startTime"], utc=True)
+    return df.set_index("startTime")
+
+
 def load_year(year: int) -> dict[str, pd.DataFrame]:
     """All per-year tables for one year, keyed by friendly name."""
     return {k: read_kind(k, year) for k in KIND_FILE}

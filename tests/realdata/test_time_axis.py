@@ -10,7 +10,7 @@ from .conftest import need, years_with
 pytestmark = pytest.mark.realdata
 
 WIDE = ["demand", "capacity_factors", "fuel_prices", "mid_target", "system_prices", "lolp_drm", "forecast_state",
-        "capacity_factors_pecd", "wind_farm_fpn"]
+        "capacity_factors_pecd", "wind_farm_fpn", "generation_mix"]
 
 
 @pytest.mark.parametrize("family", WIDE)
