@@ -10,7 +10,7 @@ tables, and measures the dynamic ones for GB units from the Balancing Mechanism 
 | `data/reference/thermal_parameters.csv` | technology x class x parameter x source (799 rows from 22 sources) | hand-curated, each value transcribed from a named sheet and cell or table and page |
 | `data/reference/thermal_parameter_sources.csv` | source, with publisher, title, publication date, URL, date accessed and licence | hand-curated |
 | `data/reference/bm_dynamic_by_tech.csv` | technology x metric x period (each year 2018-2025 and the pooled period) | `python -m gbpowerdata.build.bm_dynamic --pull` |
-| `data/processed/bm_dynamic_units.csv` | snapshot x active thermal or pumped-storage BM unit (3,913 rows) | the same command |
+| `data/processed/bm_dynamic_units.csv` | snapshot x active thermal or pumped-storage BM unit (3,990 rows) | the same command |
 
 ## Reading the table
 
@@ -40,10 +40,10 @@ ccgt = gb[(gb["technology"] == "ccgt") & gb["year"].isna() & gb["commissioned_fr
 
 | Parameter (unit) | CCGT | OCGT | Coal | Biomass | Nuclear |
 | --- | --- | --- | --- | --- | --- |
-| Minimum stable generation (share of capacity) | 0.47 | 0.87 | 0.46 | 0.47 | 0.82 |
+| Minimum stable generation (share of capacity) | 0.47 | 0.88 | 0.46 | 0.47 | 0.82 |
 | Ramp up / down (share of capacity per min) | 0.032 / 0.035 | 0.39 / 0.97 | 0.010 / 0.020 | 0.015 / 0.015 | 0.05 / 0.05 (E) |
-| Start-up notice, NDZ (h) | 1.0 | 0.09 | 6.0 | 2.0 | - |
-| Run-up from 0 MW to the minimum stable level (h) | 0.83 | 0.05 | 1.64 | 0.40 | - |
+| Start-up notice, NDZ (h) | 1.0 | 0.08 | 6.3 | 2.0 | - |
+| Run-up from 0 MW to the minimum stable level (h) | 0.83 | 0.04 | 1.64 | 0.40 | - |
 | Minimum up / down time (h) | 6 / 6 | 0.25 / 0.2 | 6 / 6 | 5 / 6 | 12 / 12 (E) |
 | Start wear cost, hot / warm / cold (EUR/MW) | 21.9 / 25.1 / 36.0 (E) | 30.5 / 52.5 / 52.5 (E) | 49.3 / 69.7 / 94.0 (E) | - | warm 21 (E) |
 | Start fuel, hot / warm / cold (MWh_th/MW) | 1.14 / 2.11 / 2.69 (E) | 0.56 any start (LF) | 2.92 / 5.00 / 5.83 (E) | - | warm 3.89 (E) |
@@ -124,7 +124,7 @@ without vintages.
 | CCGT ramp | 1 per hour | 1.9 per hour up, 2.1 down | neither binds at hourly resolution |
 | CCGT minimum up / down | 4 / 2 h | 6 / 6 h | GB units declare 6 h, a convention tied to their service agreements |
 | CCGT start cost | 60 EUR/MW, one start type, no fuel | 21.9 / 25.1 / 36.0 EUR/MW wear plus 1.14 / 2.11 / 2.69 MWh_th/MW of fuel | PyPSA's 60 is DIW's start depreciation, close to Kumar's cold-start median x 0.75 (79 x 0.75 = 59) |
-| OCGT minimum stable level | 0.20 | 0.87 | GB OCGT units are small turbines run at fixed output |
+| OCGT minimum stable level | 0.20 | 0.88 | GB OCGT units are small turbines run at fixed output |
 | Coal minimum stable level / up and down | 0.38 / 8 and 8 h | 0.46 / 6 and 6 h | |
 | Coal ramp | 0.9 per hour | 0.6 per hour up | |
 | Nuclear minimum stable level | 0.50 | 0.82 of capacity (0.91 of MEL) | GB AGRs barely turn down |
@@ -174,12 +174,16 @@ The BM dynamic parameters are declarations. Ofgem found SELs inflated to raise B
 2020, EDF West Burton B 2020, ESB Carrington 2021). SEL over MEL is higher for units at zero, so the minimum stable
 level counts running units only. A value of 999, the top of the valid range, means a unit will not start at notice
 and is left out of the summaries. A snapshot finds some units hot and some cold, so NDZ and the run-up time mix start
-types, and nuclear units declare SEL and nothing else. The register behind the summaries was built from Elexon's 2026
-unit list, which no longer carries Aberthaw B, Cottam or Eggborough. The coal rows therefore describe Drax 5-6,
-Fiddler's Ferry, Ratcliffe-on-Soar and West Burton A, and the 2018 and 2019 registers held about 5.5 GW and 3.5 GW less
-coal than operated. Since 14 Oct 2026 the register adds the three stations, and Deeside's CCGT, from
-`data/reference/bmu_left_register.csv`, so the next build of `bm_dynamic` takes them into the coal and CCGT rows, and
-the GB rows here are to be checked then.
+types, and nuclear units declare SEL and nothing else. Elexon's 2026 unit list no longer carries Aberthaw B, Cottam,
+Eggborough or Deeside's CCGT, so the registers of 2018 and 2019 held about 5.5 GW and 3.5 GW less coal than operated
+until the register added them from `data/reference/bmu_left_register.csv` on 14 Oct 2026. The build of `bm_dynamic` on
+26 Oct 2026 takes them in. The coal rows now describe 25 units (14 before: Drax 5-6, Fiddler's Ferry,
+Ratcliffe-on-Soar and West Burton A), and the GB defaults were checked against it. The coal minimum stable level
+(0.46) and minimum up and down times (6 h) are unchanged and its ramp rates move by 2% or less. Its start-up notice
+rises from 6.0 to 6.3 h, and the 90th percentile of its minimum stable level from 0.56 to 0.70, because Aberthaw B
+declared 380 MW of SEL on 520 MW units. The CCGT defaults move by less than 3% (Deeside, and the embedded units
+E_FELL-1 and E_PETEM1, which the register of 14 Oct counts as active), and the OCGT minimum stable level moves from
+0.87 to 0.88 with Aberthaw's gas turbines.
 
 ## Using the values in a model
 

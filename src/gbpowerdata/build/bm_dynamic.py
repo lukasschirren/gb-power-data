@@ -51,13 +51,16 @@ THE CAVEAT, WHICH TRAVELS WITH THE NUMBERS
     about 60 min, is its hot-start notice. Nuclear units publish only SEL.
 
 COVERAGE
-    Only units the register holds are summarised. The register was built from Elexon's 2026 unit list,
-    which no longer carries Aberthaw B, Cottam or Eggborough (coal, closed 2018-2020), so the coal rows
-    of data/reference/bm_dynamic_by_tech.csv describe Drax 5-6, Fiddler's Ferry, Ratcliffe-on-Soar and
-    West Burton A. Since 14 Oct 2026 the register adds the three, and Deeside's CCGT, from
-    data/reference/bmu_left_register.csv (gbpowerdata.build.bm_units), so the next build of this module takes
-    their declared values into the coal and CCGT rows, and the GB rows of thermal_parameters.csv are to be
-    checked against it then. No oil-fired BM unit is
+    Only units the register holds are summarised. Elexon's 2026 unit list no longer carries Aberthaw B,
+    Cottam or Eggborough (coal, closed 2018-2020) or Deeside's CCGT; since 14 Oct 2026 the register adds them
+    from data/reference/bmu_left_register.csv (gbpowerdata.build.bm_units), with Aberthaw's three gas turbines.
+    The build of 26 Oct 2026 takes them in: the coal rows of data/reference/bm_dynamic_by_tech.csv describe 25
+    units (Aberthaw B, Cottam, Drax 5-6, Eggborough, Fiddler's Ferry, Ratcliffe-on-Soar, West Burton A), 14
+    before, and the unit table holds 3,990 unit-snapshots (3,913 before). The coal medians of minimum stable
+    level (0.46 of capacity) and minimum up and down time (6 h) stay as they were and the ramp rates move by 2%
+    or less; the start-up notice rises from 6.0 to 6.3 h, and the 90th percentile of the minimum stable level
+    from 0.56 to 0.70, because Aberthaw B declared an SEL of 380 MW on its 520 MW units. Eggborough appears in
+    one snapshot (15 Jan 2018), before it stopped running in February and March 2018. No oil-fired BM unit is
     active in the register in 2018-2025. The register's "ocgt" class is mostly small open-cycle units of
     15-140 MW (the auxiliary gas turbines at coal and CCGT sites, Cowes, Indian Queens, Taylor's Lane)
     that run at or near full output, plus Spalding's 300 MW open-cycle unit.
