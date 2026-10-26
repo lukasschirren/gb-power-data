@@ -4,6 +4,7 @@ Per year the year is injected via the PIPELINE_YEAR env var (config.load_config
 reads it), so each stage runs as a clean subprocess without editing config.yaml.
 
   build_cfd_status      (once; year-independent per-CfD-unit status table)
+  bm_units              (once; bm_unit_register_{year}.csv for every year, which stage 3 dates thermal plant by)
   for each year:
     stage1_tag_plants     -> powerplants_tagged_{year}.csv
     stage1_spatial_join   -> powerplants_located_{year}.csv   (gsp_id + gsp_group)
@@ -75,6 +76,9 @@ def main(argv: list[str]) -> None:
     years = [int(a) for a in argv[1:]] or list(DEFAULT_YEARS)
     print("=== build_cfd_status (panel) ===")
     run("build_cfd_status")
+    # the BM unit register by year (every year at once), which stage 3 dates and sizes thermal plant by
+    print("=== bm_units (panel) ===")
+    run("bm_units")
     # Empirical per-year nuclear availability (needs powerplants_located_* from a prior
     # pass; soft — a cold run skips it and Stage 3 falls back to the flat 0.65).
     run("nuclear_availability", soft=True)

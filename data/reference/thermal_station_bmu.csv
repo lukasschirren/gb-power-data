@@ -1,0 +1,54 @@
+ppm_name,ppm_fueltype,station,tech,fuel,commissioned,bmu_ids,source,note
+Pembroke,Natural Gas,Pembroke,CCGT,Natural Gas,2012,T_PEMB-11;T_PEMB-21;T_PEMB-31;T_PEMB-41;T_PEMB-51,dukes-5.11-2026,
+Staythorpe,Natural Gas,Staythorpe,CCGT,Natural Gas,2010,T_STAY-1;T_STAY-2;T_STAY-3;T_STAY-4,dukes-5.11-2026,
+Keadby,Natural Gas,Keadby,CCGT,Natural Gas,1996,T_KEAD-1,dukes-5.11-2026,powerplantmatching merges Keadby 1 and Keadby 2 into one 1658 MW plant dated 1994
+Keadby,Natural Gas,Keadby 2,CCGT,Natural Gas,2023,T_KEAD-2,dukes-5.11-2026,H-class; its unit notifies from 31 Oct 2021 (commissioning)
+Didcot,Natural Gas,Didcot B,CCGT,Natural Gas,1998,T_DIDCB5;T_DIDCB6,dukes-5.11-2026,powerplantmatching dates it by Didcot A (1970) and closes it in 2024; both units ran in 2025
+South Humber Bank,Natural Gas,South Humber Bank,CCGT,Natural Gas,1997,T_SHBA-1;T_SHBA-2,powerplantmatching,not found in DUKES 5.11 by name
+Connah Quay,Natural Gas,Connah's Quay,CCGT,Natural Gas,1996,T_CNQPS-1;T_CNQPS-2;T_CNQPS-3;T_CNQPS-4,dukes-5.11-2026,
+Grain,Natural Gas,Grain,CCGT,Natural Gas,2011,T_GRAI-6;T_GRAI-7;T_GRAI-8,dukes-5.11-2026,CHP (heat to the Isle of Grain LNG terminal)
+West Burton,Natural Gas,West Burton B,CCGT,Natural Gas,2013,T_WBURB-1;T_WBURB-2;T_WBURB-3,dukes-5.11-2026,
+Immingham,Natural Gas,Immingham (VPI),CCGT,Natural Gas,2004,T_HUMR-1,dukes-5.11-2026,CHP
+Seabank,Natural Gas,Seabank,CCGT,Natural Gas,2000,T_SEAB-1;T_SEAB-2,dukes-5.11-2026,
+Saltend,Natural Gas,Saltend,CCGT,Natural Gas,2000,T_SCCL-1;T_SCCL-2;T_SCCL-3,dukes-5.11-2026,CHP
+Peterhead,Natural Gas,Peterhead,CCGT,Natural Gas,1980,T_PEHE-1,dukes-5.11-2026,DUKES dates the station (1980); its gas turbines were added later
+Carrington,Natural Gas,Carrington,CCGT,Natural Gas,2016,T_CARR-1;T_CARR-2,dukes-5.11-2026,
+Spalding,Natural Gas,Spalding,CCGT,Natural Gas,2004,T_SPLN-1,dukes-5.11-2026,
+Spalding,Natural Gas,Spalding Energy Expansion,OCGT,Natural Gas,2019,T_SEEL-1,dukes-5.11-2026,not in powerplantmatching; located at its site's entry (Spalding)
+Marchwood,Natural Gas,Marchwood,CCGT,Natural Gas,2009,T_MRWD-1,dukes-5.11-2026,
+Langage,Natural Gas,Langage,CCGT,Natural Gas,2010,T_LAGA-1,dukes-5.11-2026,
+Severn,Natural Gas,Severn,CCGT,Natural Gas,2010,T_SVRP-10;T_SVRP-20,dukes-5.11-2026,
+Sutton Bridge,Natural Gas,Sutton Bridge,CCGT,Natural Gas,1999,T_SUTB-1,dukes-5.11-2026,
+Rocksavage,Natural Gas,Rocksavage,CCGT,Natural Gas,1998,T_ROCK-1,dukes-5.11-2026,
+Damhead Creek,Natural Gas,Damhead Creek,CCGT,Natural Gas,2000,T_DAMC-1,dukes-5.11-2026,
+Coryton,Natural Gas,Coryton,CCGT,Natural Gas,2002,T_COSO-1,dukes-5.11-2026,
+Medway,Natural Gas,Medway,CCGT,Natural Gas,1995,T_MEDP-1,dukes-5.11-2026,
+Little Barford,Natural Gas,Little Barford,CCGT,Natural Gas,1995,T_LBAR-1,dukes-5.11-2026,
+Rye House,Natural Gas,Rye House,CCGT,Natural Gas,1993,T_RYHPS-1,dukes-5.11-2026,
+Killingholme,Natural Gas,Killingholme,OCGT,Natural Gas,1992,T_KILLPG-1;T_KILLPG-2,dukes-5.11-2026,DUKES lists it as single cycle; declared minimum non-zero time 1.3-2 h (gb-power-data unit_runs)
+Bage,Natural Gas,Baglan Bay,CCGT,Natural Gas,2002,T_BAGE-1,dukes-5.11-2022,last output 19 Jul 2020
+Deeside,Natural Gas,Deeside,CCGT,Natural Gas,1994,T_DEEP-1,powerplantmatching,left the register; closed 2018 (bmu_left_register.csv)
+Roos,Natural Gas,Roosecote,CCGT,Natural Gas,1991,,powerplantmatching,no generating BM unit (the register's only Roosecote unit is a 49 MW battery) and in no DUKES edition from 2018: no capacity
+Cottam Development Centre,Natural Gas,Cottam Development Centre,CCGT,Natural Gas,1999,T_CDCL-1,dukes-5.11-2026,
+Shoreham,Natural Gas,Shoreham,CCGT,Natural Gas,2000,E_SHOS-1,dukes-5.11-2026,embedded BM unit
+Great Yarmouth,Natural Gas,Great Yarmouth,CCGT,Natural Gas,2001,E_GYAR-1,dukes-5.11-2026,embedded BM unit
+Enfield,Natural Gas,Enfield,CCGT,Natural Gas,1999,T_EECL-1,dukes-5.11-2026,
+Corby,Natural Gas,Corby,CCGT,Natural Gas,1994,E_CORB-1,dukes-5.11-2025,embedded BM unit; last output 22 Jul 2025
+King Lynn,Natural Gas,King's Lynn A,CCGT,Natural Gas,1997,E_KLYN-A-1,dukes-5.11-2026,powerplantmatching dates it by its 2019 return to service
+Peterborough,Natural Gas,Peterborough,OCGT,Natural Gas,1993,E_PETEM1,dukes-5.11-2026,DUKES lists it as single cycle (245 MW); declared minimum non-zero time 0.5-1.1 h
+Glanford Brigg,Natural Gas,Glanford Brigg,OCGT,Natural Gas,1994,E_BRGG-1,dukes-5.11-2022,DUKES lists it as single cycle
+Grangemouth,Natural Gas,Grangemouth,CCGT,Natural Gas,2001,T_GRMO-1,powerplantmatching,CHP; last output 15 Feb 2025
+Fellside Chp,Natural Gas,Fellside,CCGT,Natural Gas,1995,E_FELL-1,dukes-5.11-2022,CHP; embedded BM unit
+Indian Queens,Natural Gas,Indian Queens,OCGT,Oil,1996,T_INDQ-1,dukes-5.11-2026,DUKES: diesel/gas oil single cycle
+Hirwaun,Natural Gas,Hirwaun,OCGT,Natural Gas,2025,T_HIRWN-1,bm_unit_register,open-cycle peaker that powerplantmatching labels steam turbine; its unit notifies from 30 Sep 2025
+Fawley Refinery,Natural Gas,Fawley Cogen,CCGT,Natural Gas,1985,E_FAWN-1,powerplantmatching,CHP at the Fawley refinery; embedded BM unit
+Aberthaw Gt,Natural Gas,Aberthaw GT,OCGT,Oil,1971,T_ABTH7G;T_ABTH8G;T_ABTH9G,bmu_left_register.csv,diesel/gas oil turbines; closed 31 Mar 2020
+Taylor Lane Gt,Oil,Taylor's Lane,OCGT,Oil,1979,E_TAYL2G;E_TAYL3G,dukes-5.11-2026,diesel/gas oil
+Cowes,Oil,Cowes,OCGT,Oil,1982,E_COWE1;E_COWE2,dukes-5.11-2026,diesel/gas oil
+Drax Timepoint,Hard Coal,Drax units 5-6 (coal),Hard Coal,Hard Coal,1974,T_DRAXX-5;T_DRAXX-6,dukes-5.11-2022,powerplantmatching counts the whole 4206 MW station as coal; units 1-4 burn biomass and are agents of their own (RO and CfD)
+West Burton,Hard Coal,West Burton A,Hard Coal,Hard Coal,1969,T_WBUPS-1;T_WBUPS-2;T_WBUPS-3;T_WBUPS-4,dukes-5.11-2022,
+Cottam,Hard Coal,Cottam,Hard Coal,Hard Coal,1969,T_COTPS-1;T_COTPS-2;T_COTPS-3;T_COTPS-4,bmu_left_register.csv,
+Ratcliffe,Hard Coal,Ratcliffe-on-Soar,Hard Coal,Hard Coal,1967,T_RATS-1;T_RATS-2;T_RATS-3;T_RATS-4,dukes-5.11-2022,
+Fiddler Ferry,Hard Coal,Fiddler's Ferry,Hard Coal,Hard Coal,1971,T_FIDL-1;T_FIDL-2;T_FIDL-3;T_FIDL-4,powerplantmatching,
+Eggborough,Hard Coal,Eggborough,Hard Coal,Hard Coal,1967,T_EGGPS-1;T_EGGPS-2;T_EGGPS-3;T_EGGPS-4,bmu_left_register.csv,
+Aberthaw,Hard Coal,Aberthaw B,Hard Coal,Hard Coal,1971,T_ABTH7;T_ABTH8;T_ABTH9,bmu_left_register.csv,

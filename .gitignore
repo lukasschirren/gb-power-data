@@ -36,6 +36,8 @@ data/reference/*
 !data/reference/dukes_bmu_map.csv
 !data/reference/thermal_parameters.csv
 !data/reference/thermal_parameter_sources.csv
+!data/reference/thermal_station_bmu.csv
+!data/reference/thermal_unit_efficiency.csv
 !data/reference/official_statistics.csv
 !data/reference/investment_parameters.csv
 !data/reference/investment_parameter_sources.csv

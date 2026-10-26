@@ -46,6 +46,7 @@ docstring has the method, the source quirks it handles, and its full CLI.
 | `pecd_pull` | Copernicus CDS PECD v4.2 (ERA5 and CMIP6 CF, temperature) | free CDS key + licence acceptance | `raw/pecd/` | up to 10 GB |
 | `nuts_boundaries_pull` | Eurostat GISCO NUTS-2 boundaries | free | `raw/gis/nuts2_boundaries_2021.geojson` | <5 MB |
 | `ppm_pull` | powerplantmatching plant roster, pinned release v0.8.1, checksum-verified | free (GitHub) | `raw/powerplants.csv` | 22 MB |
+| `jrc_ppdb_pull` | JRC Open Power Plants Database v1.00 (Zenodo record 3574566, CC BY 4.0), md5-verified: units with EIC codes and their net efficiency and its source | free (Zenodo) | `raw/jrc_ppdb/JRC-PPDB-OPEN.ver1.0.zip` | 1.3 MB |
 | `nordpool_pull` | Nord Pool N2EX prices, aggregated curves, blocks, flows | **paid API** | `raw/nordpool/` | 13 GB |
 | `epex_pull` | EPEX SPOT GB day-ahead and intraday prices, curves, blocks, trades | **paid sFTP** | `raw/epex/` | 3.4 GB |
 
@@ -100,7 +101,7 @@ stage stops the run, except the two marked *soft*, which are skipped when their 
 | `stage2_build_timeseries` | ESPENI, ITSDO, MID, BM units, REPD, gas, carbon, coal (N2EX fills MID gaps only if `raw/nordpool/` exists and `timeseries.mid_gap_fill_n2ex` is true) | `demand_{y}.csv`, `capacity_factors_{y}.csv`, `fuel_prices_{y}.csv`, `mid_target_{y}.csv` |
 | `build_cfd_fleet` | `raw/lccc/`, `capacity_factors_{y}.csv` | `cfd_fleet_{y}.csv` |
 | `stage2c_zone_demand` | `demand_{y}.csv`, `reference/gsp_group_demand_weights.csv` | `demand_by_zone_{y}.csv` |
-| `stage3_build_agents` | fleet, CfD status, located plants, REPD, GIS, `reference/tech_parameters.yaml`, flexibility, nuclear availability | `agents_{y}.csv` |
+| `stage3_build_agents` | fleet, CfD status, located plants, REPD, GIS, `reference/tech_parameters.yaml`, flexibility, nuclear availability, `bm_unit_register_{y}` with `reference/thermal_station_bmu.csv` (thermal plant dated and sized by its BM units), `reference/thermal_parameters.csv` (thermal availability), `reference/thermal_unit_efficiency.csv` (CCGT stations' manufacturer ratings, by EIC) | `agents_{y}.csv` |
 | `stage2b_zone_cf` (soft) | `raw/ninja/`, `reference/ninja_sites_by_zone.csv`, agents, national CF | `capacity_factors_by_zone_{y}.csv` |
 | `stage2d_wind_farms` (soft) | `raw/fpn/`, `reference/wind_farm_map.csv` | `wind_farms_{y}.csv`, `wind_farm_fpn_{y}.csv`, `wind_farm_fpn_gaps_{y}.csv` |
 
@@ -116,6 +117,7 @@ stage stops the run, except the two marked *soft*, which are skipped when their 
 | `build_cap_tariff` | Ofgem cap tariff model xlsx in `raw/ofgem/` | `cap_tariff_by_region.csv` |
 | `build_subnational_domestic` | `raw/manual/desnz_subnational/` | `domestic_supply_by_year.csv` |
 | `bm_units [--years 2018 2026]` (default to the current year) | `raw/bm_units_*.csv` (every kept snapshot), `reference/bmu_left_register.csv` (the units that left the register before it, after `fpn_left_register_pull`), `raw/{fpn,b1610,bod}/` | `bm_unit_register_{y}.csv` |
+| `thermal_unit_efficiency` (after `jrc_ppdb_pull`) | `raw/jrc_ppdb/JRC-PPDB-OPEN.ver1.0.zip` | `reference/thermal_unit_efficiency.csv`: GB gas, hard-coal and oil units (EIC 48W) with their net efficiency and its source; stage 3 gives each CCGT station its units' OEM ratings |
 | `bm_dynamic [--pull]` | `raw/bm_dynamic/` (`--pull` fetches the missing snapshots first), `bm_unit_register_{y}.csv` | `bm_dynamic_units.csv` (one row per snapshot and active thermal or pumped-storage unit: declared values and the derived minimum stable share, ramp rates, run-up time) and `reference/bm_dynamic_by_tech.csv` (by technology, each year and 2018–2025; [thermal_parameters.md](thermal_parameters.md)) |
 | `build_company_control [--stamp YYYYMMDD]` | `raw/companies_house/` (the newest snapshot of each company; with `--stamp`, those up to that pull date) | `company_control.csv` (`company_control_{stamp}.csv` with `--stamp`) |
 | `build_ownership [--years 2018 2026]` (after `capacity_market`) | `raw/dukes/`, `raw/ofgem/RO_*` (optional), CfD register and `raw/lccc/`, `raw/neso/cm_register/`, `raw/neso/ancillary/eac_by_unit_*.csv` (battery postcodes), `bm_unit_register_{y}.csv`, `capacity_market_links.csv` and `capacity_market_agreements.csv` (storage units' CM owners; without them a warning), `company_control.csv` (optional, basis `ch_psc`), `reference/{company_groups,company_owners,bmu_lead_parties,companies_house_numbers,dukes_bmu_map,wind_farm_map}.csv` | `ownership_{y}.csv`, `ownership_bmu_{y}.csv` ([ownership.md](ownership.md)) |

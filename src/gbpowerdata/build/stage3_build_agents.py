@@ -22,6 +22,33 @@ solar / onshore wind become located per-zone agents.
 
 Each CfD agent carries `vintage` and `neg_price_rule` so the ABM can apply the
 AR1-3 six-hour vs AR4+ any-hour behaviour.  Output: data/processed/agents_{year}.csv
+
+THERMAL PLANT WITH BM UNITS (since 26 Oct 2026; docs/AUDIT.md A7-8). powerplantmatching's dates
+and capacities do not follow the units that ran: it dated Didcot B by Didcot A and closed it in 2024, kept Baglan
+Bay (last output July 2020), Deeside (closed 2018) and Roosecote (no generating unit) in every year, merged Keadby 2
+(2023) into Keadby 1, and counted all of Drax (4206 MW) as coal. data/reference/thermal_station_bmu.csv maps each
+such plant to its stations and their BM units, with each station's technology, fuel and commissioning year (DUKES
+5.11) where DUKES differs from powerplantmatching (Killingholme, Peterborough and Glanford Brigg are single cycle,
+Indian Queens burns gas oil). A station's capacity in YEAR is the sum over its units of the register's capacity
+times the share of the year from the unit's first to its last day with output (bm_unit_register_{YEAR}.csv, the
+same activity rules as every register-based table), so a station that closes in March counts a quarter of its
+capacity and a closed one none. The station replaces its powerplantmatching plant; thermal plant without BM units
+(embedded industrial CHP, small engines) keeps powerplantmatching's dates.
+EFFICIENCY BY STATION (since 26 Oct 2026, the author's choice). A CCGT station takes the capacity-weighted mean of
+its units' manufacturer ratings (JRC Open Power Plants Database v1.00, best_source OEM_derived, joined by the units'
+EIC in the register; data/reference/thermal_unit_efficiency.csv, which
+gbpowerdata.build.thermal_unit_efficiency builds), on the gas price's gross basis by ppm_efficiency_basis_factor
+(0.900). A station without a rating (Keadby 2 and other units since 2019, class- or emissions-derived values) and every
+open-cycle station (JRC cannot tell open from combined cycle) takes the vintage curve at its commissioning year. The
+curve's period medians had the fleet's level (0.479 against the ratings' 0.477 on the 2025 CCGTs) but not its order
+(rank correlation 0.29): Peterhead 0.414 against its rating's 0.486, Marchwood and Severn 0.522 (powerplantmatching's
+0.58 LHV) against 0.486.
+
+THERMAL AVAILABILITY (since 26 Oct 2026). CCGT, OCGT, coal and oil plant offer their capacity times NESO's Capacity
+Market de-rating factor for the technology (the gb_default rows of data/reference/thermal_parameters.csv, by delivery
+year October to September): three quarters of the delivery year that ends in
+YEAR and a quarter of the one that starts in it, the nearest delivery year the table has where it has none. Until
+then they took a flat 0.90 (gas) or 0.85 (coal, oil).
 """
 
 from __future__ import annotations
@@ -45,17 +72,25 @@ VINTAGE_EFF = TP.get("efficiency_vintage", {})  # gas efficiency by commissionin
 # A measured PPM efficiency is net LHV; this factor (NCV/GCV) puts it on the basis of the fuel's price
 # (gas per therm = GCV). See the heating-value note at the top of tech_parameters.yaml.
 PPM_EFF_FACTOR = TP.get("ppm_efficiency_basis_factor", {})
+THERMAL_FUELS = ("Natural Gas", "Hard Coal", "Oil")
+THERMAL_MAP = "thermal_station_bmu.csv"        # module docstring, THERMAL PLANT WITH BM UNITS
+UNIT_EFFICIENCY = "thermal_unit_efficiency.csv"   # module docstring, EFFICIENCY BY STATION
+THERMAL_TABLE = "thermal_parameters.csv"       # module docstring, THERMAL AVAILABILITY
+AVAIL_TECH = {"CCGT": "ccgt", "OCGT": "ocgt", "Hard Coal": "coal", "Oil": "oil"}
 
 AGENT_COLS = ["agent_id", "name", "tech", "support_regime", "capacity_mw", "n_plants",
               "efficiency", "emissions_factor", "support_value_gbp_mwh", "is_offshore",
-              "vintage", "neg_price_rule", "gsp_id", "gsp_group", "source"]
+              "vintage", "neg_price_rule", "gsp_id", "gsp_group", "source", "commissioned"]
+# commissioned: the year a powerplantmatching plant or thermal station entered service (its DateIn; a station's from
+# THERMAL_MAP), capacity-weighted over an aggregate's plants; the projection retires gas plant oldest first by it
 
 # --- per-tech flexibility / cost-shape parameters (ABM v1, build-step 1) ------
 #   availability   : fraction of nameplate offerable in a period (outage/maintenance).
 #                    VRE = 1.0 (the CF series already sets output, no double-derate);
 #                    nuclear = empirical fleet CF (it runs whenever available, so realized
 #                    CF is its availability); dispatchable thermal = technical availability
-#                    (the merit order decides actual running); hydro = energy-limited proxy.
+#                    (the merit order decides actual running), which main() replaces for CCGT,
+#                    OCGT, coal and oil by NESO's de-rating factors; hydro = energy-limited proxy.
 #   srmc_base      : non-fuel marginal cost (GBP/MWh_e) for techs NOT priced off a
 #                    time-varying fuel series — nuclear ~8 (uranium + O&M), supported
 #                    renewables ~0. NaN => fuel-priced (gas/coal/oil): the ABM computes
@@ -221,6 +256,80 @@ def _eff(row):
     return EFF.get(row["Fueltype"], np.nan)
 
 
+def active_share(reg: pd.DataFrame, year: int) -> pd.Series:
+    """Share of `year` each BM unit was active (by unit_id): the days from its first to its last day with output
+    (the register's active_from and active_to, open where blank) that fall in the year; zero where the register marks
+    the unit inactive in the year."""
+    y0, y1 = pd.Timestamp(f"{year}-01-01"), pd.Timestamp(f"{year + 1}-01-01")
+    a = pd.to_datetime(reg["active_from"], errors="coerce").fillna(y0).clip(lower=y0)
+    b = (pd.to_datetime(reg["active_to"], errors="coerce") + pd.Timedelta(days=1)).fillna(y1).clip(upper=y1)
+    share = ((b - a).dt.days / (y1 - y0).days).clip(lower=0.0)
+    return pd.Series(np.where(reg["active"].astype(bool), share, 0.0), index=reg["unit_id"].to_numpy())
+
+
+def station_rating(units: list[str], eic: pd.Series, cap: pd.Series, oem: pd.Series) -> float:
+    """A station's manufacturer rating (net, LHV): its units' OEM-derived efficiencies (by EIC) weighted by their
+    register capacity; NaN where none of its units has one (module docstring, EFFICIENCY BY STATION)."""
+    e = pd.Series({u: oem.get(eic.get(u), np.nan) for u in units}, dtype=float).dropna()
+    w = cap.reindex(e.index).fillna(0.0)
+    return float(np.average(e, weights=w)) if len(e) and w.sum() > 0 else np.nan
+
+
+def thermal_stations(year: int) -> tuple[pd.DataFrame, set]:
+    """The thermal stations with BM units (THERMAL_MAP) as powerplantmatching-like rows, each sized by its units'
+    capacity and activity in `year` (module docstring, THERMAL PLANT WITH BM UNITS), with a CCGT station's rating where
+    its units have one (EFFICIENCY BY STATION), and the (Name, Fueltype) keys of the powerplantmatching plants they
+    replace. Location from the plant's powerplantmatching entry in any year."""
+    m = pd.read_csv(cfg.reference_dir() / THERMAL_MAP, dtype={"bmu_ids": str, "ppm_name": str})
+    reg = pd.read_csv(cfg.processed_dir() / f"bm_unit_register_{year}.csv")
+    share = active_share(reg, year)
+    cap = pd.Series(reg["capacity_mw"].to_numpy(float), index=reg["unit_id"].to_numpy())
+    eic = pd.Series(reg["eic"].to_numpy(), index=reg["unit_id"].to_numpy())
+    ue = pd.read_csv(cfg.reference_dir() / UNIT_EFFICIENCY)
+    ue = ue[ue["best_source"].eq("OEM_derived") & ue["eff"].notna()]
+    oem = pd.Series(ue["eff"].to_numpy(float), index=ue["eic_g"].to_numpy())
+    ppm = pd.concat([pd.read_csv(f, keep_default_na=False, na_values=[""])
+                     for f in sorted(cfg.processed_dir().glob("powerplants_located_*.csv"))], ignore_index=True)
+    ppm = ppm.drop_duplicates(["Name", "Fueltype"]).set_index(["Name", "Fueltype"])
+    rows = []
+    for _, s in m.iterrows():
+        units = [u for u in str(s["bmu_ids"]).split(";") if u and u != "nan"]
+        unknown = [u for u in units if u not in cap.index]
+        if unknown:
+            raise KeyError(f"{THERMAL_MAP}: {s['station']} units {unknown} are not in bm_unit_register_{year}.csv")
+        mw = float(sum(cap[u] * share[u] for u in units))
+        if mw <= 0:
+            continue
+        key = (s["ppm_name"], s["ppm_fueltype"])
+        if key not in ppm.index:
+            raise KeyError(f"{THERMAL_MAP}: {s['station']} names {key}, which no powerplants_located file holds")
+        p = ppm.loc[key]
+        rating = station_rating(units, eic, cap, oem) if s["tech"] == "CCGT" else np.nan
+        rows.append({"Name": s["station"], "Fueltype": s["fuel"], "Technology": s["tech"], "Capacity": round(mw, 1),
+                     "Efficiency": rating, "DateIn": float(s["commissioned"]),
+                     "support_regime": "merchant_thermal", "gsp_id": p["gsp_id"], "gsp_group": p["gsp_group"],
+                     "agent_source": "PPM + BM register"})
+    return pd.DataFrame(rows), set(zip(m["ppm_name"], m["ppm_fueltype"]))
+
+
+def thermal_availability(year: int) -> dict[str, float]:
+    """Calendar-year availability of each thermal technology from NESO's Capacity Market de-rating factors (module
+    docstring, THERMAL AVAILABILITY): 3/4 of the delivery year ending in `year`, 1/4 of the one starting in it."""
+    t = pd.read_csv(cfg.reference_dir() / THERMAL_TABLE, dtype={"year": str})
+    t = t[(t["parameter"] == "availability") & (t["gb_default"] == "yes")]
+    out = {}
+    for tech, tt in AVAIL_TECH.items():
+        s = t[t["technology"] == tt]
+        if s.empty:
+            raise ValueError(f"{THERMAL_TABLE}: no gb_default availability for {tt}")
+        dy = pd.Series(s["value"].astype(float).to_numpy(), index=s["year"].str[:4].astype(int)).sort_index()
+
+        def at(y: int) -> float:
+            return float(dy.iloc[int(np.abs(dy.index.to_numpy() - y).argmin())])
+        out[tech] = 0.75 * at(year - 1) + 0.25 * at(year)
+    return out
+
+
 def other_agents() -> pd.DataFrame:
     """LOCATED PPM (Stage 1b) minus CfD and minus offshore wind (REPD handles those).
 
@@ -234,6 +343,10 @@ def other_agents() -> pd.DataFrame:
     df["support_regime"] = df["support_regime"].fillna("None").replace("", "None")
     df = df[df["support_regime"] != "CfD"]
     df = df[~((df["Fueltype"] == "Wind") & (df["Technology"] == "Offshore"))]
+    # thermal plant with BM units: the stations dated and sized by the register (module docstring)
+    st, replaced = thermal_stations(YEAR)
+    df = df[[k not in replaced for k in zip(df["Name"], df["Fueltype"])]]
+    df = pd.concat([df, st], ignore_index=True)
 
     df["tech"] = np.where(df["Fueltype"] == "Natural Gas", df.apply(_gas_tech, axis=1), df["Fueltype"])
     df["eff"] = df.apply(_eff, axis=1)
@@ -241,6 +354,8 @@ def other_agents() -> pd.DataFrame:
     df["support_value"] = np.where(df["support_regime"] == "RO",
                                    df["Fueltype"].map(ROC).fillna(ROC["default"]), 0.0)
     df["is_offshore"] = df["Technology"] == "Offshore"
+    df["commissioned"] = pd.to_numeric(df["DateIn"], errors="coerce")
+    df["agent_source"] = df["agent_source"].fillna("PPM") if "agent_source" in df else "PPM"
 
     big, small = df[df["Capacity"] >= THRESH], df[df["Capacity"] < THRESH]
     individual = pd.DataFrame({
@@ -249,7 +364,8 @@ def other_agents() -> pd.DataFrame:
         "capacity_mw": big["Capacity"].round(1), "n_plants": 1, "efficiency": big["eff"].round(3),
         "emissions_factor": big["emissions_factor"], "support_value_gbp_mwh": big["support_value"].round(2),
         "is_offshore": big["is_offshore"], "vintage": np.nan, "neg_price_rule": np.nan,
-        "gsp_id": big["gsp_id"], "gsp_group": big["gsp_group"], "source": "PPM",
+        "gsp_id": big["gsp_id"], "gsp_group": big["gsp_group"], "source": big["agent_source"],
+        "commissioned": big["commissioned"],
     })
 
     def wavg(s, w):
@@ -270,6 +386,7 @@ def other_agents() -> pd.DataFrame:
             "support_value_gbp_mwh": round(wavg(g["support_value"], g["Capacity"]), 2),
             "is_offshore": off, "vintage": np.nan, "neg_price_rule": np.nan,
             "gsp_id": pd.NA, "gsp_group": zone, "source": "PPM",
+            "commissioned": round(wavg(g["commissioned"], g["Capacity"]), 1),
         })
     return pd.concat([individual, pd.DataFrame(rows, columns=AGENT_COLS)], ignore_index=True)[AGENT_COLS]
 
@@ -290,6 +407,8 @@ def main() -> None:
     nuke_av = nuclear_availability()  # empirical per-year override (declining AGR fleet)
     if nuke_av is not None:
         agents.loc[agents["tech"] == "Nuclear", "availability"] = round(nuke_av, 3)
+    for tech, av in thermal_availability(YEAR).items():   # NESO's de-rating factors (module docstring)
+        agents.loc[agents["tech"] == tech, "availability"] = round(av, 4)
     agents = agents[OUT_COLS]
 
     out = cfg.processed_dir() / f"agents_{YEAR}.csv"
