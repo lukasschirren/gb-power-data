@@ -71,9 +71,12 @@ with, which the next section explains.
 ## The heating-value basis
 
 GB gas is bought per therm, a gross calorific value (GCV) unit, and DUKES reports plant efficiency on the same basis.
+The price the pipeline uses, the System Average Price, is quoted in the kWh of the GB network, which gas transporters
+calculate from calorific values that the Gas Act 1986 (s.12(2)) defines as "megajoules (gross)".
 DESNZ's Electricity Generation Costs are HHV (the same as GCV) for non-renewables. ENTSO-E, the Danish Energy Agency,
 Agora, JRC and the consultant reports behind the cost studies quote net calorific value (NCV, the same as LHV). The
-API4 coal price the pipeline uses is net as received. DUKES gives the ratios of net to gross calorific value as
+API4 coal price the pipeline uses is net as received, and the landed coal price beside it is converted on the same
+6,000 kcal/kg NAR (HMRC gives no calorific value). DUKES gives the ratios of net to gross calorific value as
 0.900 for natural gas, 0.950 for power-station coal, 0.940 for fuel and gas oil, and 0.924 for wood pellets
 (`ncv_gcv_ratio` rows).
 

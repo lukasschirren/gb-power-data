@@ -84,7 +84,7 @@ def test_every_packable_file_has_sources_and_the_flags_follow_them(src, tmp_path
     nc = {e["path"]: e["non_commercial"] for e in man["files"]}
     assert nc["processed/demand_2023.csv"] is True                        # ESPENI: CC BY-NC
     assert nc["processed/mid_target_2023.csv"] is False                   # Elexon: open
-    assert set(man["sources"]) == {"espeni", "elexon", "pecd", "ppm", "govuk", "worldbank", "ecb"}
+    assert set(man["sources"]) == {"espeni", "elexon", "pecd", "ppm", "govuk", "worldbank", "hmrc", "ecb"}
     assert "© Elexon" in man["sources"]["elexon"]["attribution"]
 
 

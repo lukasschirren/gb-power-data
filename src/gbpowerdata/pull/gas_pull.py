@@ -6,6 +6,14 @@ that sets CCGT/OCGT short-run marginal cost. ONS publishes it daily (source:
 National Gas Transmission) in pence/kWh; we convert to pence/therm to match the
 pipeline convention.
 
+Heating-value basis: gross (GCV, the same as HHV). The OCM trades, and SAP prices, gas in the kWh of the
+GB network, which a gas transporter calculates from volumes and calorific values (Gas Act 1986 s.12(1)),
+and the Act defines a calorific value as "the number of megajoules (gross)" from burning one cubic metre
+of gas at 15°C and 1013.25 millibars (s.12(2), https://www.legislation.gov.uk/ukpga/1986/44/section/12).
+Neither ONS nor National Gas print "gross" beside SAP; the basis follows from the unit (checked 26 Oct
+2026; docs/AUDIT.md A4-5). Efficiencies and emission factors paired with this price must therefore be
+GCV (data/reference/tech_parameters.yaml, docs/thermal_parameters.md).
+
 Coverage: ONS SAP runs Jan 2018 -> present. (The legacy MIPI SOAP service that
 held earlier history was decommissioned in 2023, so 2016-2017 is not available
 here.)

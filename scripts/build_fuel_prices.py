@@ -1,15 +1,16 @@
 """Build fuel_prices_{year}.csv locally from the public sources, for the years the data pack leaves out.
 
 WHY. Until the UK left the EU ETS (end 2020) the carbon price in fuel_prices is the EEX EU ETS
-auction clearing price, and EEX's market-data terms do not allow passing that data on. The data
-pack therefore leaves out fuel_prices_2018-2021 (2021 because stage 2 interpolates between
-mid-month prices, so 1-14 January 2021 still carries the December 2020 EEX price), and each user
-fetches the prices from the public sources for their own use, which is what this script does.
+auction clearing price, and so is January-April 2021, the UK ETS's proxy before its first auction in
+May 2021 (pull.carbon_pull); EEX's market-data terms do not allow passing that data on. The data
+pack therefore leaves out fuel_prices_2018-2021, and each user fetches the prices from the public
+sources for their own use, which is what this script does.
 
 STEPS (each a subprocess, as in scripts/run_pipeline.py)
     gbpowerdata.pull.gas_pull       ONS System Average Price of gas    -> data/raw/gas_sap_daily.csv
     gbpowerdata.pull.carbon_pull    EEX EUA auctions + gov.uk UK ETS   -> data/raw/carbon_monthly.csv
-    gbpowerdata.pull.coal_pull      World Bank Pink Sheet coal         -> data/raw/coal_monthly.csv
+    gbpowerdata.pull.coal_pull      World Bank Pink Sheet coal, HMRC   -> data/raw/coal_monthly.csv
+                                    landed steam coal imports
     gbpowerdata.build.stage2_build_timeseries --fuel-only, per year    -> data/processed/fuel_prices_{year}.csv
 
 No account or key is needed. `--no-pull` skips the three pulls when data/raw/ already holds them.

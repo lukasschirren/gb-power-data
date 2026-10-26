@@ -8,8 +8,9 @@ Outputs (data/processed/, UTC half-hourly, year-suffixed, aligned on startTime):
                              1.00 x exports + 1.00 x pumping), so national_demand_mw is not the demand a model
                              with its own interconnectors and storage should serve (README, data caveats).
   capacity_factors_{year}.csv  wind_offshore / wind_onshore / solar capacity factors
-  fuel_prices_{year}.csv     gas (p/therm), coal (GBP/MWh-th), carbon ETS + total
-                             (ETS+CPS, GBP/tonne), filled to half-hourly
+  fuel_prices_{year}.csv     gas (p/therm), coal (GBP/MWh-th: FOB Richards Bay, and landed in the UK where
+                             coal_monthly.csv has it), carbon ETS + total (ETS+CPS, GBP/tonne), filled to
+                             half-hourly
   mid_target_{year}.csv      Elexon's market index price (MID: the volume-weighted price of the half-hour's
                              short-term trades on EPEX SPOT GB, not a day-ahead auction price; validation
                              target, NOT an input), with mid_source. A half-hour without traded volume is
@@ -208,14 +209,20 @@ def build_fuel_prices(idx: pd.DatetimeIndex) -> pd.DataFrame:
     gas_daily = (gas.reindex(gas.index.union(days)).interpolate("time")
                  .reindex(days).ffill().bfill())
 
-    # Carbon: monthly ETS (EU-ETS EUA pre-2021 / UK-ETS UKA from 2021), GBP/t.
+    # Carbon: monthly ETS (EU-ETS EUA to 2020, the EUA as proxy for Jan-Apr 2021, UK-ETS UKA from May 2021;
+    # pull.carbon_pull), GBP/t.
     carbon_daily = _monthly_to_daily("carbon_monthly.csv", "carbon_price_gbp_per_tonne")
-    # Coal: monthly GB coal price (GBP/MWh-thermal) -> half-hourly by calendar month.
+    # Coal: monthly GB coal price (GBP/MWh-thermal) -> half-hourly by calendar month: Richards Bay FOB, and the
+    # price of the UK's landed cargoes where coal_monthly.csv carries it (pull.coal_pull, AUDIT A4-6).
     coal_daily = _monthly_to_daily("coal_monthly.csv", "coal_gbp_per_mwh_thermal")
+    landed = "coal_landed_gbp_per_mwh_thermal" in pd.read_csv(RAW / "coal_monthly.csv", nrows=0).columns
 
     out = pd.DataFrame({"startTime": idx})
     out["gas_price_pence_per_therm"] = daily_to_halfhourly(gas_daily, idx).round(3).values
     out["coal_price_gbp_per_mwh_thermal"] = daily_to_halfhourly(coal_daily, idx).round(3).values
+    if landed:
+        out["coal_landed_price_gbp_per_mwh_thermal"] = daily_to_halfhourly(
+            _monthly_to_daily("coal_monthly.csv", "coal_landed_gbp_per_mwh_thermal"), idx).round(3).values
     out["carbon_price_gbp_per_tonne"] = daily_to_halfhourly(carbon_daily, idx).round(3).values
     # Total fossil carbon = ETS + CPS. The ETS-only column is kept for transparency.
     out["carbon_total_gbp_per_tonne"] = (out["carbon_price_gbp_per_tonne"] + CPS_GBP_PER_TONNE).round(3)

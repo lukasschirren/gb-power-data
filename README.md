@@ -41,10 +41,11 @@ python -m gbpowerdata.datapack unpack gb-power-data_processed_<date>.zip
 python scripts/build_fuel_prices.py      # fuel prices for 2018-2021, built on your machine (about a minute)
 ```
 
-The last command is there because the 2018–2020 carbon price comes from EEX, whose terms do not
-allow passing it on. The pack therefore leaves out `fuel_prices_2018` to `fuel_prices_2021`
-(early January 2021 is interpolated from December 2020), and the script fetches the prices from the
-public sources and builds those four files locally, with no account needed.
+The last command is there because the carbon price of 2018 to April 2021 comes from EEX, whose terms
+do not allow passing it on (no UK allowance traded before May 2021, so January to April 2021 carry the
+EU price of the month as the proxy). The pack therefore leaves out `fuel_prices_2018` to
+`fuel_prices_2021`, and the script fetches the prices from the public sources and builds those four
+files locally, with no account needed.
 
 ### 3. Load a table
 
@@ -71,7 +72,7 @@ series has one row per half-hour with its UTC start time in the column `startTim
 | Wind and solar | `capacity_factors_{y}` | offshore wind, onshore wind and solar capacity factors |
 | | `capacity_factors_by_zone_{y}` | the same per GSP group, shaped by renewables.ninja reanalysis |
 | | `capacity_factors_pecd_{y}` | the same three capacity factors from a second weather source, the Copernicus Pan-European Climate Database (PECD) |
-| Prices | `fuel_prices_{y}` | gas, coal and carbon (EU or UK ETS plus the carbon price support); 2018–2021 built locally |
+| Prices | `fuel_prices_{y}` | gas, coal and carbon (EU or UK ETS plus the carbon price support); coal both as the Richards Bay export price and as the price of the UK's landed imports; 2018–2021 built locally |
 | | `mid_target_{y}` | Elexon's Market Index Data price: the volume-weighted price of the half-hour's short-term trades on EPEX SPOT GB (half-hour and 1-4 hour blocks; the day-ahead auction has weight 0), not a day-ahead auction price; its trading window moved closer to delivery on 18 Apr 2019 (BSC modification P377) |
 | | `system_prices_{y}` | the imbalance (cash-out) price and net imbalance volume |
 | Plants and support | `powerplants_tagged_{y}`, `powerplants_located_{y}` | every GB plant with its support scheme (CfD, RO, FiT, none) and grid region |
@@ -237,6 +238,7 @@ on 10 Oct 2026).
 | Investment parameters from reports (CEPA for DESNZ 2025, Mott MacDonald for BEIS 2018) | published by DESNZ and BEIS on gov.uk, under the authors' copyright notices: values cited with a locator, never their documents | the source of each row (`source`, `locator`) in `investment_parameter_sources.csv` | `investment_parameters.csv`, tracked in `data/reference/`, not packed |
 | Copernicus PECD v4.2 | CC BY 4.0 | "Generated using Copernicus Climate Change Service information [year]" | `capacity_factors_pecd` |
 | World Bank Pink Sheet | CC BY 4.0 | source | coal price in `fuel_prices` |
+| HMRC overseas trade statistics | Open Government Licence v3.0 | source and licence link | landed coal price in `fuel_prices` |
 | ECB | [ECB statistics reuse policy](https://www.ecb.europa.eu/stats/ecb_statistics/governance_and_quality_framework/html/usage_policy.en.html), commercial use allowed | "Source: ECB statistics" | EUR→GBP and USD→GBP conversions in `fuel_prices` |
 | Thermal plant parameters (22 sources, [docs/thermal_parameters.md](docs/thermal_parameters.md)) | per source, in `thermal_parameter_sources.csv`: CC BY 4.0 (ENTSO-E and ENTSOG TYNDP 2026 Scenarios, Danish Energy Agency, JRC, PyPSA-Eur), Open Government Licence v3.0 (DESNZ, BEIS, DUKES), NESO Open Licence, BMRS licence, reproduction with acknowledgement (METIS); the remaining sources (Kumar et al. 2012, DIW, Agora Energiewende, Leigh Fisher and Jacobs, Parsons Brinckerhoff, CEPA and GHD) state no open licence, and their values are cited, with a locator, never their documents | the source of each row (`source`, `locator`); "TYNDP 2026 Scenarios" for the ENTSO-E rows | `thermal_parameters.csv`, tracked in `data/reference/`, not packed |
 | Official statistics (DESNZ, NESO, LCCC) | per row, in the `licence` column of `official_statistics.csv`: Open Government Licence v3.0 for DUKES; NESO's website terms for its balancing services spend reports and LCCC's terms of use for its annual reports, neither an open licence, so only single published totals are cited from them, with a locator, never their documents | the source of each row (`publisher`, `title`, `url`, `locator`) | `official_statistics.csv`, tracked in `data/reference/`, not packed |

@@ -8,8 +8,8 @@ history, tied to the tag of the code that built it) or put on any shared drive.
 PACKS
     processed   the data/processed/ tables built from open sources (PROCESSED_*): the 2018-2025
                 panel, consumer-side tables and the national PECD capacity factors. Left out:
-                licensed day-ahead data; fuel_prices_2018-2021, whose carbon price comes from EEX
-                (whose terms do not allow passing it on), which `scripts/build_fuel_prices.py`
+                licensed day-ahead data; fuel_prices_2018-2021, whose carbon price to April 2021
+                comes from EEX (whose terms do not allow passing it on), which `scripts/build_fuel_prices.py`
                 rebuilds from the public sources; and the hourly NUTS-2 PECD tables
                 (pecd/cf_historical spans 1950-2025 at 0.75 GB; pecd/cf_future_* is 0.7 GB per
                 climate model), which `pecd_pull` + `pecd_build` rebuild with a free key.
@@ -126,10 +126,12 @@ SOURCES = {
                 attribution="Danish Energy Agency, Technology Data for Energy Storage"),
     "worldbank": dict(name="World Bank Commodity Price Data (Pink Sheet)", licence="CC BY 4.0",
                       url="https://www.worldbank.org/en/research/commodity-markets"),
+    "hmrc": dict(name="HMRC overseas trade in goods statistics (uktradeinfo; landed steam coal imports)",
+                 licence="Open Government Licence v3.0", url="https://www.uktradeinfo.com"),
     "ecb": dict(name="ECB euro foreign exchange reference rates", licence="ECB statistics reuse policy (free reuse, commercial included)",
                 url="https://www.ecb.europa.eu/stats/ecb_statistics/governance_and_quality_framework/html/usage_policy.en.html",
                 attribution="Source: ECB statistics"),
-    "eex": dict(name="EEX EU ETS primary auction clearing prices (carbon, 2018-2020)",
+    "eex": dict(name="EEX EU ETS primary auction clearing prices (carbon, 2018 to April 2021)",
                 licence="EEX market-data terms: redistribution to third parties is a licensed EEX service",
                 ship=False, url="https://www.eex.com/en/market-data/licensing-policies",
                 rebuild="python scripts/build_fuel_prices.py"),
@@ -166,7 +168,7 @@ FILE_SOURCES = {
     "demand": ("espeni", "elexon"),
     "demand_by_zone": ("espeni", "elexon", "govuk"),
     "forecast_state": ("elexon", "neso"),
-    "fuel_prices": ("govuk", "worldbank", "ecb"),     # + "eex" for EEX_YEARS, see sources_for
+    "fuel_prices": ("govuk", "worldbank", "hmrc", "ecb"),  # + "eex" for EEX_YEARS, see sources_for
     "lolp_drm": ("elexon",),
     "mid_target": ("elexon",),
     # DUKES 5.11 (govuk), Ofgem's RO register, LCCC's CfD register, NESO's CM register, Elexon's BM register, the
@@ -198,9 +200,9 @@ FILE_SOURCES = {
     "raw/espeni": ("espeni",), "raw/gis": ("neso",), "raw/ofgem": ("ofgem",),
     "raw/manual/dno_duos": ("dno",), "raw/manual/desnz_subnational": ("govuk",),
 }
-# The carbon price is the EEX EUA auction price until the UK left the EU ETS (pull.carbon_pull
-# EUA_YEARS 2018-2020), the gov.uk UK ETS price after. 2021 is included because stage 2 interpolates
-# between mid-month prices, so 1-14 January 2021 still carries the December 2020 EEX price.
+# The carbon price is the EEX EUA auction price until the UK left the EU ETS (2018-2020) and, as the proxy of the
+# UK ETS before its first auction, in January-April 2021 (pull.carbon_pull), the gov.uk UK ETS price after; stage 2
+# interpolates between mid-month prices, so EEX prices reach to mid-May 2021.
 EEX_YEARS = (2018, 2019, 2020, 2021)
 
 

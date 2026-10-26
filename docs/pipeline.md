@@ -40,7 +40,7 @@ docstring has the method, the source quirks it handles, and its full CLI.
 | `entsoe_pull`, `entsoe_capacity_pull` | ENTSO-E Transparency: neighbour day-ahead prices, interconnector NTC | free token | `raw/entsoe/` | 0.6 GB |
 | `gas_pull` | ONS System Average Price of gas (daily) | free | `raw/gas_sap_daily.csv` | <1 MB |
 | `carbon_pull` | EEX EUA (2018–20) and gov.uk UKA auctions (2021+) | free | `raw/carbon_monthly.csv` | <1 MB |
-| `coal_pull` | World Bank Pink Sheet coal | free | `raw/coal_monthly.csv` | <1 MB |
+| `coal_pull` | World Bank Pink Sheet coal (FOB Richards Bay); HMRC's landed steam coal imports (CN 27011290, CIF) | free | `raw/coal_monthly.csv`, `raw/hmrc_coal_imports.csv` | <1 MB |
 | `fx_pull` | ECB EUR→GBP daily | free | `raw/ecb_fx/` | <1 MB |
 | `renninja_pull` | renewables.ninja reanalysis CF per site | free token, ~50 requests/h | `raw/ninja/` | 0.1 GB, ~8 h |
 | `pecd_pull` | Copernicus CDS PECD v4.2 (ERA5 and CMIP6 CF, temperature) | free CDS key + licence acceptance | `raw/pecd/` | up to 10 GB |

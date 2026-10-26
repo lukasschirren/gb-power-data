@@ -2,10 +2,12 @@
 # SRMC = fuel_price/efficiency + carbon_price * emissions_factor/efficiency + vom
 #
 # HEATING-VALUE BASIS (Oct 2026). Efficiency, emission factor and fuel price must be on ONE basis.
-# Gas is priced per therm, a gross calorific value (GCV) unit, so every gas efficiency and the gas
-# emission factor here are GCV. Coal is priced from the World Bank API4 series, which is NAR
-# (net as received), so coal is on the net (NCV) basis. The values and their sources are in
-# gb-power-data data/reference/thermal_parameters.csv (gb_default rows) and docs/thermal_parameters.md.
+# Gas is priced per therm, a gross calorific value (GCV) unit (Gas Act 1986 s.12(2): a calorific value
+# is "megajoules (gross)"; pull.gas_pull), so every gas efficiency and the gas emission factor here are
+# GCV. Coal is priced from the World Bank API4 series, which is NAR (net as received), so coal is on the
+# net (NCV) basis; the landed coal price of fuel_prices assumes the same 6,000 kcal/kg NAR (pull.coal_pull).
+# The values and their sources are in gb-power-data data/reference/thermal_parameters.csv (gb_default rows)
+# and docs/thermal_parameters.md.
 # Until Oct 2026 the CCGT values mixed bases (fleet capacity-weighted 0.504 in 2023 against DUKES's
 # GCV sent-out 0.479), which put gas SRMC about 5% low.
 
