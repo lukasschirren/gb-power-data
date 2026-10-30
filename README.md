@@ -101,7 +101,7 @@ series has one row per half-hour with its UTC start time in the column `startTim
 | Thermal plant | `unit_run_times`, `unit_spells_{y}` | how long each thermal BM unit ran once started and stayed off once stopped, per year: the spells' counts and percentiles in its metered output (from February 2019) and in its own notifications (from 2018), the share under 6 h and how often it two-shifts, beside the minimum non-zero and zero times (MNZT, MZT) and the start notice (NDZ) it declared to NESO; every spell with its start and end |
 | Forecasts and tightness | `forecast_state_{y}` | what was forecast the day before (wind, solar, demand, margin) |
 | | `lolp_drm_{y}` | loss-of-load probability and de-rated margin |
-| Household bills | `consumer_levy_daily`, `consumer_levy_annual` | the CfD levy in £/MWh and £ per household |
+| Household bills | `consumer_levy_daily`, `consumer_levy_annual` | the CfD levy in £/MWh and £ per household, and the electricity exempted for energy-intensive industries |
 | | `duos_domestic_tariffs`, `cap_tariff_by_region`, `domestic_supply_by_year` | network charges, the price cap by region (its unit rate at each period's benchmark consumption), the domestic share of demand |
 | | `cap_components_by_period` | what the direct-debit price cap is made of in each period since April 2017, for electricity and gas: the unit rate split into wholesale, CfD, Capacity Market, policy, network and other costs, the standing charge, and each government scheme per MWh or per customer (Ofgem's cap model) |
 | Day-ahead auctions (licensed) | `dayahead_price_*`, curve, block and trade tables | N2EX and EPEX SPOT data; needs a subscription and is never shared ([below](#licensed-market-data-n2ex-epex-spot)) |

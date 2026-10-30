@@ -19,7 +19,16 @@ Year-independent — writes the whole panel in one pass, like `cfd_status.csv`.
 Output (data/processed/):
   consumer_levy_daily.csv   date, reconciled + interim levy GBP/MWh, eligible
                             demand, CfD payments from the settlement side, and the
-                            implied levy (payments / demand) as a cross-check
+                            implied levy (payments / demand) as a cross-check; and
+                            the electricity exempted for energy-intensive
+                            industries in the same settlement run as the reconciled
+                            rate (eii_demand_mwh, from Nov 2017, 85% of their
+                            supply until Apr 2024 and 100% since; outside eligible
+                            demand), for the cost the exemption moves onto other
+                            consumers. Use runs after the initial one (settlement_run
+                            != 'II'): the initial run misses certificates processed
+                            late, most in July when they renew (July 2024: 3.2% of
+                            demand at first, 4.9% reconciled)
   consumer_levy_annual.csv  per year: total levy GBP bn, mean GBP/MWh, and the
                             household bill impact at Ofgem's TDCV
 
@@ -60,10 +69,11 @@ def load_reconciled() -> pd.DataFrame:
         "Settlement_Date": "date",
         "Reconciled_Daily_Levy_Rate_GBP_Per_MWh": "reconciled_levy_gbp_mwh",
         "Reconciled_Eligible_Demand_MWh": "reconciled_eligible_demand_mwh",
+        "Reconciled_Energy_Intensive_Industries_Demand_MWh": "eii_demand_mwh",
         "Settlement_Run_Type": "settlement_run"})
-    keep = ["date", "reconciled_levy_gbp_mwh", "reconciled_eligible_demand_mwh",
+    keep = ["date", "reconciled_levy_gbp_mwh", "reconciled_eligible_demand_mwh", "eii_demand_mwh",
             "settlement_run"]
-    for c in keep[1:3]:
+    for c in keep[1:4]:
         df[c] = pd.to_numeric(df[c], errors="coerce")
     dup = df["date"].duplicated().sum()
     if dup:
@@ -172,7 +182,7 @@ def main(argv: list[str]) -> None:
     out_daily = cfg.processed_dir() / "consumer_levy_daily.csv"
     cols = ["date", "reconciled_levy_gbp_mwh", "interim_levy_gbp_mwh", "ocl_gbp_mwh",
             "total_levy_gbp_mwh", "implied_levy_gbp_mwh", "eligible_demand_mwh",
-            "cfd_payments_gbp", "cfd_generation_mwh", "levy_income_gbp", "settlement_run"]
+            "cfd_payments_gbp", "cfd_generation_mwh", "levy_income_gbp", "settlement_run", "eii_demand_mwh"]
     daily[cols].to_csv(out_daily, index=False)
     print(f"Saved {len(daily):,} daily rows -> {out_daily}")
 
