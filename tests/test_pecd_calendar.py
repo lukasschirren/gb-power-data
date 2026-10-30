@@ -34,6 +34,21 @@ def test_to_long_detects_long_raw_shape():
     assert sorted(long["zone"]) == ["UKC1", "UKD1"]
 
 
+def test_load_raw_tech_keeps_only_uk_zones_of_every_file(tmp_path):
+    # Two overlapping raw files (the pull's year blocks overlap) with European zones beside GB's:
+    # only the UK zones survive, each hour once.
+    (tmp_path / "solar_pv_2020-2021_0.csv").write_text(
+        "# preamble\nDate,UKC1,FR10,DE11\n2021-01-01T00:00:00Z,0.1,0.5,0.6\n", encoding="utf-8")
+    (tmp_path / "solar_pv_2014-2021_0.csv").write_text(
+        "# preamble\nDate,UKC1,FR10\n2021-01-01T00:00:00Z,0.1,0.5\n2021-01-01T01:00:00Z,0.2,0.5\n",
+        encoding="utf-8")
+
+    long = pecd_build.load_raw_tech("solar_pv", tmp_path)
+
+    assert set(long["zone"]) == {"UKC1"}
+    assert long["value"].tolist() == [0.1, 0.2]
+
+
 def test_reindex_and_flag_marks_missing_hour_not_fills_it():
     long = pd.DataFrame({
         "time": pd.to_datetime(["2023-01-01T00:00Z", "2023-01-01T01:00Z", "2023-01-01T03:00Z"]),

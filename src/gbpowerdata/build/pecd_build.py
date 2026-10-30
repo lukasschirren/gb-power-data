@@ -79,11 +79,17 @@ def _to_long(df: pd.DataFrame) -> pd.DataFrame:
 def load_raw_tech(tech: str, raw_dir: Path = RAW_DIR) -> pd.DataFrame:
     """Each raw file opens with a `#`-prefixed metadata preamble (title, citation, licence,
     spatial/temporal extent -- ~50 lines, confirmed against a real pull), same convention as
-    renewables.ninja's own CSVs (`renninja_pull.py`'s `pd.read_csv(..., comment="#")`)."""
+    renewables.ninja's own CSVs (`renninja_pull.py`'s `pd.read_csv(..., comment="#")`).
+
+    Each file holds every European zone (630 NUTS-2 columns for solar, 41 of them UK), so the UK
+    zones are kept file by file: melting 1950-2025 of all of them at once needed more than 32 GB."""
     files = sorted(raw_dir.glob(f"{tech}_*.csv"))
     if not files:
         sys.exit(f"No raw PECD files for {tech!r} in {raw_dir}; run gbpowerdata.pull.pecd_pull first.")
-    frames = [_to_long(pd.read_csv(f, comment="#")) for f in files]
+    frames = []
+    for f in files:
+        long = _to_long(pd.read_csv(f, comment="#"))
+        frames.append(long[long["zone"].astype(str).str.startswith("UK")])
     long = pd.concat(frames, ignore_index=True).drop_duplicates(["time", "zone"])
     return long.sort_values(["zone", "time"])
 
@@ -125,7 +131,6 @@ def build_cf(techs: tuple[str, ...] = CF_TECHS, raw_dir: Path = RAW_DIR, stem: s
             print(f"  skip {tech} (no raw files)")
             continue
         long = load_raw_tech(tech, raw_dir)
-        long = long[long["zone"].astype(str).str.startswith("UK")]
         if tech in _WIND_WEIGHTS:
             weight_fn, zone_col = _WIND_WEIGHTS[tech]
             zones = sorted(long["zone"].unique())
