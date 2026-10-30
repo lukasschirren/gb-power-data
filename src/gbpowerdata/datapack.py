@@ -144,10 +144,24 @@ SOURCES = {
     "octopus": dict(name="Octopus Energy public API (standard variable tariff)", licence="publicly published, no stated licence",
                     url="https://developer.octopus.energy"),
     "dno": dict(name="DNO charging statements", licence="publicly published regulatory statements, no stated licence"),
+    "entsoe": dict(name="ENTSO-E Transparency Platform and TYNDP 2024 scenario files",
+                   licence="ENTSO-E Transparency Platform terms (free re-use with attribution); TYNDP data CC BY 4.0",
+                   url="https://transparency.entsoe.eu/content/static_content/Static%20content/terms%20and%20conditions/terms%20and%20conditions.html",
+                   attribution="Source: ENTSO-E Transparency Platform"),
+    # Nord Pool's N2EX products (day-ahead prices, capacities) are licensed market data: never packed or tracked
+    "nordpool": dict(name="Nord Pool N2EX market data (licensed subscription)", licence="Nord Pool data terms, subscriber only",
+                     ship=False, url="https://www.nordpoolgroup.com", rebuild="python -m gbpowerdata.pull.nordpool_pull"),
 }
 # Which sources feed which file: processed family (or single file) / raw input pattern -> keys.
 FILE_SOURCES = {
     "agents": ("ppm", "lccc", "govuk", "neso", "elexon"),
+    # the model-input stages of October 2026 (modelinputs exports them): the wind split, the baseload reference
+    # price, the neighbours' supply slope and residual demand, the RO stations, TYNDP's hourly market data
+    "vre_cf_corrected": ("espeni", "ninja", "elexon", "govuk"),
+    "bmrp_halfhourly": ("lccc",),
+    "foreign_supply_slope": ("entsoe", "ecb"),
+    "ro_stations": ("ofgem",),
+    "tyndp_nt2030_cy2009_hourly": ("entsoe",),
     # NESO's results by unit, Elexon's register for the unit ids, and the bidders' groups by the ownership tables'
     # rules and spellings (the registers' names, Companies House's control register); not packed (see above)
     "ancillary_by_unit": ("neso", "elexon", "govuk", "ofgem", "lccc", "companies_house"),
