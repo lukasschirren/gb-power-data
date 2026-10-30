@@ -4,7 +4,8 @@ its station, its REPD site(s), its location and its support contract.
 WHY. The merit-order comb gives every wind agent either the national CF or (--vre-profile zonal)
 its GSP group's reanalysis shape, so no two farms in a zone differ. Observed per-unit output
 exists for the transmission and BM-registered fleet: the Final Physical Notification (FPN,
-data/raw/fpn/, gbpowerdata.pull.fpn_pull), 172 wind units and ~27 GW. Priced at the caprec clearing, the
+data/raw/fpn/, gbpowerdata.pull.fpn_pull), 206 wind units and 27 GW (Oct 2026: 169 transmission T_ units,
+25.7 GW, and 37 embedded E_ units, 1.3 GW, whose notifications `bm_units --pull-missing` fetched). Priced at the caprec clearing, the
 per-unit capture spread is about twice the 14-zone one (sd GBP 3.5-5.5/MWh, 2022-23). This map is
 what lets gbpowerdata.build.stage2d_wind_farms and the comb's --vre-profile farm give the RO part of
 that fleet one agent per farm. It records FACTS only; the regime and band RULES live in stage2d.
