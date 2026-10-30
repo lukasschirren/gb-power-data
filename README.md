@@ -111,7 +111,10 @@ Known quirks of the data are listed under [data caveats](#data-caveats).
 
 ## Rebuild the data yourself
 
-You only need this section to update the data or change how it is built.
+You only need this section to update the data or change how it is built. To hand a market
+model its inputs as one folder it can name, export them instead of pointing the model at this
+checkout: `python -m gbpowerdata.modelinputs --out DIR` writes the tables with a sha256
+manifest and this repository's commit (section 7 of [docs/pipeline.md](docs/pipeline.md)).
 
 ### Accounts and tokens
 

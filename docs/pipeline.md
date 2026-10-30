@@ -27,6 +27,8 @@ docstring has the method, the source quirks it handles, and its full CLI.
 | `bm_dynamic_pull [dates] [--sp 24]` | Elexon BM dynamic data of every unit at one settlement period (SEL, SIL, run-up and run-down rates, NDZ, NTO, NTB, MZT, MNZT, MDV, MDP) with its MEL and PN; default the 15th of Jan, Apr, Jul and Oct 2018–2025; `--submissions [DATASET ...]`: every submission of the named dynamic datasets since Sep 2016, by month (default MDV and MDP; MZT, MNZT, NDZ, SEL, RURE, RDRE for thermal plant's minimum times, notice, stable level and run rates; supplier and virtual lead party units included) | free | `raw/bm_dynamic/{dynamic,rates,mels,pn}_{date}_sp{sp}.csv`, `submissions_{dataset}_{YYYY-MM}.csv` | ~0.5 MB a date; submissions since Sep 2016: MDV and MDP 0.3 MB each, MZT, MNZT, NDZ, SEL, RURE, RDRE 4-25 MB each |
 | `lccc_pull` (+ `--levy`) | LCCC CfD portal (CKAN): register status, CfD↔BMU map, actual generation and payments, strike prices, levy rates, the hourly IMRP, the Capacity Market's obligations and payments by auction and month | free | `raw/lccc/` | 20 MB |
 | `ons_pull` | ONS time series: the CPI index (D7BT, 2015=100), for the Capacity Market's indexation | free | `raw/ons/cpi_index_d7bt.csv` | 20 kB |
+| `entsoe_residual_pull [--years 2019 2025] [--zones fr nl ...]` | ENTSO-E Transparency: the neighbours' load (A65) and wind and solar generation (A75) by hour, for their residual demand; one request per zone, product and year, raw XML cached under `by_year/` | free token | `raw/entsoe/foreign_residual/{zone}_residual_hourly.csv`, `_coverage_report.csv` | 0.4 GB |
+| `tyndp_pull` | ENTSO-E / ENTSOG TYNDP 2024 scenario files: the NT+ 2030 market model results (climate year 2009), its readme and the commodity prices, zips extracted beside themselves | free | `raw/tyndp/` | 0.2 GB |
 | `cost_data_pull [names] [--force]` | DESNZ Electricity Generation Costs 2020, 2023 and 2025 (key data and assumptions, Annex A) the Danish Energy Agency's Technology Data for Energy Storage datasheet, and NREL's ATB 2021-2025 (streamed, cut to utility-scale batteries) | free | `raw/cost_data/{egc2020_key_data_and_assumptions,egc2023_annex_a,egc2025_annex_a}.xlsx`, `dea_technology_data_energy_storage_v{version}.xlsx`, `atb_{edition}[_v{version}]_utility_battery.csv` | 4 MB (0.6 GB streamed) |
 | `neso_pull [demand]` | NESO data portal: BSUoS, AAHEDC, TNUoS; `demand`: the historic demand data, one file per year from 2016 (national and transmission demand, embedded wind and solar, pumping, every interconnector's flow, non-BM STOR, per settlement period) | free | `raw/neso/`, `raw/neso/historic_demand_{year}.csv` | 18 MB; demand 1.3-1.8 MB a year |
 | `cm_register_pull` | NESO Capacity Market register: every CM unit and its components (applicant, parent company, technology, capacities, agreements, traded obligations), and the auction results (clearing price, base period, capacity awarded) and de-rating factors; the trading contacts' columns are dropped | free | `raw/neso/cm_register/{cmu,components,auction_static,auction_capacity_cost,derating_factors}_{date}.csv` | 16 MB |
@@ -134,6 +136,13 @@ stage stops the run, except the two marked *soft*, which are skipped when their 
 | `build_crown_estate [--strict]` | `raw/crown_estate/`, `reference/crown_estate_farms.csv`, `reference/crown_estate_ownership_reports.csv` (local only, optional), `reference/{company_owners,company_groups}.csv` | `crown_estate_ownership.csv` (local only, not packed); prints the differences between `company_owners.csv` and The Crown Estate's tables; `--strict` exits 1 on an unexplained difference, an unmapped farm, a changed not-compared farm or an unused known difference |
 | `pecd_build`, then `pecd_national_cf` | `raw/pecd/historical/`, PECD region weights, agents | `pecd/cf_historical.csv`, `pecd/temperature_popweighted_historical.csv`, `capacity_factors_pecd_{y}.csv` |
 | `pecd_build --stream future` | `raw/pecd/projection/{gcm}/{ssp}/` (from `pecd_pull --stream projection`) | `pecd/cf_future_{gcm}_{ssp}.csv` (~0.7 GB each) |
+| `weather_years [--fleet-year 2025]` (about ten minutes) | `raw/pecd/historical/`, PECD region weights, `agents_{fleet_year}.csv` | `pecd/gsp_cf_era5.parquet` (hourly ERA5 capacity factors per GSP group and technology, every PECD year 1950-2025, to be weighted by any fleet with `weather_years.weighted_national`), `pecd/national_cf_historical.parquet` (the national series on the fleet year's zone capacities) |
+| `vre_split [--years 2018 2025]` | `raw/espeni.csv`, `raw/ninja/{offshore,onshore}__{group}_{y}.csv`, `agents_{y}.csv`, the drivers | `vre_cf_corrected.csv`: metered wind split offshore and onshore by the capacity-weighted reanalysis shape, solar from the embedded estimate, as capacity factors against the agents' capacities and MW |
+| `interconnector_capacity [--end 2026-07-20]` | `raw/entsoe/capacity/`, `raw/entsoe/dayahead_prices/`, `raw/nordpool/capacity/` (NSL), `raw/ecb_fx/eur_gbp_daily.csv`, `reference/ic_rated_capacity.csv` | `ic_hourly.parquet`: per hour and link the published and the rated capacity in each direction, the neighbour's price in GBP/MWh, the loss, the import bid and export willingness to pay (carries Nord Pool's NSL capacity: licensed) |
+| `bmrp` | `raw/lccc/bmrp_seasonal.csv` | `bmrp_halfhourly.csv`: the baseload CfDs' season-ahead reference price on the half-hourly spine, NaN before Summer 2019 |
+| `foreign_supply` (after `entsoe_residual_pull` and `interconnector_capacity`) | `raw/entsoe/foreign_residual/`, `ic_hourly.parquet` | `foreign_supply_slope.csv`: each neighbour's price per MW of residual demand (within year, low-residual half), r2, n, usable |
+| `tyndp_hourly` (after `tyndp_pull`; about two minutes) | `raw/tyndp/MMStandardOutputFile_NT2030_Plexos_CY2009_2.5_v40.xlsx` | `tyndp_nt2030_cy2009_hourly.csv`: the 2030 hourly marginal cost of GB's neighbours' nodes and GB's own demand, wind, solar and dumped energy in ENTSO-E's TYNDP 2024 market model, climate year 2009 |
+| `ro_stations [--file ...]` | the newest `raw/ofgem/RO_Accredited_Stations_*.csv` | `ro_stations.csv`: every RO accredited station with its capacity, technology, commissioning and accreditation dates and site postcode, without the holder's name and address |
 
 `python scripts/build_fuel_prices.py [first last]` (default 2018 2021) runs `gas_pull`,
 `carbon_pull` and `coal_pull`, then `stage2_build_timeseries --fuel-only` for each year, so it
@@ -171,6 +180,9 @@ rev = processed.read_storage_revenue(2025, annual=True)  # each storage unit's e
 runs = processed.read_unit_run_times(source="fpn")       # thermal units' notified run and down times by year
 hh = processed.merge_drivers(2023)       # half-hourly demand + CF + fuel + MID on one index
 p = venue.get("epex").load_da_price(2023)   # day-ahead price of one auction (licensed data)
+ic = processed.read_interconnector()     # each link's hourly capacity and the neighbour's price (licensed: NSL)
+w = processed.read_weather_years("gsp")  # ERA5 capacity factors per GSP group, 1950-2025
+ro = processed.read_ro_stations()        # the RO register's stations without their holders
 ```
 
 Every time series is UTC, half-hourly, keyed on `startTime`.
@@ -193,3 +205,32 @@ command that builds them, and `unpack` prints it. A release is built with
 `timeseries.mid_gap_fill_n2ex: false`, committed and tagged; then both packs are exported and
 attached to the GitHub Release of that tag (`gh release create <tag> dist/*.zip`), so the
 manifest's commit names the code that built the data.
+
+## 7. Model inputs
+
+`gbpowerdata.modelinputs` writes the tables a market model reads as one folder, so the model
+runs on a snapshot it can name rather than on this checkout's live folders:
+
+```text
+python -m gbpowerdata.modelinputs --out DIR [--years 2018 2025] [--licensed] [--overwrite]
+python -m gbpowerdata.modelinputs --out DIR --check
+```
+
+The folder holds, under fixed names, the per-year panel (`modelinputs.YEARLY`: demand, capacity
+factors national and by zone, fuel prices, agents, the CfD fleet, located plants, wind farms with
+their FPN and gaps, the BM register, the generation mix, LOLP and the Capacity Market payments),
+the single tables (`SINGLE`: CfD status, REGO, the wind split, the interconnector table, the BMRP,
+the supply slope, the RO stations, TYNDP's hourly data, the ERA5 weather series, the Capacity
+Market's agreements, auctions, de-rating and weights, the consumer levy, domestic supply, the
+cap's components, DESNZ's generation by fuel, the storage fleet and the battery summaries), the
+reference tables the model reads (`REFERENCE`) and four raw files under flat names (`RAW`: the
+ECB's daily rate, LCCC's actual generation, the REPD snapshot, the GSP boundaries). Every file is
+checked before anything is written; a missing one stops the export with its name.
+
+`MANIFEST.json` names each file's size, sha256 and sources, the years, and the commit of this
+repository that built the data (`-dirty` when `src/` had uncommitted changes), so a model run can
+record which snapshot it was cleared on; `--check` verifies a folder against it. Licensed tables
+(the day-ahead auction prices, a `mid_target` gap-filled with N2EX, and `ic_hourly.parquet`, whose
+NSL capacity is Nord Pool's) are copied only with `--licensed`, on the licence holder's own
+machine, and flagged in the manifest; without it they are listed under `left_out_licensed`. The
+model reads the folder through its own loader and never imports this package.

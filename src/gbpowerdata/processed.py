@@ -266,6 +266,69 @@ def read_generation_by_fuel(reconciliation: bool = False) -> pd.DataFrame:
     return pd.read_csv(cfg.processed_dir() / name)
 
 
+def _timeseries(path: Path, time_col: str = "startTime") -> pd.DataFrame:
+    df = pd.read_parquet(path) if path.suffix == ".parquet" else pd.read_csv(path)
+    if time_col in df.columns:
+        df[time_col] = pd.to_datetime(df[time_col], utc=True)
+        df = df.set_index(time_col)
+    else:
+        df.index = pd.to_datetime(df.index, utc=True)
+    return df
+
+
+def read_vre_split() -> pd.DataFrame:
+    """Metered wind split offshore and onshore by the reanalysis shape, and embedded solar (gbpowerdata.build.vre_split):
+    half-hourly capacity factors against the agents' capacities and MW, indexed by UTC startTime, 2018-2025."""
+    return _timeseries(cfg.processed_dir() / "vre_cf_corrected.csv")
+
+
+def read_interconnector() -> pd.DataFrame:
+    """Each interconnector's hourly capacity per direction, published and rated, with the neighbour's price in
+    GBP/MWh and the import bid and export willingness to pay (gbpowerdata.build.interconnector_capacity): long,
+    one row per hour and link, indexed by UTC startTime; carries Nord Pool's NSL capacity, so licensed."""
+    return _timeseries(cfg.processed_dir() / "ic_hourly.parquet")
+
+
+def read_bmrp() -> pd.DataFrame:
+    """The baseload CfDs' season-ahead reference price on the half-hourly spine (gbpowerdata.build.bmrp): season and
+    bmrp_gbp_mwh, NaN before LCCC's first published season (Summer 2019), indexed by UTC startTime."""
+    return _timeseries(cfg.processed_dir() / "bmrp_halfhourly.csv")
+
+
+def read_foreign_supply() -> pd.DataFrame:
+    """The neighbours' inverse-supply slope per zone (gbpowerdata.build.foreign_supply): zone, link, slope_gbp_per_mw,
+    r2, n, usable."""
+    return pd.read_csv(cfg.processed_dir() / "foreign_supply_slope.csv")
+
+
+def read_ro_stations() -> pd.DataFrame:
+    """Ofgem's RO accredited stations without their holders (gbpowerdata.build.ro_stations): accreditation number,
+    station, technology, DNC in MW, commissioning and accreditation dates (parsed), country, station postcode."""
+    df = pd.read_csv(cfg.processed_dir() / "ro_stations.csv", dtype={"station_postcode": str})
+    for c in ("commissioning_date", "accreditation_date"):
+        df[c] = pd.to_datetime(df[c], errors="coerce")
+    return df
+
+
+WEATHER_TABLES = ("national", "gsp")
+
+
+def read_weather_years(kind: str = "national") -> pd.DataFrame:
+    """The ERA5 weather record as capacity factors (gbpowerdata.build.weather_years), hourly 1950-2025 on PECD's stamps,
+    indexed by UTC startTime: "national" (wind_offshore_cf, wind_onshore_cf, solar_cf on today's fleet) or "gsp"
+    (one column per GSP group and technology, to be weighted by any fleet with weather_years.weighted_national)."""
+    if kind not in WEATHER_TABLES:
+        raise ValueError(f"{kind}: one of {WEATHER_TABLES}")
+    name = "national_cf_historical.parquet" if kind == "national" else "gsp_cf_era5.parquet"
+    return _timeseries(cfg.processed_dir() / "pecd" / name)
+
+
+def read_tyndp_hourly() -> pd.DataFrame:
+    """ENTSO-E's TYNDP 2024 market model for 2030, climate year 2009 (gbpowerdata.build.tyndp_hourly): the hourly
+    marginal cost of GB's neighbours' nodes and GB's own demand, wind and solar potential and dumped energy."""
+    return pd.read_csv(cfg.processed_dir() / "tyndp_nt2030_cy2009_hourly.csv")
+
+
 def load_year(year: int) -> dict[str, pd.DataFrame]:
     """All per-year tables for one year, keyed by friendly name."""
     return {k: read_kind(k, year) for k in KIND_FILE}

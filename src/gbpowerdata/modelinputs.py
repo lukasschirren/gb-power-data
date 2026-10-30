@@ -62,11 +62,13 @@ REFERENCE = ("thermal_parameters", "thermal_parameter_sources", "thermal_station
              "cfd_round_params", "wind_farm_map", "wind_farm_map_overrides", "tech_parameters.yaml",
              "gsp_overrides", "nuclear_availability_by_year", "bm_dynamic_by_tech", "ic_rated_capacity",
              "rego_prices", "rego_price_sources", "rego_statistics")
-# raw files, pattern under raw/ -> name in the folder (a pattern with * takes the newest match)
+# raw files, pattern under raw/ -> name in the folder (a pattern with * takes the newest match), and their sources
 RAW = {"ecb_fx/eur_gbp_daily.csv": "fx_eur_gbp_daily.csv",
        "lccc/cfd_actual_generation.csv": "cfd_actual_generation.csv",
        "repd_*.csv": "repd.csv",
        "gis/gsp_regions_*.geojson": "gis/gsp_regions.geojson"}
+RAW_SOURCES = {"fx_eur_gbp_daily.csv": ("ecb",), "cfd_actual_generation.csv": ("lccc",),
+               "repd.csv": ("govuk",), "gis/gsp_regions.geojson": ("neso",)}
 # processed tables whose sources datapack.sources_for cannot resolve from the name (no year, a parquet, a folder)
 EXTRA_SOURCES = {"ic_hourly.parquet": ("entsoe", "nordpool", "ecb"),
                  "pecd/gsp_cf_era5.parquet": ("pecd", "ppm"),
@@ -127,7 +129,7 @@ def files(years: tuple[int, int]) -> list[tuple[Path, str, tuple[str, ...]]]:
         if p is None:
             missing.append(f"{name} (raw/{pattern})")
         else:
-            take(p, name, datapack.FILE_SOURCES.get(f"raw/{pattern.split('/')[0].split('_')[0]}", UNREGISTERED))
+            take(p, name, RAW_SOURCES.get(name, UNREGISTERED))
     if missing:
         raise SystemExit("modelinputs: missing files, nothing written:\n  " + "\n  ".join(missing))
     return out
