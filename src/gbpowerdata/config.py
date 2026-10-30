@@ -37,7 +37,7 @@ def load_config() -> dict:
 
 def _path(key: str, *, make: bool = False) -> Path:
     """Resolve a directory from config['paths'] (relative to the repo root unless absolute)."""
-    p = REPO_ROOT / load_config()["paths"][key]
+    p = Path(os.path.normpath(REPO_ROOT / load_config()["paths"][key]))
     if make:
         p.mkdir(parents=True, exist_ok=True)
     return p
