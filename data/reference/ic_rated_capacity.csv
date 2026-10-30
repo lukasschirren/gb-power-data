@@ -1,0 +1,11 @@
+link,cable,rated_mw,in_service_from,source
+IFA_ElecLink_IFA2,IFA,2000,2016-01-01,"IFA, 2,000 MW, in service since 1986 (before the table's first hour, 2016-01-01)"
+IFA_ElecLink_IFA2,IFA2,1000,2021-01-22,"Ofgem, Post Construction Review of the IFA2 interconnector to France: commercial operations from 22 Jan 2021, 1,000 MW; https://www.ofgem.gov.uk/publications/post-construction-review-ifa2-interconnector-france"
+IFA_ElecLink_IFA2,ElecLink,1000,2022-05-25,"JAO, ElecLink go-live: commercial operations from 12:00 CEST 25 May 2022, 1,000 MW; https://www.jao.eu/news/eleclink-go-live"
+BritNed,BritNed,1000,2016-01-01,"BritNed, 1,000 MW, in service since 2011 (before the table's first hour)"
+Nemo,Nemo Link,1000,2019-01-31,"Nemo Link, 1,000 MW; first power as the interconnector builder has carried it since Jul 2026 (not separately sourced)"
+Ireland,Moyle,500,2016-01-01,"Moyle, 500 MW, in service since 2002 (before the table's first hour)"
+Ireland,East West,500,2016-01-01,"East West Interconnector, 500 MW, in service since 2012 (before the table's first hour)"
+Ireland,Greenlink,504,2025-01-29,"National Grid, Greenlink interconnector is live: 504 MW, commercial operations from 29 Jan 2025; https://www.nationalgrid.com/greenlink-interconnector-live-connecting-national-grid-and-eirgrid-networks"
+NSL,North Sea Link,1400,2021-10-01,"North Sea Link, 1,400 MW; first power as the interconnector builder has carried it since Jul 2026 (not separately sourced)"
+Viking,Viking Link,1400,2023-12-29,"Viking Link, 1,400 MW (Energinet capped it at 800 MW at start for West Jutland grid limits; https://en.energinet.dk/Infrastructure-Projects/Projektliste/Viking-Link); first power as the interconnector builder has carried it (not separately sourced)"

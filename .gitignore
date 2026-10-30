@@ -41,6 +41,7 @@ data/reference/*
 !data/reference/official_statistics.csv
 !data/reference/investment_parameters.csv
 !data/reference/investment_parameter_sources.csv
+!data/reference/ic_rated_capacity.csv
 !data/reference/rego_prices.csv
 !data/reference/rego_price_sources.csv
 !data/reference/rego_statistics.csv
