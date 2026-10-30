@@ -28,7 +28,7 @@ Output: `data/processed/n2ex_curve_features_{year}.csv` (one row per delivery ho
 
 Usage:  python -m gbpowerdata.build.parse_n2ex_curves 2023            # one year
         python -m gbpowerdata.build.parse_n2ex_curves 2018 2025       # inclusive range
-        python -m gbpowerdata.build.parse_n2ex_curves                 # all years with curves
+        python -m gbpowerdata.build.parse_n2ex_curves                 # all years with curves and the panel
 """
 
 from __future__ import annotations
@@ -175,7 +175,10 @@ def build(year: int) -> None:
 
 def main(argv: list[str]) -> None:
     if len(argv) == 1:
-        years = sorted({int(p.stem.split("-")[0]) for p in CURVES.glob("*.json")})
+        # the curves start in 2016, the panel's tables hourly_generation reads in 2018
+        pdir = cfg.processed_dir()
+        years = sorted(y for y in {int(p.stem.split("-")[0]) for p in CURVES.glob("*.json")}
+                       if all((pdir / f"{t}_{y}.csv").exists() for t in ("demand", "capacity_factors", "agents")))
     elif len(argv) == 2:
         years = [int(argv[1])]
     else:
