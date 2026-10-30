@@ -143,6 +143,7 @@ stage stops the run, except the two marked *soft*, which are skipped when their 
 | `foreign_supply` (after `entsoe_residual_pull` and `interconnector_capacity`) | `raw/entsoe/foreign_residual/`, `ic_hourly.parquet` | `foreign_supply_slope.csv`: each neighbour's price per MW of residual demand (within year, low-residual half), r2, n, usable |
 | `tyndp_hourly` (after `tyndp_pull`; about two minutes) | `raw/tyndp/MMStandardOutputFile_NT2030_Plexos_CY2009_2.5_v40.xlsx` | `tyndp_nt2030_cy2009_hourly.csv`: the 2030 hourly marginal cost of GB's neighbours' nodes and GB's own demand, wind, solar and dumped energy in ENTSO-E's TYNDP 2024 market model, climate year 2009 |
 | `ro_stations [--file ...]` | the newest `raw/ofgem/RO_Accredited_Stations_*.csv` | `ro_stations.csv`: every RO accredited station with its capacity, technology, commissioning and accreditation dates and site postcode, without the holder's name and address |
+| `cfd_contracts [--register ...] [--status ...]` | the pinned CfD register xlsx, `raw/lccc/cfd_contract_portfolio_status.csv`, `reference/cfd_round_params.csv` | `cfd_contracts.csv`: every register contract, terminated ones included, with its status, the day it begins (start, else expected start, else target commissioning; Hinkley Point C placed on 1 July 2030), its term, the first day without it, and its initial strike in its base year's money and in 2024 money, without the counterparty or the site |
 
 `python scripts/build_fuel_prices.py [first last]` (default 2018 2021) runs `gas_pull`,
 `carbon_pull` and `coal_pull`, then `stage2_build_timeseries --fuel-only` for each year, so it
@@ -219,7 +220,7 @@ python -m gbpowerdata.modelinputs --out DIR --check
 The folder holds, under fixed names, the per-year panel (`modelinputs.YEARLY`: demand, capacity
 factors national and by zone, fuel prices, agents, the CfD fleet, located plants, wind farms with
 their FPN and gaps, the BM register, the generation mix, LOLP and the Capacity Market payments),
-the single tables (`SINGLE`: CfD status, REGO, the wind split, the interconnector table, the BMRP,
+the single tables (`SINGLE`: CfD status, the CfD contracts, REGO, the wind split, the interconnector table, the BMRP,
 the supply slope, the RO stations, TYNDP's hourly data, the ERA5 weather series, the Capacity
 Market's agreements, auctions, de-rating and weights, the consumer levy, domestic supply, the
 cap's components, DESNZ's generation by fuel, the storage fleet and the battery summaries), the

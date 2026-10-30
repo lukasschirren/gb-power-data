@@ -83,7 +83,7 @@ series has one row per half-hour with its UTC start time in the column `startTim
 | | `mid_target_{y}` | Elexon's Market Index Data price: the volume-weighted price of the half-hour's short-term trades on EPEX SPOT GB (half-hour and 1-4 hour blocks; the day-ahead auction has weight 0), not a day-ahead auction price; its trading window moved closer to delivery on 18 Apr 2019 (BSC modification P377) |
 | | `system_prices_{y}` | the imbalance (cash-out) price and net imbalance volume |
 | Plants and support | `powerplants_tagged_{y}`, `powerplants_located_{y}` | every GB plant with its support scheme (CfD, RO, FiT, none) and grid region |
-| | `cfd_status`, `cfd_fleet_{y}` | each CfD contract, and the actual payments LCCC settled |
+| | `cfd_status`, `cfd_contracts`, `cfd_fleet_{y}` | each CfD contract (its status, dates, term and strike in 2024 money in `cfd_contracts`), and the actual payments LCCC settled |
 | | `agents_{y}` | the fleet grouped into units ready for a market model |
 | | `wind_farms_{y}`, `wind_farm_fpn_{y}` | output of each transmission-connected wind farm |
 | Ownership | `bm_unit_register_{y}` | every BM unit of the kept register snapshots with its lead party (the company that trades it; the register snapshot for the year, today's as a proxy before the first kept snapshot), technology, capacity and whether it produced in the year (the current year: the last pulled year's activity); the units that left the register before the first snapshot (Cottam, Aberthaw B, Eggborough and Deeside) are added from a sourced table and dated by their notifications in Elexon's all-units stream |

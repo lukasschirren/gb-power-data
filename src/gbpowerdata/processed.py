@@ -301,6 +301,17 @@ def read_foreign_supply() -> pd.DataFrame:
     return pd.read_csv(cfg.processed_dir() / "foreign_supply_slope.csv")
 
 
+def read_cfd_contracts() -> pd.DataFrame:
+    """LCCC's CfD register as contracts (gbpowerdata.build.cfd_contracts): one row per contract, terminated ones
+    included, with its status, begin, term, end (the first day without it), strike in its base year's money and in
+    2024 money, and the 2012-to-2024 price factor on every row; the date columns parsed."""
+    df = pd.read_csv(cfg.processed_dir() / "cfd_contracts.csv")
+    for c in ("start", "expected_start", "tcw_start", "target_commissioning", "begin", "tcw_end", "end"):
+        df[c] = pd.to_datetime(df[c], errors="coerce")
+    df["dated_by"] = df["dated_by"].fillna("")          # an undated (terminated) contract's empty rule
+    return df
+
+
 def read_ro_stations() -> pd.DataFrame:
     """Ofgem's RO accredited stations without their holders (gbpowerdata.build.ro_stations): accreditation number,
     station, technology, DNC in MW, commissioning and accreditation dates (parsed), country, station postcode."""
