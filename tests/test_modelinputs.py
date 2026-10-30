@@ -23,6 +23,7 @@ def tree(tmp_path, monkeypatch):
         (ref / M.file_name(name)).write_text("k: v\n" if name.endswith(".yaml") else "a\n1\n")
     (raw / "ecb_fx" / "eur_gbp_daily.csv").write_text("date,eur_gbp\n")
     (raw / "lccc" / "cfd_actual_generation.csv").write_text("a\n")
+    (raw / "coal_monthly.csv").write_text("month,coal_gbp_per_mwh_thermal\n2023-01,19.0\n")
     (raw / "repd_q1_2026.csv").write_text("a\n")
     (raw / "gis" / "gsp_regions_2024.geojson").write_text("{}")
     (proc / "mid_target_2023.csv").write_text("startTime,mid_source\n2023-01-01T00:00Z,N2EX\n")
@@ -39,6 +40,7 @@ def test_export_writes_every_table_and_a_manifest_that_checks(tree, tmp_path):
     names = {t["name"] for t in man["tables"]}
     assert "demand_2023.csv" in names and "fx_eur_gbp_daily.csv" in names and "gis/gsp_regions.geojson" in names
     assert "pecd/gsp_cf_era5.parquet" in names and "thermal_parameters.csv" in names and "repd.csv" in names
+    assert "coal_monthly.csv" in names
     assert (out / "demand_2023.csv").exists() and (out / "gis" / "gsp_regions.geojson").exists()
     assert json.loads((out / M.MANIFEST).read_text())["kind"] == M.KIND
     assert man["years"] == [2023, 2023] and man["licensed"] is False

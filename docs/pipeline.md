@@ -223,8 +223,9 @@ the single tables (`SINGLE`: CfD status, REGO, the wind split, the interconnecto
 the supply slope, the RO stations, TYNDP's hourly data, the ERA5 weather series, the Capacity
 Market's agreements, auctions, de-rating and weights, the consumer levy, domestic supply, the
 cap's components, DESNZ's generation by fuel, the storage fleet and the battery summaries), the
-reference tables the model reads (`REFERENCE`) and four raw files under flat names (`RAW`: the
-ECB's daily rate, LCCC's actual generation, the REPD snapshot, the GSP boundaries). Every file is
+reference tables the model reads (`REFERENCE`) and five raw files under flat names (`RAW`: the
+ECB's daily rate, LCCC's actual generation, the monthly coal price, the REPD snapshot, the GSP
+boundaries). Every file is
 checked before anything is written; a missing one stops the export with its name.
 
 `MANIFEST.json` names each file's size, sha256 and sources, the years, and the commit of this

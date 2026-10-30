@@ -65,10 +65,12 @@ REFERENCE = ("thermal_parameters", "thermal_parameter_sources", "thermal_station
 # raw files, pattern under raw/ -> name in the folder (a pattern with * takes the newest match), and their sources
 RAW = {"ecb_fx/eur_gbp_daily.csv": "fx_eur_gbp_daily.csv",
        "lccc/cfd_actual_generation.csv": "cfd_actual_generation.csv",
+       "coal_monthly.csv": "coal_monthly.csv",
        "repd_*.csv": "repd.csv",
        "gis/gsp_regions_*.geojson": "gis/gsp_regions.geojson"}
 RAW_SOURCES = {"fx_eur_gbp_daily.csv": ("ecb",), "cfd_actual_generation.csv": ("lccc",),
-               "repd.csv": ("govuk",), "gis/gsp_regions.geojson": ("neso",)}
+               "coal_monthly.csv": ("worldbank", "hmrc", "ecb"), "repd.csv": ("govuk",),
+               "gis/gsp_regions.geojson": ("neso",)}
 # processed tables whose sources datapack.sources_for cannot resolve from the name (no year, a parquet, a folder)
 EXTRA_SOURCES = {"ic_hourly.parquet": ("entsoe", "nordpool", "ecb"),
                  "pecd/gsp_cf_era5.parquet": ("pecd", "ppm"),
