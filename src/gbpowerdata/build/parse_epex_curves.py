@@ -180,14 +180,22 @@ def _normalise_legacy(raw: bytes) -> pd.DataFrame:
         df = df[df["order_type"].astype(str).str.upper().eq("L")]
     if df.empty:
         return pd.DataFrame(columns=["deliveryStart", "side", "price", "volume"])
-    day = pd.to_datetime(df["applying_date"].iloc[0]).normalize()
-    ts = (day + pd.Timedelta(hours=int(df["hour"].iloc[0]))).tz_localize(
-        LONDON, ambiguous=True, nonexistent="NaT")
-    out = pd.DataFrame({"deliveryStart": pd.NaT if ts is pd.NaT else ts.tz_convert("UTC"),
+    ts = _legacy_start(pd.to_datetime(df["applying_date"].iloc[0]).normalize(), df["hour"].iloc[0])
+    out = pd.DataFrame({"deliveryStart": ts,
                         "side": _sides(df["side"]),
                         "price": df["agg_price"].astype(float),
                         "volume": df["agg_volume"].astype(float)})
     return out
+
+
+def _legacy_start(day: pd.Timestamp, hour) -> pd.Timestamp:
+    """UTC start of a pre-2020 file's hour (0..23, GB local time). The autumn day's repeated hour is labelled
+    "01X" (25 files that day in 2012 and 2014-16): the second 01:00, in GMT; a bare 01 is the first, in BST. The
+    spring day's missing hour has no start (NaT)."""
+    h = str(hour).strip().upper()
+    ts = (day + pd.Timedelta(hours=int(h.removesuffix("X")))).tz_localize(
+        LONDON, ambiguous=not h.endswith("X"), nonexistent="NaT")
+    return pd.NaT if ts is pd.NaT else ts.tz_convert("UTC")
 
 
 def daily_frames(zf: zipfile.ZipFile, inner: str):
