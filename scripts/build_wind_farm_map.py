@@ -28,8 +28,10 @@ WHAT EACH ROW CARRIES
                                                no positive FPN (not yet built)
     match_method, qa_flag, note                how the REPD link was made; capacity ratio REPD/BMU
                                                outside [0.5, 2] or no REPD; an override's reason
-    data/reference/wind_farm_map_overrides.csv (elexon_bmu_id, repd_ref_ids, note) pins a unit's
-    REPD rows; every override states why.
+    data/reference/wind_farm_map_overrides.csv (elexon_bmu_id, repd_ref_ids, note, bmu_capacity_mw) pins
+    a unit's REPD rows, or corrects the register's capacity where it is plainly wrong (apply_capacity_
+    overrides; since 27 Oct 2026, for Bad a Cheo, which Elexon lists at 270 MW against REPD's 26.7 and
+    whose notified output is a 3.5% capacity factor on 270 MW); every override states why.
 
 A unit's ERA is decided per unit, not per station: stations such as Gordonbush or Aikengall pair
 an RO-era original with a post-2017 extension under one name, and an extension's units only appear
@@ -109,6 +111,17 @@ def _fpn_first(bmu: str) -> tuple[pd.Timestamp | None, pd.Timestamp | None]:
     return t.min(), (t[pos].min() if pos.any() else None)
 
 
+def apply_capacity_overrides(w: pd.DataFrame, ovr: pd.DataFrame) -> pd.DataFrame:
+    """The register's capacity, replaced for each unit whose override gives one (ovr indexed by elexon_bmu_id, its
+    bmu_capacity_mw a number or empty); every other unit keeps the register's."""
+    w = w.copy()
+    cap = (pd.to_numeric(ovr["bmu_capacity_mw"], errors="coerce").dropna() if "bmu_capacity_mw" in ovr
+           else pd.Series(dtype=float))
+    fix = w["elexon_bmu_id"].isin(cap.index)
+    w.loc[fix, "bmu_capacity_mw"] = w.loc[fix, "elexon_bmu_id"].map(cap).astype(float)
+    return w
+
+
 def build() -> pd.DataFrame:
     bm = pd.read_csv(next(RAW.glob("bm_units_*.csv")))
     fpn = {f[:-4] for f in os.listdir(RAW / "fpn") if f.endswith(".csv")}
@@ -143,16 +156,19 @@ def build() -> pd.DataFrame:
         station[st] = _summary(hit, how)
 
     ovr = (pd.read_csv(OVR, dtype=str).set_index("elexon_bmu_id") if OVR.exists()
-           else pd.DataFrame(columns=["repd_ref_ids", "note"]))
+           else pd.DataFrame(columns=["repd_ref_ids", "note", "bmu_capacity_mw"]))
     recs = []
     for _, u in w.iterrows():
         rec = dict(station[u["station"]], note="")
         if u["elexon_bmu_id"] in ovr.index:
             o = ovr.loc[u["elexon_bmu_id"]]
-            ids = {i.strip() for i in str(o["repd_ref_ids"]).split(";") if i.strip()}
-            rec = dict(_summary(rp[rp["id_new"].isin(ids)], "override"), note=o.get("note", ""))
+            ids = {i.strip() for i in str(o.get("repd_ref_ids", "")).split(";") if i.strip() and i.strip() != "nan"}
+            if ids:                                     # an override may correct the capacity alone (below)
+                rec = _summary(rp[rp["id_new"].isin(ids)], "override")
+            rec = dict(rec, note=o.get("note", ""))
         recs.append(dict(elexon_bmu_id=u["elexon_bmu_id"], **rec))
     w = w.merge(pd.DataFrame(recs), on="elexon_bmu_id", how="left")
+    w = apply_capacity_overrides(w, ovr)
     unused = sorted(set(ovr.index) - set(w["elexon_bmu_id"]))
     if unused:
         print(f"  WARN overrides for units not in the FPN wind set: {unused}")

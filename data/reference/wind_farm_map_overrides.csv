@@ -1,4 +1,4 @@
-elexon_bmu_id,repd_ref_ids,note
+elexon_bmu_id,repd_ref_ids,note,bmu_capacity_mw
 T_ACHRW-1,4331,"A'Chruach Phase 1 (48.3 MW, op 2016-06); not in the Power Station Dictionary and the apostrophe defeats the name match"
 T_DUNGW-1,4118,"Dunmaglass (94 MW, op 2016-09); Elexon spells it Dunmglass"
 T_GORDW-1,3662,"Gordonbush original (70 MW, op 2012-06); running from the first FPN record. Its extension is T_GORDW-2"
@@ -29,3 +29,4 @@ T_MOWWO-1,6158,"Moray West (882 MW, under construction in REPD); post-RO"
 T_MOWWO-2,6158,"Moray West (882 MW, under construction in REPD); post-RO"
 T_MOWWO-3,6158,"Moray West (882 MW, under construction in REPD); post-RO"
 T_MOWWO-4,6158,"Moray West (882 MW, under construction in REPD); post-RO"
+T_BDCHW-1,,"Bad a Cheo (REPD 26.7 MW, op 2019-05; the name match to REPD 4646 stands). Elexon's register gives 270 MW, ten times REPD, and the unit's notified output is a 3.5% capacity factor on 270 MW against 35% on 26.7 MW (2023-2025)",26.7

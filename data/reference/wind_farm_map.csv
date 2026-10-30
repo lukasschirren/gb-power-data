@@ -8,7 +8,7 @@ T_ANSUW-1,An Suidhe 1,19.36,An Suidhe Windfarm,3298,An Suidhe,19.3,2010-08-04,Fa
 T_ARCHW-1,Arecleoch,114.0,Arecleoch Windfarm,3258,Arecleoch Windfarm,120.0,2011-06-14,False,221500.0,578500.0,_N,False,,pre_record,,2016-03-01 01:00:00+00:00,psd_id,,
 T_BENBW-1,Benbrack WF,67.0,BENBW,,,,,,,,,False,,observed,2025-09-24 17:00:00+00:00,2016-03-01 01:00:00+00:00,none,no_repd,
 T_BROCW-1,Broken Cross WF,48.0,BROCW,,,,,,,,,False,,observed,2024-01-24 18:00:00+00:00,2016-03-01 01:00:00+00:00,none,no_repd,
-T_BDCHW-1,Bad a Cheo Wind Farm,270.0,Bad a Cheo,4646,Bad a Cheo Wind Farm,26.7,2019-05-01,False,316615.0,948900.0,_P,True,AAA-BAD-185,observed,2018-11-23 15:30:00+00:00,2016-03-01 01:00:00+00:00,name:1.00,capacity_ratio,
+T_BDCHW-1,Bad a Cheo Wind Farm,26.7,Bad a Cheo,4646,Bad a Cheo Wind Farm,26.7,2019-05-01,False,316615.0,948900.0,_P,True,AAA-BAD-185,observed,2018-11-23 15:30:00+00:00,2016-03-01 01:00:00+00:00,name:1.00,,"Bad a Cheo (REPD 26.7 MW, op 2019-05; the name match to REPD 4646 stands). Elexon's register gives 270 MW, ten times REPD, and the unit's notified output is a 3.5% capacity factor on 270 MW against 35% on 26.7 MW (2023-2025)"
 T_BOWLW-1,Barrow Offshore Wind,90.0,Barrow Offshore Windfarm,2546,Barrow ,90.0,2006-04-01,True,314978.0,455827.0,_G,False,,pre_record,,2016-03-01 01:00:00+00:00,name:1.00,,
 T_BEATO-1,Beatrice Offshore WF 1,184.0,Beatrice,2521,Beatrice,588.0,2019-08-05,True,344074.0,911416.0,_P,True,INV-BEA-001;INV-BEA-002,observed,2018-07-16 14:30:00+00:00,2016-03-01 01:00:00+00:00,psd_id,,
 T_BEATO-2,Beatrice Offshore WF 2,166.0,Beatrice,2521,Beatrice,588.0,2019-08-05,True,344074.0,911416.0,_P,True,INV-BEA-001;INV-BEA-002,observed,2018-09-17 11:30:00+00:00,2016-03-01 01:00:00+00:00,psd_id,,
