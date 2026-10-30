@@ -76,7 +76,8 @@ PROCESSED_YEARLY = (
 # ancillary_by_unit_{y} (0.7 GB for 2020-2026; python -m gbpowerdata.pull.ancillary_pull, then
 # python -m gbpowerdata.build.ancillary_services, about ten minutes)
 PROCESSED_SINGLE = (
-    "bm_dynamic_units.csv", "cfd_status.csv", "cap_tariff_by_region.csv", "consumer_levy_annual.csv",
+    "bm_dynamic_units.csv", "cfd_status.csv", "cap_tariff_by_region.csv", "cap_components_by_period.csv",
+    "consumer_levy_annual.csv",
     "consumer_levy_daily.csv", "domestic_supply_by_year.csv", "duos_domestic_tariffs.csv", "storage_fleet.csv",
     "capacity_market_auctions.csv", "capacity_market_weights.csv", "capacity_market_derating.csv",
     "capacity_market_agreements.csv", "capacity_market_links.csv", "investment_inputs.csv", "unit_run_times.csv",
@@ -204,6 +205,7 @@ FILE_SOURCES = {
     "wind_farms": ("elexon", "govuk", "lccc", "psd"),
     "cfd_status": ("lccc", "govuk"),
     "cap_tariff_by_region": ("ofgem",),
+    "cap_components_by_period": ("ofgem",),
     "consumer_levy_annual": ("lccc", "octopus"),      # svt_unit_rate_gbp_mwh, levy_share_of_unit_rate_pct
     "consumer_levy_daily": ("lccc",),
     "domestic_supply_by_year": ("govuk",),

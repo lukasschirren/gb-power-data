@@ -117,7 +117,7 @@ stage stops the run, except the two marked *soft*, which are skipped when their 
 | `build_forecast_state --start 2016 --end 2025` | `raw/forecasts/` | `forecast_state_{y}.csv` |
 | `build_consumer_levy` | `raw/lccc/` (levy set), `raw/octopus/svt_unit_rates.csv` | `consumer_levy_daily.csv`, `consumer_levy_annual.csv` |
 | `build_duos_tariffs` | `raw/manual/dno_duos/`, `raw/ofgem/duos_per_customer.csv` | `duos_domestic_tariffs.csv` |
-| `build_cap_tariff` | Ofgem cap tariff model xlsx in `raw/ofgem/` | `cap_tariff_by_region.csv` |
+| `build_cap_tariff` | Ofgem cap tariff model xlsx in `raw/ofgem/` (the newest) | `cap_tariff_by_region.csv` (the model's own period, by region and payment method, divided by that period's benchmark consumption), `cap_components_by_period.csv` (the direct-debit cap's make-up per period and fuel since April 2017: benchmark consumption read off the cap, unit rate and its parts, standing charge, each scheme) |
 | `build_subnational_domestic` | `raw/manual/desnz_subnational/` | `domestic_supply_by_year.csv` |
 | `bm_units [--years 2018 2026]` (default to the current year) | `raw/bm_units_*.csv` (every kept snapshot), `reference/bmu_left_register.csv` (the units that left the register before it, after `fpn_left_register_pull`), `raw/{fpn,b1610,bod}/` | `bm_unit_register_{y}.csv` |
 | `thermal_unit_efficiency` (after `jrc_ppdb_pull`) | `raw/jrc_ppdb/JRC-PPDB-OPEN.ver1.0.zip` | `reference/thermal_unit_efficiency.csv`: GB gas, hard-coal and oil units (EIC 48W) with their net efficiency and its source; stage 3 gives each CCGT station its units' OEM ratings |
