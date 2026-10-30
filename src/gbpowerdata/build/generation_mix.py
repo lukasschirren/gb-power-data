@@ -17,8 +17,10 @@ SOURCES
   data/raw/b1610/{unit}.csv   Elexon B1610, each wind unit's metered output (gbpowerdata.pull.b1610_pull --fuel WIND:
       every T_ and E_ wind unit of the newest register snapshot), MWh per settlement period, from 1 February 2019
       (Elexon's archive starts then); for the split of metered wind into offshore and onshore.
-  data/reference/wind_farm_map.csv   is_offshore of the transmission wind units; a unit it lacks is offshore when its
-      register name says so ("Offshore", "Hywind", "OWF": Burbo, Hywind, Kincardine, Dogger Bank B), else onshore.
+  data/reference/wind_farm_map.csv   is_offshore of the wind units with a notification record; a unit it lacks, or
+      leaves blank (no REPD site matched: North Kyle, Kennoxhead, Moy, Hywind ...), is offshore when its register
+      name says so ("Offshore", "Hywind", "OWF": Burbo, Hywind, Kincardine, Dogger Bank B), else onshore. Before
+      30 Oct 2026 a blank was read as offshore, which put about 0.5 GW of onshore farms in the offshore split.
 
 THE HALF-HOURLY TABLE (MW, mean over the half-hour, UTC startTime on the year's spine)
   gas_ccgt_mw, gas_ocgt_mw, coal_mw, oil_mw, nuclear_mw, biomass_mw, hydro_mw (non-pumped hydro), other_mw,
@@ -131,10 +133,12 @@ def neso_embedded(raw: Path, year: int) -> pd.DataFrame:
 
 def wind_offshore_flags(register: pd.DataFrame, farm_map: pd.DataFrame) -> pd.Series:
     """Every T_ and E_ wind unit of a register snapshot -> offshore (bool): the farm map's is_offshore where it has the
-    unit, else whether the unit's name says offshore (OFFSHORE_NAME)."""
+    unit and states it, else whether the unit's name says offshore (OFFSHORE_NAME)."""
     w = register[register["fuelType"].eq("WIND") & register["elexonBmUnit"].astype(str).str.match(r"[TE]_")]
     names = w.drop_duplicates("elexonBmUnit").set_index("elexonBmUnit")["bmUnitName"].astype(str)  # some listed twice
-    mapped = farm_map.drop_duplicates("elexon_bmu_id").set_index("elexon_bmu_id")["is_offshore"].astype(bool)
+    # is_offshore is blank where no REPD site matched (North Kyle, Kennoxhead, Moy ...); a blank read as bool is True
+    mapped = (farm_map.drop_duplicates("elexon_bmu_id").set_index("elexon_bmu_id")["is_offshore"].dropna()
+              .map(lambda v: str(v).strip().lower() == "true"))
     flags = names.str.contains(OFFSHORE_NAME).rename("offshore")
     known = names.index.intersection(mapped.index)
     flags[known] = mapped[known]

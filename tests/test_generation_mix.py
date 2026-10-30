@@ -94,6 +94,18 @@ def test_wind_units_are_offshore_by_the_farm_map_else_by_name():
     assert f.to_dict() == {"T_WLNYO-1": True, "T_ACHRW-1": False, "E_BURBO": True, "E_ABRTW-1": False}
 
 
+def test_a_map_row_without_a_repd_site_falls_back_to_the_name():
+    # The map leaves is_offshore blank where no REPD site matched (North Kyle, Moy, Hywind); a blank is not offshore,
+    # the unit's name decides (read from the CSV as the map is: True/False/blank -> object column with NaN).
+    reg = pd.DataFrame({"elexonBmUnit": ["T_NOKYW-1", "E_HYWDW-1", "T_WLNYO-1"],
+                        "bmUnitName": ["North Kyle Wind Farm-1", "Hywind Generator BMU1", "Walney"],
+                        "fuelType": ["WIND", "WIND", "WIND"]})
+    farm = pd.DataFrame({"elexon_bmu_id": ["T_NOKYW-1", "E_HYWDW-1", "T_WLNYO-1"],
+                         "is_offshore": [np.nan, np.nan, True]}, dtype=object)
+    f = G.wind_offshore_flags(reg, farm)
+    assert f.to_dict() == {"T_NOKYW-1": False, "E_HYWDW-1": True, "T_WLNYO-1": True}
+
+
 def test_wind_units_are_read_in_mw_on_utc_and_summed_by_flag(tmp_path):
     for unit, q in (("T_OFF-1", [50.0, 60.0]), ("E_ON-1", [10.0, -0.5])):
         pd.DataFrame({"settlementDate": ["2023-07-01", "2023-07-01"], "settlementPeriod": [1, 2],
