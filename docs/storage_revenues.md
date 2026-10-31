@@ -219,8 +219,9 @@ GBP 160.7m in 2025 by the same streams, GBP 288.5m in 2022.
 
 The benchmarks the tests use are free and official: NESO's annual spend on each response and reserve service
 (`data/reference/official_statistics.csv`; the ancillary columns are awards, 7-38% above what NESO paid by service,
-[AUDIT.md](AUDIT.md) A10-2) and DESNZ's battery capacity (DUKES 5.16). Nothing in the pipeline reads commercial
-indices. As an optional, anecdotal cross-check only, against the figures Modo quotes for its GB BESS index in its
+[AUDIT.md](AUDIT.md) A10-2) and DESNZ's battery capacity (DUKES 5.16). Nothing in the open tables reads commercial
+indices; `build.storage_revenue_aurora` reads a subscriber's export of Aurora's Flexplorer GB leaderboard locally and
+sets it beside this table unit by unit and stream by stream (licensed: its numbers stay out of this document). As an optional, anecdotal cross-check only, against the figures Modo quotes for its GB BESS index in its
 free research notes (GBP thousand per MW per year):
 
 | Month | This table, trading units | Modo |

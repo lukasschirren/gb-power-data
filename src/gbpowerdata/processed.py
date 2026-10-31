@@ -144,6 +144,24 @@ def read_storage_fleet() -> pd.DataFrame:
     return df
 
 
+def read_storage_revenue_aurora(year: int, monthly: bool = False) -> pd.DataFrame:
+    """Aurora's estimate of what each battery earned, from a subscriber's export of its Flexplorer GB leaderboard
+    (gbpowerdata.build.storage_revenue_aurora; LICENSED, local only): MWh and GBP per unit, UK local date and market.
+    `monthly=True` gives one row per unit and month with a column per market named as in read_storage_revenue, and
+    storage_revenue_aurora.compare sets the two side by side. Kept out of KIND_FILE, like read_lolp."""
+    df = pd.read_csv(cfg.processed_dir() / f"storage_revenue_aurora_{year}.csv", parse_dates=["date"])
+    if not monthly:
+        return df
+    from gbpowerdata.build.storage_revenue_aurora import monthly as by_month
+    return by_month(df)
+
+
+def read_storage_units_aurora() -> pd.DataFrame:
+    """The units of Aurora's leaderboard export (gbpowerdata.build.storage_revenue_aurora; LICENSED, local only): MW,
+    MWh and duration as Aurora states them, optimiser, lead party, balancing zone, and the span of days exported."""
+    return pd.read_csv(cfg.processed_dir() / "storage_units_aurora.csv", parse_dates=["first_date", "last_date"])
+
+
 def read_unit_run_times(source: str | None = None) -> pd.DataFrame:
     """How long each thermal BM unit ran once started and stayed off once stopped, per year (gbpowerdata.build.
     unit_runs): counts and percentiles of the spells in hours, from the metered output (`source="b1610"`) or the unit's

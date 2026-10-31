@@ -25,7 +25,7 @@ again at the same version.
 | `manual/dno_duos/` | DNO charging statements; see below | `build.build_duos_tariffs` | Jul 2026 | `duos_domestic_tariffs` (complete) |
 | `manual/desnz_subnational/` | DESNZ subnational electricity consumption; see below | `build.build_subnational_domestic` | Aug 2026 | `domestic_supply_by_year` (complete) |
 
-Three more inputs are **not** in the inputs pack:
+Five more inputs are **not** in the inputs pack:
 
 | File (under `data/raw/`) | Source | Why not packed |
 | --- | --- | --- |
@@ -33,6 +33,7 @@ Three more inputs are **not** in the inputs pack:
 | `psd/ids.csv` | OSUKED Power Station Dictionary, MIT licence; see `../psd/PROVENANCE.md` | small, so it is tracked in git |
 | `pecd/masks/ANCI_PE{ON,OF}-mask_PECD4.2_fv1.nc` | Copernicus CDS `sis-energy-pecd` region masks (240 MB; one-off request, see `common/pecd_regions.py`) | only rebuild the PECD weight tables, which are tracked in `data/reference/` |
 | `ofgem/RO_Accredited_Stations_*.csv`, `ofgem/RO_Certificates_*.csv` | Ofgem Renewables and CHP Register, public reports; see below | they hold the names and addresses of individuals' small stations; what `build.build_ownership` takes from them (GB stations of 1 MW or more, no addresses) is in `ownership_{y}` |
+| `aurora/leaderboard-gbr-{from}-{to}.zip` | Aurora Energy Research, Flexplorer (in the Flexible Energy Service subscription): the GB battery leaderboard, exported by hand per date range (the name gives the range asked for, not the days it holds); read by `build.storage_revenue_aurora`; first export downloaded 29 Oct 2026, holding 1 Jan to 29 Oct 2026 | licensed: the subscription keeps the export, and everything built from it, on the subscriber's machine |
 
 Naming convention inside `manual/`: `<publisher>_<dataset>`, lowercase, underscores.
 

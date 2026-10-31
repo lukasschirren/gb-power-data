@@ -105,6 +105,7 @@ series has one row per half-hour with its UTC start time in the column `startTim
 | | `duos_domestic_tariffs`, `cap_tariff_by_region`, `domestic_supply_by_year` | network charges, the price cap by region (its unit rate at each period's benchmark consumption), the domestic share of demand |
 | | `cap_components_by_period` | what the direct-debit price cap is made of in each period since April 2017, for electricity and gas: the unit rate split into wholesale, CfD, Capacity Market, policy, network and other costs, the standing charge, and each government scheme per MWh or per customer (Ofgem's cap model) |
 | Day-ahead auctions (licensed) | `dayahead_price_*`, curve, block and trade tables | N2EX and EPEX SPOT data; needs a subscription and is never shared ([below](#licensed-market-data-n2ex-epex-spot)) |
+| Battery revenues, Aurora (licensed) | `storage_revenue_aurora_{y}`, `storage_units_aurora` | Aurora's Flexplorer GB leaderboard as a subscriber exports it: each battery's MWh and GBP per day and market, with the MWh, duration and optimiser Aurora states, to set beside `storage_revenue_{y}`; needs the subscription and is never shared ([below](#licensed-market-data-n2ex-epex-spot)) |
 
 How each table is built, with every input and output, is in [docs/pipeline.md](docs/pipeline.md).
 Known quirks of the data are listed under [data caveats](#data-caveats).
@@ -226,6 +227,11 @@ builds a `mid_target` that may be shared, and the data pack's is built that way,
 interpolated or left missing. `.gitignore` blocks all of these paths,
 `tests/test_repo_hygiene.py` fails if one is ever tracked, and `datapack export` refuses to pack
 them. Every other stage runs without the licensed data.
+
+Aurora's Flexplorer is licensed the same way: a subscriber exports its GB battery leaderboard by
+hand into `data/raw/aurora/`, and `python -m gbpowerdata.build.storage_revenue_aurora` turns it
+into `storage_revenue_aurora_{y}` and `storage_units_aurora`, which stay on that machine. Every
+such path carries `aurora`, which the same three guards refuse.
 
 ## Data terms
 

@@ -1,7 +1,8 @@
 """Licensed market data and credentials never enter version control.
 
 Nord Pool (N2EX) and EPEX SPOT data are commercial: the raw files AND everything derived from
-them (day-ahead prices, curve features, block orders, trade panels) must stay out of git. The
+them (day-ahead prices, curve features, block orders, trade panels) must stay out of git, as must
+Aurora's Flexplorer leaderboard export and the tables built from it. The
 same holds for API tokens and passwords, and for copies of The Crown Estate's ownership tables
 (its terms: own use only). Two checks, both against git itself:
 
@@ -38,6 +39,11 @@ MUST_BE_IGNORED = [
     "data/processed/mid_target_2023.csv",            # carries N2EX gap-fill values
     "data/reference/n2ex_demand_shape.csv",
     "data/reference/EPEXSPOT_SFTP_file_specifications_2026-3a.pdf",
+    # Aurora's leaderboard export (a subscriber's download) and what is built from it
+    "data/raw/aurora/leaderboard-gbr-2026-01-01-2026-12-31.zip",
+    "data/processed/storage_revenue_aurora_2026.csv",
+    "data/processed/storage_units_aurora.csv",
+    "data/processed/aurora_figures/revenue_stack.png",
     # credentials
     "data/reference/entsoe_token.txt",
     "data/reference/renewables_ninja_token.txt",
@@ -50,7 +56,7 @@ MUST_BE_IGNORED = [
     "data/raw/crown_estate/wind_farm_ownership_20241231.html",
     "data/processed/crown_estate_ownership.csv",
 ]
-COMMERCIAL_MARKERS = ("nordpool", "n2ex", "epex", "dayahead", "mid_target")
+COMMERCIAL_MARKERS = ("nordpool", "n2ex", "epex", "dayahead", "mid_target", "aurora")
 SECRET_MARKERS = ("token", "credential", "password", ".pem", ".key")
 
 

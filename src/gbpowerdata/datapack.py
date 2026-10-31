@@ -93,8 +93,9 @@ INPUTS = (
     "manual/dno_duos/**/*", "manual/desnz_subnational/*",
 )
 # Licensed day-ahead data and anything derived from it: the venues' names, and "dayahead" in every table priced at
-# the auctions (dayahead_price_*, storage_revenue_dayahead_*); the same markers as .gitignore.
-LICENSED = re.compile(r"nordpool|n2ex|epex|dayahead|curve_compare|demand_curves", re.I)
+# the auctions (dayahead_price_*, storage_revenue_dayahead_*); and Aurora's leaderboard export with everything built
+# from it (raw/aurora/, storage_revenue_aurora_*, storage_units_aurora); the same markers as .gitignore.
+LICENSED = re.compile(r"nordpool|n2ex|epex|dayahead|curve_compare|demand_curves|aurora", re.I)
 
 # Upstream sources and their terms (checked at the URLs, 5 Oct 2026). `nc`: non-commercial only;
 # `ship=False`: the terms do not allow passing the data on, so files carrying it are never packed
@@ -287,10 +288,10 @@ def input_files() -> list[Path]:
 
 
 def check_shareable(path: Path, arcname: str) -> None:
-    """Raise if a file is (or derives from) licensed N2EX/EPEX data. Judged on its place in the
+    """Raise if a file is (or derives from) licensed N2EX/EPEX or Aurora data. Judged on its place in the
     data layout (`arcname`), not on where the data folder happens to sit on this machine."""
     if LICENSED.search(arcname):
-        raise ValueError(f"{arcname}: licensed N2EX/EPEX data, never packed")
+        raise ValueError(f"{arcname}: licensed N2EX/EPEX or Aurora data, never packed")
     if path.name.startswith("mid_target_"):
         src = pd.read_csv(path, usecols=["mid_source"])["mid_source"]
         n = int((src == "N2EX").sum())

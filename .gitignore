@@ -66,6 +66,8 @@ data/**/*EPEX*
 # anything priced at or derived from the day-ahead auctions carries "dayahead" in its name
 # (dayahead_price_*, storage_revenue_dayahead_*)
 data/**/*dayahead*
+# Aurora's Flexplorer leaderboard export (a subscriber's download, raw/aurora/) and every table and figure from it
+data/**/*aurora*
 data/**/curve_compare_*
 data/**/demand_curves_*
 data/**/mid_target_*

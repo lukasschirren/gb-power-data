@@ -159,6 +159,13 @@ where a volume was missing and the plain mean stands in. LCCC's IMRP (`lccc_pull
 open) is the same weighted average, and `tests/realdata/test_licensed.py` checks the blend
 against it.
 
+**Licensed benchmark** (needs `raw/aurora/`, a subscriber's export of Aurora's Flexplorer GB
+leaderboard; every output is licensed data):
+
+| Command | Writes (`processed/`) |
+| --- | --- |
+| `storage_revenue_aurora [--raw DIR]` | `storage_revenue_aurora_{y}.csv`: MWh and GBP per unit, UK local date and market (wholesale, BM, DC, DM, DR, QR, BR); `storage_units_aurora.csv`: per unit the MW, MWh, duration, optimiser, lead party and balancing zone Aurora states; its `monthly()` and `compare()` set it beside `storage_revenue_{y}` ([storage_revenues.md](storage_revenues.md)) |
+
 ## 5. Reading the outputs
 
 Use `gbpowerdata.processed` instead of globbing file names:
