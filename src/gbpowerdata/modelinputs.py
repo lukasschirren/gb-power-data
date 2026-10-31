@@ -44,7 +44,7 @@ MANIFEST = "MANIFEST.json"
 # processed/{name}_{year}.csv for every year of the range
 YEARLY = ("demand", "capacity_factors", "capacity_factors_by_zone", "fuel_prices", "agents", "cfd_fleet",
           "powerplants_located", "wind_farms", "wind_farm_fpn", "wind_farm_fpn_gaps", "bm_unit_register",
-          "generation_mix", "lolp_drm", "capacity_market")
+          "generation_mix", "lolp_drm", "capacity_market", "generation_battery")
 # per year too; mid_target is required (licensed only when gap-filled with N2EX), the day-ahead prices are copied
 # when present
 YEARLY_LICENSED = ("mid_target", "dayahead_price_n2ex", "dayahead_price_epex_hourly", "dayahead_price_epex_hh",

@@ -219,7 +219,8 @@ python -m gbpowerdata.modelinputs --out DIR --check
 
 The folder holds, under fixed names, the per-year panel (`modelinputs.YEARLY`: demand, capacity
 factors national and by zone, fuel prices, agents, the CfD fleet, located plants, wind farms with
-their FPN and gaps, the BM register, the generation mix, LOLP and the Capacity Market payments),
+their FPN and gaps, the BM register, the generation mix, LOLP, the Capacity Market payments and the
+batteries' half-hourly output and frequency response),
 the single tables (`SINGLE`: CfD status, the CfD contracts, REGO, the wind split, the interconnector table, the BMRP,
 the supply slope, the RO stations, TYNDP's hourly data, the ERA5 weather series, the Capacity
 Market's agreements, auctions, de-rating and weights, the consumer levy, domestic supply, the
