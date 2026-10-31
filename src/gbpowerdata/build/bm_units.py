@@ -48,7 +48,13 @@ Rules:
               (PANEL_START), since such a window says nothing about the time before it (Lynemouth unit 1, metered
               from the B1610 window's start on 1 Feb 2019 but in an outage until 4 Mar 2019, ran in 2018: LCCC's
               daily generation for the station's CfD then exceeds what two units can make). A last date within
-              END_SLACK of the window's end means still running. A unit with bid-offer data only is dated by its
+              END_SLACK of the end of the unit's own pull means still running: a kind's files are pulled in
+              separate runs (B1610's thermal units to 1 Jan 2026, its wind and storage units to 19 Oct 2026 on
+              26 Oct 2026), and a date on which at least PULL_MIN_FILES files of a kind end is the end of a pull
+              (pull_ends). A unit whose file ends on one was pulled to it, so it is measured from there; any other
+              file stopped with the unit's metering and is measured from the kind's latest end. Measured from the
+              latest end instead, the thermal units' last days of 2025 read as closures (Fellside, Peterborough and
+              Killingholme, which all ran in 2026; corrected 31 Oct 2026). A unit with bid-offer data only is dated by its
               first and last submission. A unit whose FPN and B1610 files never show output is inactive in every
               year ("no_output"), and so is a unit whose notifications --pull-missing found empty over the whole
               window ("no_notifications", recorded in data/raw/fpn_without_notifications.csv: Dogger Bank B's five
@@ -148,7 +154,8 @@ MIN_DAY_PERIODS = 4                    # a day with output in fewer distinct hal
 STORAGE = ("battery", "pumped_storage")
 START_SLACK = pd.Timedelta(days=7)     # a first output date this close to its window's start: there before it
 PANEL_START = pd.Timestamp(f"{YEARS[0]}-01-01")   # a pull window opening later says nothing about the time before
-END_SLACK = pd.Timedelta(days=45)      # a last output date this close to its window's end: still running
+END_SLACK = pd.Timedelta(days=45)      # a last output date this close to its pull's end: still running
+PULL_MIN_FILES = 20                     # a date this many files of a kind end on is the end of a pull (pull_ends)
 # Commercial closures of units the register still lists (public dates): a unit no activity file covers is
 # active until then, and one whose files show output later is active only until then: the winter 2022/23 coal
 # contingency kept Drax units 5 and 6 and West Burton A units 1 and 2 available outside the market, and their
@@ -243,13 +250,29 @@ def pull_windows(activity: dict[str, dict[str, dict]]) -> dict[str, Span]:
     return out
 
 
+def pull_ends(activity: dict[str, dict[str, dict]], min_files: int = PULL_MIN_FILES) -> dict[str, frozenset]:
+    """Each kind's pull ends: the last dates at least `min_files` of its files share (module docstring). A file
+    ending on another date stopped with its unit's data, not with a pull."""
+    count: dict[str, dict] = {}
+    for kinds in activity.values():
+        for kind, a in kinds.items():
+            if a.get("empty"):
+                continue
+            end = pd.Timestamp(a["file"][1]).normalize()
+            count.setdefault(kind, {})[end] = count.setdefault(kind, {}).get(end, 0) + 1
+    return {k: frozenset(d for d, n in c.items() if n >= min_files) for k, c in count.items()}
+
+
 def activity_window(activity: dict[str, dict], windows: dict[str, Span], unit: str = "",
-                    capacity_mw: float = np.nan, fuel_known: bool = True, tech: str = "", closed=None) -> dict:
+                    capacity_mw: float = np.nan, fuel_known: bool = True, tech: str = "", closed=None,
+                    pulls: dict[str, frozenset] | None = None) -> dict:
     """From a unit's files ({kind: {"file": (first, last), "output": (first, last) or None, "output_any": the same
     counting charging}}) and each kind's pull window: the first active date (None if the unit produced from the
     start of the window of the kind that saw it first), the last (None if still producing at the end of a
     window) and the source (see the module docstring, also for the rules without output files). `closed` is a
-    documented closure the caller knows (a unit that left the register), else RETIREMENTS' for the unit."""
+    documented closure the caller knows (a unit that left the register), else RETIREMENTS' for the unit. `pulls`
+    (pull_ends) says where each kind's pulls ended: a unit whose file ends on one is measured from its own pull's
+    end; without it, every unit from its kind's latest end."""
     closed = RETIREMENTS.get(unit) if closed is None or pd.isna(closed) else closed
     key = "output_any" if tech in STORAGE else "output"
     output = {k: a[key] for k, a in activity.items() if k in OUTPUT_KINDS and a.get(key)}
@@ -280,7 +303,12 @@ def activity_window(activity: dict[str, dict], windows: dict[str, Span], unit: s
     # kind starts with the window was there already, whatever its first output (Lynemouth unit 1, in an outage)
     registered = opens > PANEL_START and kind in files and files[kind][0] <= opens + START_SLACK
     at_start = first <= opens + START_SLACK or registered
-    at_end = any(v[1] >= windows[k][1] - END_SLACK for k, v in ends.items())
+    def pull_end(k: str) -> pd.Timestamp:
+        own = activity.get(k, {}).get("file")
+        if pulls and own is not None and pd.Timestamp(own[1]).normalize() in pulls.get(k, ()):
+            return pd.Timestamp(own[1])
+        return windows[k][1]
+    at_end = any(v[1] >= pull_end(k) - END_SLACK for k, v in ends.items())
     source = "+".join(sorted(starts)) + ("" if starts is output else "_file")
     to = None if at_end else last
     if closed is not None and (to is None or to > pd.Timestamp(closed)):
@@ -504,6 +532,7 @@ def build_year(year: int, activity: dict | None = None, reg: pd.DataFrame | None
     reg = pd.concat([reg, left.drop(columns=["closed", "station"])], ignore_index=True) if len(left) else reg
     activity = activity_files() if activity is None else activity
     windows = pull_windows(activity)
+    pulls = pull_ends(activity)
     reg["capacity_source"] = "register"
     fix = reg["unit_id"].map(CAPACITY_WHILE_ACTIVE)
     reg.loc[fix.notna() | reg["unit_id"].isin(closed), "capacity_source"] = "table"
@@ -513,7 +542,7 @@ def build_year(year: int, activity: dict | None = None, reg: pd.DataFrame | None
     if ran.any():
         reg.loc[ran, "capacity_mw"] = reg.loc[ran, "unit_id"].map(fpn_max_level)
         reg.loc[ran, "capacity_source"] = "fpn_max"
-    act = pd.DataFrame([activity_window(activity.get(u, {}), windows, u, c, pd.notna(f), t, closed.get(u))
+    act = pd.DataFrame([activity_window(activity.get(u, {}), windows, u, c, pd.notna(f), t, closed.get(u), pulls)
                         for u, c, f, t in zip(reg["unit_id"], reg["capacity_mw"], reg["fuel_type"], reg["tech"])],
                        index=reg.index)
     df = pd.concat([reg, act], axis=1)

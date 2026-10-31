@@ -282,3 +282,24 @@ def test_the_table_of_units_that_left_the_register_is_optional_but_must_have_its
     pd.DataFrame({"unit_id": ["T_X-1"], "fuel_type": ["COAL"]}).to_csv(tmp_path / B.LEFT_REGISTER, index=False)
     with pytest.raises(ValueError):
         B.left_register()
+
+
+def test_a_unit_is_measured_from_the_end_of_its_own_pull():
+    # B1610's thermal units pulled to 1 Jan 2026, its wind and storage units to 19 Oct 2026 (26 Oct 2026): a thermal
+    # unit pausing over Christmas 2025 is still running (Fellside, which ran in 2026), not closed on 25 Dec
+    windows = {"b1610": (T("2019-02-01"), T("2026-10-19"))}
+    pulls = {"b1610": frozenset({T("2026-01-01"), T("2026-10-19")})}
+    fell = files(b1610=((T("2019-02-01"), T("2026-01-01")), (T("2019-02-01"), T("2025-12-25"))))
+    assert B.activity_window(fell, windows, "E_FELL-1", pulls=pulls)["active_to"] is None
+    assert B.activity_window(fell, windows, "E_FELL-1")["active_to"] == T("2025-12-25")      # the latest end
+    # a file that stopped with its unit's metering (no pull ends there) is measured from the latest end
+    gone = files(b1610=((T("2019-02-01"), T("2023-12-31")), (T("2019-02-01"), T("2023-12-20"))))
+    assert B.activity_window(gone, windows, "T_X-1", pulls=pulls)["active_to"] == T("2023-12-20")
+
+
+def test_pull_ends_are_dates_many_files_share():
+    act = {f"U{i}": {"b1610": {"file": (T("2019-02-01"), T("2026-01-01"))}} for i in range(25)}
+    act |= {f"W{i}": {"b1610": {"file": (T("2019-02-01"), T("2026-10-19"))}} for i in range(30)}
+    act |= {"X": {"b1610": {"file": (T("2019-02-01"), T("2023-12-31"))}},
+            "E": {"fpn": {"file": (T("2016-03-01"), T("2026-10-19")), "empty": True}}}
+    assert B.pull_ends(act) == {"b1610": frozenset({T("2026-01-01"), T("2026-10-19")})}
