@@ -82,6 +82,7 @@ series has one row per half-hour with its UTC start time in the column `startTim
 | Prices | `fuel_prices_{y}` | gas, coal and carbon (EU or UK ETS plus the carbon price support); coal both as the Richards Bay export price and as the price of the UK's landed imports; 2018–2021 built locally |
 | | `mid_target_{y}` | Elexon's Market Index Data price: the volume-weighted price of the half-hour's short-term trades on EPEX SPOT GB (half-hour and 1-4 hour blocks; the day-ahead auction has weight 0), not a day-ahead auction price; its trading window moved closer to delivery on 18 Apr 2019 (BSC modification P377) |
 | | `system_prices_{y}` | the imbalance (cash-out) price and net imbalance volume |
+| | `tyndp_nt2030_cy2009_hourly`, `tyndp_nt2040_cy2009_hourly`, `tyndp_commodity_prices` | the neighbours' future prices: ENTSO-E's TYNDP 2024 market model (National Trends+ 2030 and 2040, climate year 2009), hourly marginal cost of the nodes GB's links reach and of GB itself, and the fuel and carbon prices its scenarios assume (2021 euros) |
 | Plants and support | `powerplants_tagged_{y}`, `powerplants_located_{y}` | every GB plant with its support scheme (CfD, RO, FiT, none) and grid region |
 | | `cfd_status`, `cfd_contracts`, `cfd_fleet_{y}` | each CfD contract (its status, dates, term and strike in 2024 money in `cfd_contracts`), and the actual payments LCCC settled |
 | | `agents_{y}` | the fleet grouped into units ready for a market model |

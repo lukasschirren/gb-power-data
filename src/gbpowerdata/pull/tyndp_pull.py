@@ -3,7 +3,7 @@
 WHY. A projection of GB's market into the 2030s needs its neighbours' own future systems, not their observed
 prices moved by gas: with far more wind and solar, continental surplus hours take their prices to zero and GB can
 no longer export its own surplus at a positive price. The TYNDP 2024 market model (ENTSO-E's PLEXOS runs of the
-National Trends+ scenario) publishes the hourly marginal cost of every market node in 2030
+National Trends+ scenario) publishes the hourly marginal cost of every market node in 2030 and 2040
 (`build.tyndp_hourly` keeps GB's neighbours).
 
 FILES (https://2024.entsos-tyndp-scenarios.eu/download/, licence CC BY 4.0 as Open-TYNDP records it):
@@ -12,10 +12,16 @@ FILES (https://2024.entsos-tyndp-scenarios.eu/download/, licence CC BY 4.0 as Op
                                                           Data", 55 columns per node (generation by technology,
                                                           demand, balance, dumped energy, energy not served, marginal
                                                           cost in EUR/MWh), 8,736 hours
+  MMStandardOutputFile_NT2040_Plexos_CY2009_2.5_v40.xlsx   NT+ 2040 market model results, climate year 2009, the same
+                                                          layout (added 31 Oct 2026, so a projection to 2035 can run
+                                                          between TYNDP's 2030 and 2040 instead of holding 2030's;
+                                                          the 2040 runs publish climate years 1995, 2008 and 2009,
+                                                          and 2009 keeps the weather of the 2030 table)
   MMStandardOutputFile_Readme.docx                        what the columns are
   Prices.zip                                              the commodity prices the runs assume ("2023 06 22 TYNDP 2024
-                                                          Commodity prices Final.xlsx"; 2021 EUR: NT+ 2030 gas blend
-                                                          7.5 EUR/GJ, CO2 113.4 EUR/t)
+                                                          Commodity prices Final.xlsx"; 2021 EUR: NT+ gas blend 7.5
+                                                          EUR/GJ in 2030 and 9.0 in 2040, CO2 113.4 and 147 EUR/t;
+                                                          `build.tyndp_commodity_prices` tabulates them)
 Each is saved as downloaded, the zips beside the extracted workbooks; a file on disk is not pulled again.
 Ported on 30 Oct 2026 from the research repository's gbabm.pull.tyndp_pull.
 
@@ -36,6 +42,8 @@ BASE = "https://2024-data.entsos-tyndp-scenarios.eu/files"
 FILES = {
     "MMStandardOutputFile_NT2030_Plexos_CY2009_2.5_v40.xlsx.zip":
         f"{BASE}/scenarios-outputs/MMStandardOutputFile_NT2030_Plexos_CY2009_2.5_v40.xlsx.zip",
+    "MMStandardOutputFile_NT2040_Plexos_CY2009_2.5_v40.xlsx.zip":
+        f"{BASE}/scenarios-outputs/MMStandardOutputFile_NT2040_Plexos_CY2009_2.5_v40.xlsx.zip",
     "MMStandardOutputFile_Readme.docx": f"{BASE}/scenarios-outputs/MMStandardOutputFile_Readme.docx",
     "Prices.zip": f"{BASE}/scenarios-inputs/Prices.zip",
 }

@@ -334,10 +334,17 @@ def read_weather_years(kind: str = "national") -> pd.DataFrame:
     return _timeseries(cfg.processed_dir() / "pecd" / name)
 
 
-def read_tyndp_hourly() -> pd.DataFrame:
-    """ENTSO-E's TYNDP 2024 market model for 2030, climate year 2009 (gbpowerdata.build.tyndp_hourly): the hourly
-    marginal cost of GB's neighbours' nodes and GB's own demand, wind and solar potential and dumped energy."""
-    return pd.read_csv(cfg.processed_dir() / "tyndp_nt2030_cy2009_hourly.csv")
+def read_tyndp_hourly(year: int = 2030) -> pd.DataFrame:
+    """ENTSO-E's TYNDP 2024 market model for 2030 or 2040 (National Trends+), climate year 2009
+    (gbpowerdata.build.tyndp_hourly): the hourly marginal cost of GB's neighbours' nodes and GB's own demand, wind
+    and solar potential and dumped energy."""
+    return pd.read_csv(cfg.processed_dir() / f"tyndp_nt{year}_cy2009_hourly.csv")
+
+
+def read_tyndp_commodity_prices() -> pd.DataFrame:
+    """The fuel and carbon prices TYNDP 2024's scenarios assume (gbpowerdata.build.tyndp_commodity_prices): fuel,
+    scenario, year, value, unit (2021 euros)."""
+    return pd.read_csv(cfg.processed_dir() / "tyndp_commodity_prices.csv")
 
 
 def load_year(year: int) -> dict[str, pd.DataFrame]:

@@ -52,7 +52,7 @@ YEARLY_LICENSED = ("mid_target", "dayahead_price_n2ex", "dayahead_price_epex_hou
 # processed/ tables without a year (.csv unless an extension is given; a folder keeps its folder)
 SINGLE = ("cfd_status", "cfd_contracts", "rego_vintages", "rego_price_monthly", "vre_cf_corrected", "ic_hourly.parquet",
           "bmrp_halfhourly", "foreign_supply_slope", "ro_stations", "tyndp_nt2030_cy2009_hourly",
-          "pecd/gsp_cf_era5.parquet", "pecd/national_cf_historical.parquet",
+          "tyndp_nt2040_cy2009_hourly", "tyndp_commodity_prices", "pecd/gsp_cf_era5.parquet", "pecd/national_cf_historical.parquet",
           "capacity_market_agreements", "capacity_market_auctions", "capacity_market_derating",
           "capacity_market_weights", "capacity_market_links", "consumer_levy_annual", "consumer_levy_daily",
           "domestic_supply_by_year", "cap_components_by_period", "generation_by_fuel_annual", "storage_fleet",

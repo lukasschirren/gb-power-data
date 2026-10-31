@@ -58,6 +58,8 @@ def model_inputs(tmp_path, monkeypatch):
     nat.to_parquet(proc / "pecd" / "national_cf_historical.parquet")
     pd.DataFrame({"_A_onshore_wind": [0.2, 0.3]}, index=t.rename("startTime")).to_parquet(proc / "pecd" / "gsp_cf_era5.parquet")
     pd.DataFrame({"hour": [1, 2], "label": ["01JAN01", "01JAN02"], "mc_fr00": [40.0, 0.0]}).to_csv(proc / "tyndp_nt2030_cy2009_hourly.csv", index=False)
+    pd.DataFrame({"hour": [1, 2, 3], "label": ["01JAN01", "01JAN02", "01JAN03"], "mc_fr00": [50.0, 0.0, 9.0]}).to_csv(proc / "tyndp_nt2040_cy2009_hourly.csv", index=False)
+    pd.DataFrame({"fuel": ["CO2 price"], "scenario": ["all"], "year": [2040], "value": [147.0], "unit": ["EUR2021/t"]}).to_csv(proc / "tyndp_commodity_prices.csv", index=False)
     return proc
 
 
@@ -73,4 +75,5 @@ def test_model_input_loaders_read_each_table_with_utc_time_axes(model_inputs):
     assert str(processed.read_weather_years("gsp").index.tz) == "UTC"
     with pytest.raises(ValueError):
         processed.read_weather_years("ro")
-    assert len(processed.read_tyndp_hourly()) == 2
+    assert len(processed.read_tyndp_hourly()) == 2 and len(processed.read_tyndp_hourly(2040)) == 3
+    assert processed.read_tyndp_commodity_prices().loc[0, "value"] == 147.0
