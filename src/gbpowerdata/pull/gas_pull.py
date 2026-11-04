@@ -18,36 +18,57 @@ Coverage: ONS SAP runs Jan 2018 -> present. (The legacy MIPI SOAP service that
 held earlier history was decommissioned in 2023, so 2016-2017 is not available
 here.)
 
+EDITIONS (4 Nov 2026). ONS republishes the workbook as dated editions, each with the full daily history from Jan
+2018 (dataset page: https://www.ons.gov.uk/economy/economicoutputandproductivity/output/datasets/
+systemaveragepricesapofgas). The series keeps the history it was built on: the base edition of 18 Dec 2025
+(ons_sap_gas.xlsx, to 14 Dec 2025, from which the 2018-2025 panels were built), then each later edition in EDITIONS,
+saved as ons_sap_gas_{date}.xlsx, adds only the days after the series' last. Where an edition shares days with the
+series, they must agree within AGREE_P_THERM (the 24 Sep 2026 edition agrees with the base on every shared day to
+0.012 p/therm), or the build stops. Until 4 Nov 2026 the puller rebuilt the series from ons_sap_gas.xlsx alone
+whenever that file existed, which replaced the appended days by the base's; it now merges every edition on disk,
+downloads only an edition that is missing, and refuses to replace gas_sap_daily.csv by a series that ends earlier
+or has fewer days (--force overrides).
+
 Output (data/raw/): gas_sap_daily.csv  [date, gas_price_pence_per_kwh, gas_price_pence_per_therm]
 
 Usage:
-  python -m gbpowerdata.pull.gas_pull            # download latest ONS workbook + build the series
-  python -m gbpowerdata.pull.gas_pull --file path/to/ons_sap.xlsx
+  python -m gbpowerdata.pull.gas_pull                  # download any missing edition, merge them, write the series
+  python -m gbpowerdata.pull.gas_pull --no-download    # merge the editions on disk only
+  python -m gbpowerdata.pull.gas_pull --file path/to/ons_sap.xlsx [--force]   # one workbook alone
 """
 
 from __future__ import annotations
 
 import argparse
 import sys
+from pathlib import Path
 
 import pandas as pd
 import requests
 
 from gbpowerdata import config as cfg
 
-# Latest ONS "System Average Price of Gas" workbook (date-stamped edition; update
-# when ONS republishes — it carries the full daily history from Jan 2018). The dataset page
-# (.../datasets/systemaveragepricesapofgas) lists the newest edition under /current/. The
-# 24 Sep 2026 edition runs to 20 Sep 2026 and matches the 18 Dec 2025 one on every shared day
-# to 0.012 p/therm; it was appended to gas_sap_daily.csv for the 2026 days only.
-ONS_URL = ("https://www.ons.gov.uk/file?uri=/economy/economicoutputandproductivity/"
-           "output/datasets/systemaveragepricesapofgas/2026/"
-           "systemaveragepriceofgasdataset240926.xlsx")
+ONS = ("https://www.ons.gov.uk/file?uri=/economy/economicoutputandproductivity/"
+       "output/datasets/systemaveragepricesapofgas/")
+BASE = "ons_sap_gas.xlsx"
+BASE_URL = ONS + "2025/systemaveragepriceofgasdataset181225.xlsx"     # the 18 Dec 2025 edition
+# the later editions, by release date (docstring, EDITIONS); add the newest when ONS republishes
+EDITIONS = {
+    "2026-09-24": ONS + "2026/systemaveragepriceofgasdataset240926.xlsx",
+    "2026-10-29": ONS + "2026/systemaveragepriceofgasdataset291026.xlsx",
+}
+SHEET = "1.Daily SAP Gas"
+OUT = "gas_sap_daily.csv"
+AGREE_P_THERM = 0.05
 THERM_KWH = 29.3071  # 1 therm = 29.3071 kWh
 
 
-def download(dst) -> None:
-    r = requests.get(ONS_URL, timeout=120,
+def edition_file(date: str) -> str:
+    return f"ons_sap_gas_{date}.xlsx"
+
+
+def download(url: str, dst: Path) -> None:
+    r = requests.get(url, timeout=120,
                      headers={"User-Agent": "Mozilla/5.0 (research data pull)"})
     r.raise_for_status()
     dst.write_bytes(r.content)
@@ -55,7 +76,7 @@ def download(dst) -> None:
 
 
 def build(xlsx) -> pd.DataFrame:
-    df = pd.read_excel(xlsx, sheet_name="1.Daily SAP Gas", header=4)
+    df = pd.read_excel(xlsx, sheet_name=SHEET, header=4)
     df = df.rename(columns={df.columns[0]: "date", df.columns[1]: "sap_p_kwh"})
     df["date"] = pd.to_datetime(df["date"], errors="coerce")
     df = df.dropna(subset=["date"]).copy()
@@ -69,20 +90,49 @@ def build(xlsx) -> pd.DataFrame:
     return out.reset_index(drop=True)
 
 
+def series(raw: Path) -> pd.DataFrame:
+    """The base edition, then every dated edition on disk in date order adding the days after the series' last
+    (docstring, EDITIONS)."""
+    out = build(raw / BASE)
+    for f in sorted(raw.glob("ons_sap_gas_*.xlsx")):
+        e = build(f)
+        shared = out.merge(e, on="date", suffixes=("", "_e"))
+        if len(shared):
+            gap = (shared["gas_price_pence_per_therm"] - shared["gas_price_pence_per_therm_e"]).abs()
+            if gap.max() > AGREE_P_THERM:
+                worst = shared.loc[gap.idxmax(), "date"]
+                raise SystemExit(f"gas_pull: {f.name} and the series disagree by {gap.max():.3f} p/therm on {worst} "
+                                 f"(more than {AGREE_P_THERM})")
+        out = pd.concat([out, e[e["date"] > out["date"].max()]], ignore_index=True)
+    return out
+
+
 def main(argv: list[str]) -> None:
     p = argparse.ArgumentParser(description="Build daily GB gas (SAP) price series from ONS.")
-    p.add_argument("--file", help="use an already-downloaded ONS workbook instead of fetching.")
+    p.add_argument("--file", help="use one already-downloaded ONS workbook alone instead of the editions.")
+    p.add_argument("--no-download", action="store_true", help="merge the editions on disk, download none.")
+    p.add_argument("--force", action="store_true", help="replace the series even by a shorter one.")
     args = p.parse_args(argv[1:])
 
     raw = cfg.raw_dir()
-    xlsx = raw / "ons_sap_gas.xlsx"
     if args.file:
-        xlsx = cfg.REPO_ROOT / args.file if not str(args.file).startswith("/") else args.file
-    elif not xlsx.exists():
-        download(xlsx)
+        xlsx = Path(args.file)
+        out = build(xlsx if xlsx.is_absolute() else cfg.REPO_ROOT / xlsx)
+    else:
+        if not args.no_download:
+            if not (raw / BASE).exists():
+                download(BASE_URL, raw / BASE)
+            for date, url in EDITIONS.items():
+                if not (raw / edition_file(date)).exists():
+                    download(url, raw / edition_file(date))
+        out = series(raw)
 
-    out = build(xlsx)
-    path = raw / "gas_sap_daily.csv"
+    path = raw / OUT
+    if path.exists() and not args.force:
+        old = pd.read_csv(path, usecols=["date"])
+        if len(out) < len(old) or out["date"].iloc[-1] < old["date"].iloc[-1]:
+            raise SystemExit(f"gas_pull: refusing to replace {OUT} ({len(old)} days to {old['date'].iloc[-1]}) by a "
+                             f"shorter series ({len(out)} days to {out['date'].iloc[-1]}); --force overrides")
     out.to_csv(path, index=False)
     span = f"{out['date'].iloc[0]} -> {out['date'].iloc[-1]}"
     print(f"Saved {len(out):,} daily SAP rows ({span}) -> {path.name}")
