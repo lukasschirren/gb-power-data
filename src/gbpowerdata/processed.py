@@ -132,6 +132,14 @@ def read_storage_revenue(year: int, annual: bool = False) -> pd.DataFrame:
     return by_unit(df)
 
 
+def read_gas_sap_daily() -> pd.DataFrame:
+    """The ONS System Average Price of gas, one row per gas day from 2018 to the latest published day, nominal, in
+    pence per kWh and per therm on the gross calorific basis (gbpowerdata.build.gas_sap_daily); date parsed."""
+    df = pd.read_csv(cfg.processed_dir() / "gas_sap_daily.csv")
+    df["date"] = pd.to_datetime(df["date"])
+    return df
+
+
 def read_storage_fleet() -> pd.DataFrame:
     """Every battery and pumped storage unit the open data name, with power and (where stated) energy capacity and
     the dates it entered and left the market (gbpowerdata.build.storage_fleet; operating(fleet, date) there gives the

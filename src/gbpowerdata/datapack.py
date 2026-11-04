@@ -82,7 +82,7 @@ PROCESSED_SINGLE = (
     "capacity_market_auctions.csv", "capacity_market_weights.csv", "capacity_market_derating.csv",
     "capacity_market_agreements.csv", "capacity_market_links.csv", "investment_inputs.csv", "unit_run_times.csv",
     "generation_mix_summary.csv", "generation_battery_summary.csv", "generation_battery_units.csv",
-    "generation_by_fuel_annual.csv", "generation_reconciliation_annual.csv",
+    "generation_by_fuel_annual.csv", "generation_reconciliation_annual.csv", "gas_sap_daily.csv",
 )
 # Hand-downloaded raw inputs, as glob patterns under data/raw/ ({cfd_register} is the file name
 # set in config.yaml).
@@ -199,6 +199,7 @@ FILE_SOURCES = {
     "generation_battery_units": ("elexon", "neso"),
     "generation_by_fuel_annual": ("govuk",),            # DUKES 5.6 and the regional generation tables
     "generation_reconciliation_annual": ("govuk", "elexon", "neso"),
+    "gas_sap_daily": ("govuk",),                        # ONS's System Average Price of gas, by gas day
     "lolp_drm": ("elexon",),
     "mid_target": ("elexon",),
     # DUKES 5.11 (govuk), Ofgem's RO register, LCCC's CfD register, NESO's CM register, Elexon's BM register, the

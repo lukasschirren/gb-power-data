@@ -101,6 +101,7 @@ stage stops the run, except the two marked *soft*, which are skipped when their 
 | `stage1_tag_plants` | `raw/powerplants.csv`, CfD register, `reference/{plant,cfd}_overrides.yaml`, `reference/benchmarks_{y}.csv` | `powerplants_tagged_{y}.csv`, `regime_summary_{y}.csv`, `cfd_ppm_matches_{y}.csv` |
 | `stage1_spatial_join` | tagged plants, CfD register, `raw/gis/`, `reference/gsp_overrides.csv` | `powerplants_located_{y}.csv` |
 | `stage2_build_timeseries` | ESPENI, ITSDO, MID, BM units, REPD, gas, carbon, coal (N2EX fills MID gaps only if `raw/nordpool/` exists and `timeseries.mid_gap_fill_n2ex` is true) | `demand_{y}.csv`, `capacity_factors_{y}.csv`, `fuel_prices_{y}.csv`, `mid_target_{y}.csv` |
+| `gas_sap_daily` (after `gas_pull`) | `raw/gas_sap_daily.csv` | `gas_sap_daily.csv` (one row per gas day from 2018 to the latest published day; a missing day reported and left missing) |
 | `build_cfd_fleet` | `raw/lccc/`, `capacity_factors_{y}.csv` | `cfd_fleet_{y}.csv` |
 | `stage2c_zone_demand` | `demand_{y}.csv`, `reference/gsp_group_demand_weights.csv` | `demand_by_zone_{y}.csv` |
 | `stage3_build_agents` | fleet, CfD status, located plants, REPD, GIS, `reference/tech_parameters.yaml`, flexibility, nuclear availability, `bm_unit_register_{y}` with `reference/thermal_station_bmu.csv` (thermal plant dated and sized by its BM units), `reference/thermal_parameters.csv` (thermal availability), `reference/thermal_unit_efficiency.csv` (CCGT stations' manufacturer ratings, by EIC) | `agents_{y}.csv` |

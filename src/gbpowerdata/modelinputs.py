@@ -56,7 +56,7 @@ SINGLE = ("cfd_status", "cfd_contracts", "rego_vintages", "rego_price_monthly", 
           "capacity_market_agreements", "capacity_market_auctions", "capacity_market_derating",
           "capacity_market_weights", "capacity_market_links", "consumer_levy_annual", "consumer_levy_daily",
           "domestic_supply_by_year", "cap_components_by_period", "generation_by_fuel_annual", "storage_fleet",
-          "generation_battery_summary", "generation_battery_units")
+          "generation_battery_summary", "generation_battery_units", "gas_sap_daily")
 # data/reference/ tables
 REFERENCE = ("thermal_parameters", "thermal_parameter_sources", "thermal_station_bmu", "thermal_unit_efficiency",
              "cfd_round_params", "wind_farm_map", "wind_farm_map_overrides", "tech_parameters.yaml",
