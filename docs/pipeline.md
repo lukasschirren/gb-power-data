@@ -38,7 +38,7 @@ docstring has the method, the source quirks it handles, and its full CLI.
 | `ofgem_pull` | Ofgem price-cap annexes (scraped from the levels page) | free | `raw/ofgem/` | ~0.4 GB |
 | `octopus_pull` | Octopus Agile and standard variable tariffs | free | `raw/octopus/` | 0.4 GB |
 | `entsoe_pull`, `entsoe_capacity_pull` | ENTSO-E Transparency: neighbour day-ahead prices, interconnector NTC | free token | `raw/entsoe/` | 0.6 GB |
-| `gas_pull` | ONS System Average Price of gas (daily) | free | `raw/gas_sap_daily.csv` | <1 MB |
+| `gas_pull` | ONS System Average Price of gas (daily; its dated editions merged, each adding the days after the series' last) | free | `raw/gas_sap_daily.csv` | <1 MB |
 | `carbon_pull` | EEX EUA (2018–20) and gov.uk UKA auctions (2021+) | free | `raw/carbon_monthly.csv` | <1 MB |
 | `coal_pull` | World Bank Pink Sheet coal (FOB Richards Bay); HMRC's landed steam coal imports (CN 27011290, CIF) | free | `raw/coal_monthly.csv`, `raw/hmrc_coal_imports.csv` | <1 MB |
 | `fx_pull` | ECB EUR→GBP daily | free | `raw/ecb_fx/` | <1 MB |
